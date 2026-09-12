@@ -1,0 +1,39 @@
+{
+  "name": "shipfold",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "d1:export": "node d1/export_to_d1.js",
+    "d1:sync": "node d1/sync_to_d1.js",
+    "password:change": "node scripts/change-password.js",
+    "test:connections": "node scripts/test-connections.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1129.0",
+    "@clerk/nextjs": "^5.7.5",
+    "bcryptjs": "^2.4.3",
+    "bootstrap": "^5.3.8",
+    "canvas-confetti": "^1.9.4",
+    "lucide-react": "^0.453.0",
+    "next": "^14.2.15",
+    "next-auth": "^4.24.8",
+    "nodemailer": "^7.0.13",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^20.17.0",
+    "@types/nodemailer": "^8.0.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3"
+  }
+}
