@@ -1,4 +1,4 @@
-name = "shipfold"
+name = "client-1"
 compatibility_date = "2024-10-22"
 compatibility_flags = ["nodejs_compat"]
 
