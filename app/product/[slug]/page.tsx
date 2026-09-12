@@ -684,7 +684,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
                 </button>
                 {openAccordion === 'shipping' && (
                   <div className="pt-3 space-y-2 text-zinc-600 leading-relaxed font-light">
-                    <p>• Complimentary express shipping on all orders over ₹1,499.</p>
+                    <p>• 100% Free Express Delivery on all orders nationwide with doorstep tracking.</p>
                     <p>• Hand-inspected, branded bespoke box packaging with signature tissue wrap.</p>
                     <p>• Hassle-free 14-day doorstep exchange for size or alternative colourways.</p>
                   </div>

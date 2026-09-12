@@ -41,10 +41,10 @@ const COUPON_STORAGE_KEY = 'shipfold_luxury_coupon';
 
 const DEFAULT_SHIPPING_SETTINGS: CartShippingSettings = {
   freeShippingEnabled: true,
-  freeShippingThreshold: 999,
-  standardShippingFee: 150,
-  shippingNotice: 'Complimentary express shipping on all orders over ₹999.',
-  freeShippingAllOrders: false,
+  freeShippingThreshold: 0,
+  standardShippingFee: 0,
+  shippingNotice: 'Free Delivery on all orders nationwide.',
+  freeShippingAllOrders: true,
 };
 
 export function CartProvider({ children }: { children: React.ReactNode }) {

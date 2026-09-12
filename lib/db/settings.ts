@@ -16,10 +16,10 @@ export interface ShippingSettings {
 
 export const DEFAULT_SHIPPING_SETTINGS: ShippingSettings = {
   freeShippingEnabled: true,
-  freeShippingThreshold: 999,
-  standardShippingFee: 150,
-  shippingNotice: 'Complimentary express shipping on all orders over ₹999.',
-  freeShippingAllOrders: false,
+  freeShippingThreshold: 0,
+  standardShippingFee: 0,
+  shippingNotice: 'Free Delivery on all orders nationwide.',
+  freeShippingAllOrders: true,
 };
 
 let memorySettingsCache: ShippingSettings | null = null;

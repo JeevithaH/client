@@ -266,14 +266,10 @@ export function CartDrawer() {
                     <span>-₹{discountAmount.toLocaleString('en-IN')}</span>
                   </div>
                 )}
-                <div className="flex justify-between">
-                  <span>Express Shipping</span>
-                  <span>
-                    {shippingFee === 0 ? (
-                      <span className="text-emerald-700 font-medium uppercase text-[10px]">Complimentary</span>
-                    ) : (
-                      `₹${shippingFee}`
-                    )}
+                <div className="flex justify-between items-center">
+                  <span>Express Delivery</span>
+                  <span className="text-emerald-700 font-semibold uppercase text-xs tracking-wider">
+                    FREE DELIVERY
                   </span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-zinc-300 text-sm font-semibold text-zinc-900">
