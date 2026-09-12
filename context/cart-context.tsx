@@ -3,6 +3,14 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { CartItem, Coupon } from '@/lib/types';
 
+export interface CartShippingSettings {
+  freeShippingEnabled: boolean;
+  freeShippingThreshold: number;
+  standardShippingFee: number;
+  shippingNotice: string;
+  freeShippingAllOrders?: boolean;
+}
+
 interface CartContextType {
   items: CartItem[];
   itemCount: number;
@@ -13,6 +21,8 @@ interface CartContextType {
   appliedCoupon: Coupon | null;
   freeShippingThreshold: number;
   amountNeededForFreeShipping: number;
+  shippingSettings: CartShippingSettings;
+  isFreeShippingAlways: boolean;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
   addToCart: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void;
@@ -21,20 +31,51 @@ interface CartContextType {
   clearCart: () => void;
   applyCoupon: (code: string) => Promise<{ success: boolean; message: string }>;
   removeCoupon: () => void;
+  refreshShippingSettings: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = 'shipfold_luxury_cart';
 const COUPON_STORAGE_KEY = 'shipfold_luxury_coupon';
-const FREE_SHIPPING_THRESHOLD = 1499;
-const STANDARD_SHIPPING_FEE = 150;
+
+const DEFAULT_SHIPPING_SETTINGS: CartShippingSettings = {
+  freeShippingEnabled: true,
+  freeShippingThreshold: 999,
+  standardShippingFee: 150,
+  shippingNotice: 'Complimentary express shipping on all orders over ₹999.',
+  freeShippingAllOrders: false,
+};
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [shippingSettings, setShippingSettings] = useState<CartShippingSettings>(DEFAULT_SHIPPING_SETTINGS);
+
+  const refreshShippingSettings = async () => {
+    try {
+      const res = await fetch('/api/shipping-settings');
+      const data = await res.json();
+      if (data?.success && data?.settings) {
+        setShippingSettings({
+          freeShippingEnabled: Boolean(data.settings.freeShippingEnabled),
+          freeShippingThreshold: Number(data.settings.freeShippingThreshold ?? 999),
+          standardShippingFee: Number(data.settings.standardShippingFee ?? 150),
+          shippingNotice: data.settings.shippingNotice || DEFAULT_SHIPPING_SETTINGS.shippingNotice,
+          freeShippingAllOrders: Boolean(data.settings.freeShippingAllOrders || (data.settings.freeShippingEnabled && Number(data.settings.freeShippingThreshold) <= 0)),
+        });
+      }
+    } catch (e) {
+      console.warn('Could not fetch shipping settings', e);
+    }
+  };
+
+  // Load shipping settings on mount
+  useEffect(() => {
+    refreshShippingSettings();
+  }, []);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -91,11 +132,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return 0;
   }, [appliedCoupon, subtotal]);
 
+  const isFreeShippingAlways = useMemo(() => {
+    return shippingSettings.freeShippingEnabled && (
+      shippingSettings.freeShippingAllOrders === true ||
+      shippingSettings.freeShippingThreshold <= 0
+    );
+  }, [shippingSettings]);
+
   const shippingFee = useMemo(() => {
     if (items.length === 0) return 0;
-    const discountedSubtotal = subtotal - discountAmount;
-    return discountedSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : STANDARD_SHIPPING_FEE;
-  }, [items.length, subtotal, discountAmount]);
+    const discountedSubtotal = Math.max(0, subtotal - discountAmount);
+
+    if (shippingSettings.freeShippingEnabled) {
+      if (isFreeShippingAlways || discountedSubtotal >= shippingSettings.freeShippingThreshold) {
+        return 0;
+      }
+    }
+    return Math.max(0, shippingSettings.standardShippingFee);
+  }, [items.length, subtotal, discountAmount, shippingSettings, isFreeShippingAlways]);
 
   const total = useMemo(() => {
     const discounted = Math.max(0, subtotal - discountAmount);
@@ -103,9 +157,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [subtotal, discountAmount, shippingFee, items.length]);
 
   const amountNeededForFreeShipping = useMemo(() => {
+    if (isFreeShippingAlways || !shippingSettings.freeShippingEnabled) return 0;
     const discounted = Math.max(0, subtotal - discountAmount);
-    return Math.max(0, FREE_SHIPPING_THRESHOLD - discounted);
-  }, [subtotal, discountAmount]);
+    return Math.max(0, shippingSettings.freeShippingThreshold - discounted);
+  }, [subtotal, discountAmount, shippingSettings, isFreeShippingAlways]);
 
   const addToCart = (item: Omit<CartItem, 'quantity'>, quantity: number = 1) => {
     setItems((prev) => {
@@ -181,8 +236,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         shippingFee,
         total,
         appliedCoupon,
-        freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
+        freeShippingThreshold: shippingSettings.freeShippingThreshold,
         amountNeededForFreeShipping,
+        shippingSettings,
+        isFreeShippingAlways,
+        refreshShippingSettings,
         isCartOpen,
         setIsCartOpen,
         addToCart,

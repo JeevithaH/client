@@ -21,6 +21,8 @@ export function CartDrawer() {
     appliedCoupon,
     freeShippingThreshold,
     amountNeededForFreeShipping,
+    shippingSettings,
+    isFreeShippingAlways,
     isCartOpen,
     setIsCartOpen,
     updateQuantity,
@@ -66,10 +68,12 @@ export function CartDrawer() {
     }
   };
 
-  const progressPercent = Math.min(
-    100,
-    Math.round(((subtotal - discountAmount) / freeShippingThreshold) * 100)
-  );
+  const progressPercent = isFreeShippingAlways
+    ? 100
+    : Math.min(
+        100,
+        Math.round(((subtotal - discountAmount) / (freeShippingThreshold || 1)) * 100)
+      );
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
@@ -88,14 +92,11 @@ export function CartDrawer() {
               <h2 className="font-serif text-lg font-medium text-zinc-900 tracking-wide">
                 Shopping Bag
               </h2>
-              <span className="text-xs bg-[#0C1427] text-white px-2 py-0.5 font-medium rounded-full">
-                {itemCount}
-              </span>
             </div>
             <button
               onClick={() => setIsCartOpen(false)}
-              className="p-1 text-zinc-400 hover:text-zinc-900 transition-colors"
-              aria-label="Close bag"
+              className="p-2 text-zinc-400 hover:text-zinc-700 transition-colors"
+              aria-label="Close Shopping Bag"
             >
               <X className="w-5 h-5" />
             </button>
@@ -103,7 +104,11 @@ export function CartDrawer() {
 
           {/* Free Shipping Progress Indicator */}
           <div className="p-4 bg-zinc-50 border-b border-zinc-200/80">
-            {amountNeededForFreeShipping > 0 ? (
+            {isFreeShippingAlways ? (
+              <p className="text-xs font-medium text-emerald-800 flex items-center gap-1.5 tracking-wide">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" /> Complimentary Express Delivery on all orders!
+              </p>
+            ) : amountNeededForFreeShipping > 0 ? (
               <p className="text-xs text-zinc-700 tracking-wide font-sans">
                 Add <span className="font-semibold text-zinc-900">₹{amountNeededForFreeShipping.toLocaleString('en-IN')}</span> more to qualify for <span className="font-semibold text-[#8B6B38]">Complimentary Express Delivery</span>
               </p>

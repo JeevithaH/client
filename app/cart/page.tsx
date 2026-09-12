@@ -33,6 +33,8 @@ export default function CartPage() {
     appliedCoupon,
     freeShippingThreshold,
     amountNeededForFreeShipping,
+    isFreeShippingAlways,
+    shippingSettings,
     updateQuantity,
     removeFromCart,
     applyCoupon,
@@ -73,10 +75,12 @@ export default function CartPage() {
     }
   };
 
-  const progressPercent = Math.min(
-    100,
-    Math.round(((subtotal - discountAmount) / freeShippingThreshold) * 100)
-  );
+  const progressPercent = isFreeShippingAlways
+    ? 100
+    : Math.min(
+        100,
+        Math.round(((subtotal - discountAmount) / (freeShippingThreshold || 1)) * 100)
+      );
 
   if (items.length === 0) {
     return (
@@ -118,7 +122,11 @@ export default function CartPage() {
 
         {/* Free Delivery Threshold Notification */}
         <div className="p-4 bg-white border border-zinc-200 mb-8 shadow-sm">
-          {amountNeededForFreeShipping > 0 ? (
+          {isFreeShippingAlways ? (
+            <p className="text-xs font-semibold text-emerald-800 flex items-center gap-1.5 tracking-wide">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" /> Complimentary Express Delivery on all orders!
+            </p>
+          ) : amountNeededForFreeShipping > 0 ? (
             <p className="text-xs text-zinc-700 tracking-wide font-sans">
               Add{' '}
               <span className="font-bold text-zinc-900">

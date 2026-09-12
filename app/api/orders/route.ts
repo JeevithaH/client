@@ -5,6 +5,8 @@ import {
   getProductById,
   validateCouponForCheckout,
   getDb,
+  getShippingSettings,
+  calculateShippingFee,
 } from '@/lib/db';
 import { Order } from '@/lib/types';
 import { checkRateLimit, rateLimitResponse, RATE_LIMIT_PRESETS } from '@/lib/rate-limit';
@@ -206,8 +208,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 8. Shipping Fee & Total Calculation (Spec 12, 13)
-    const verifiedShippingFee = verifiedSubtotal >= 999 ? 0 : 150;
+    // 8. Shipping Fee & Total Calculation (Admin Configured)
+    const shippingSettings = await getShippingSettings();
+    const verifiedShippingFee = calculateShippingFee(Math.max(0, verifiedSubtotal - verifiedDiscount), shippingSettings);
     const verifiedTotalAmount = Math.max(1, Math.round(verifiedSubtotal - verifiedDiscount + verifiedShippingFee));
 
     // 9. PAYMENT VERIFICATION (Spec 15)

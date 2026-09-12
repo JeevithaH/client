@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createRazorpayOrder, verifyRazorpaySignature } from '@/lib/razorpay';
 import { checkRateLimit, rateLimitResponse, RATE_LIMIT_PRESETS } from '@/lib/rate-limit';
 import { parseSafeJson, safeErrorResponse } from '@/lib/security';
-import { getProductById, validateCouponForCheckout } from '@/lib/db';
+import { getProductById, validateCouponForCheckout, getShippingSettings, calculateShippingFee } from '@/lib/db';
 import { getAuthenticatedUser } from '@/lib/clerk-auth';
 import { logSecurityEvent } from '@/lib/logger';
 
@@ -81,8 +81,9 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // Shipping calculation: Free over ₹999, else ₹150
-      const shippingFee = serverSubtotal >= 999 ? 0 : 150;
+      // Shipping calculation based on admin configured settings
+      const shippingSettings = await getShippingSettings();
+      const shippingFee = calculateShippingFee(Math.max(0, serverSubtotal - discountAmount), shippingSettings);
       const finalServerAmount = Math.max(1, Math.round(serverSubtotal - discountAmount + shippingFee));
 
       const orderReceipt = body.receipt || `rcpt_${Date.now()}`;

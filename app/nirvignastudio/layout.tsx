@@ -17,10 +17,12 @@ import {
   ShieldCheck,
   AlertTriangle,
   Image as ImageIcon,
+  Truck,
 } from 'lucide-react';
 
 const ADMIN_NAV = [
   { label: 'Dashboard', href: '/nirvignastudio', icon: LayoutDashboard },
+  { label: 'Shipping & Delivery', href: '/nirvignastudio/shipping', icon: Truck },
   { label: 'Ad & Placements', href: '/nirvignastudio/placements', icon: ImageIcon },
   { label: 'Product Archive', href: '/nirvignastudio/products', icon: Shirt },
   { label: 'Client Orders', href: '/nirvignastudio/orders', icon: ShoppingBag },

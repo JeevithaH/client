@@ -12,6 +12,7 @@ import {
   Tag,
   Boxes,
   RefreshCw,
+  Truck,
 } from 'lucide-react';
 import { AdminDashboardMetrics, OrderStatus } from '@/lib/types';
 import { useToast } from '@/context/toast-context';
@@ -205,7 +206,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Quick Access Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Link
           href="/nirvignastudio/products/new"
           className="p-4 bg-white border border-zinc-200 hover:border-black flex items-center justify-between transition-all group"
@@ -217,6 +218,22 @@ export default function AdminDashboardPage() {
             <div>
               <p className="text-xs font-bold text-black uppercase tracking-wider">Add New Product</p>
               <p className="text-[11px] text-zinc-500">Upload to R2 & create variants</p>
+            </div>
+          </div>
+          <ArrowUpRight className="w-4 h-4 text-zinc-400 group-hover:text-black transition-colors" />
+        </Link>
+
+        <Link
+          href="/nirvignastudio/shipping"
+          className="p-4 bg-white border border-zinc-200 hover:border-black flex items-center justify-between transition-all group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-zinc-100 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
+              <Truck className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-black uppercase tracking-wider">Shipping Policy</p>
+              <p className="text-[11px] text-zinc-500">Free delivery & parcel fees</p>
             </div>
           </div>
           <ArrowUpRight className="w-4 h-4 text-zinc-400 group-hover:text-black transition-colors" />

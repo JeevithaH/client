@@ -78,3 +78,7 @@ export { getAdminDashboardMetrics } from './metrics';
 
 // 10. Security & Auth Tokens
 export { saveAuthToken, verifyAuthToken } from './auth-tokens';
+
+// 11. Store & Shipping Settings
+export { getShippingSettings, updateShippingSettings, calculateShippingFee, DEFAULT_SHIPPING_SETTINGS } from './settings';
+export type { ShippingSettings } from './settings';
