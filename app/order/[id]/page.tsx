@@ -331,16 +331,39 @@ export default function OrderTrackingPage({ params }: { params: { id: string } }
                 <span>-₹{order.discount_amount.toLocaleString('en-IN')}</span>
               </div>
             )}
-            <div className="flex justify-between text-zinc-600">
-              <span>Insured Shipping</span>
-              <span>
-                {order.shipping_fee === 0 ? 'Complimentary' : `₹${order.shipping_fee}`}
+            <div className="flex justify-between items-center text-zinc-600">
+              <span>Express Delivery</span>
+              <span className="text-emerald-700 font-semibold uppercase text-xs">
+                {order.shipping_fee === 0 ? 'FREE DELIVERY' : `₹${order.shipping_fee}`}
               </span>
             </div>
+            <div className="flex justify-between items-center text-zinc-600 pt-1 border-t border-zinc-100">
+              <span>Payment Mode</span>
+              <span className="font-semibold text-zinc-900">
+                {order.payment_method || 'Online Payment'}
+              </span>
+            </div>
+            <div className="flex justify-between items-center text-zinc-600">
+              <span>Payment Status</span>
+              {order.payment_status === 'Paid' ? (
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">
+                  Paid & Verified
+                </span>
+              ) : (
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-100 text-amber-800">
+                  Cash on Delivery (Pending)
+                </span>
+              )}
+            </div>
             <div className="flex justify-between pt-2 border-t border-zinc-200 text-sm font-semibold text-zinc-900">
-              <span>Gross Settled</span>
+              <span>Total Amount</span>
               <span className="font-serif">₹{order.total_amount.toLocaleString('en-IN')}</span>
             </div>
+            {order.payment_method?.includes('COD') && order.payment_status !== 'Paid' && (
+              <p className="text-[11px] text-amber-700 bg-amber-50 p-2 rounded border border-amber-200 mt-2 font-medium">
+                💡 Please keep ₹{order.total_amount.toLocaleString('en-IN')} ready in cash or UPI for the courier upon arrival.
+              </p>
+            )}
           </div>
         </div>
 
