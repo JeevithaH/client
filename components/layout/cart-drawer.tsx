@@ -44,7 +44,7 @@ export function CartDrawer() {
     e.preventDefault();
     setIsCartOpen(false);
     if (!isAuthenticated) {
-      router.push('/sign-in?redirect_url=/checkout');
+      router.push('/login?callbackUrl=/checkout');
     } else {
       router.push('/checkout');
     }

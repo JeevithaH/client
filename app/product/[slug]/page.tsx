@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import {
   Star,
   ShoppingBag,
@@ -38,6 +39,8 @@ import { ProductCard } from '@/components/shop/product-card';
 export default function ProductDetailPage({ params }: { params: { slug: string } }) {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const { isSignedIn: isClerkSignedIn } = useUser();
+  const isAuthenticated = isClerkSignedIn || status === 'authenticated';
   const { addToCart } = useCart();
   const { success, error } = useToast();
 
@@ -230,7 +233,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
 
   const handleBuyNow = () => {
     handleAddToCart();
-    if (status === 'unauthenticated') {
+    if (!isAuthenticated) {
       router.push('/login?callbackUrl=/checkout');
     } else {
       router.push('/checkout');
@@ -529,19 +532,27 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
 
             {/* CTAs: Place in Cart & WhatsApp & Wishlist */}
             <div className="space-y-3 pt-2">
-              <div className="flex gap-3 items-center">
+              <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
                 <button
                   disabled={isOutOfStock}
                   onClick={handleAddToCart}
-                  className="flex-1 py-4 rounded-full bg-[#0E0E0E] hover:bg-zinc-800 text-white text-[11px] uppercase tracking-[0.25em] font-medium transition-all shadow-md disabled:opacity-50"
+                  className="flex-1 py-4 rounded-full bg-white border border-[#0E0E0E] hover:bg-zinc-50 text-[#0E0E0E] text-[11px] uppercase tracking-[0.25em] font-medium transition-all shadow-sm disabled:opacity-50 text-center"
                 >
                   {isOutOfStock ? 'Sold Out' : 'Place in Cart'}
+                </button>
+
+                <button
+                  disabled={isOutOfStock}
+                  onClick={handleBuyNow}
+                  className="flex-1 py-4 rounded-full bg-[#0E0E0E] hover:bg-zinc-800 text-white text-[11px] uppercase tracking-[0.25em] font-medium transition-all shadow-md disabled:opacity-50 text-center"
+                >
+                  {isOutOfStock ? 'Sold Out' : 'Buy Now'}
                 </button>
 
                 {/* Wishlist Button */}
                 <button
                   onClick={() => product && toggleWishlist(product)}
-                  className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all ${
+                  className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all self-center shrink-0 ${
                     isFavorited
                       ? 'bg-rose-50 border-rose-300 text-rose-600'
                       : 'border-zinc-300 hover:border-black text-zinc-700 bg-white'

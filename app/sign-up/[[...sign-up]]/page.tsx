@@ -5,6 +5,7 @@ export default function SignUpPage({
 }: {
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-  const callbackUrl = (searchParams?.callbackUrl || searchParams?.redirect_url || '/account') as string;
+  const rawUrl = (searchParams?.callbackUrl || searchParams?.redirect_url || '/checkout') as string;
+  const callbackUrl = rawUrl.startsWith('/login') || rawUrl.startsWith('/sign-in') ? '/checkout' : rawUrl;
   redirect(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
 }

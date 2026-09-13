@@ -11,8 +11,44 @@ import { useSignIn, useSignUp, useUser } from '@clerk/nextjs';
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const rawCallbackUrl = searchParams.get('callbackUrl') || searchParams.get('redirect_url') || '/account';
-  const callbackUrl = rawCallbackUrl.startsWith('/login') || rawCallbackUrl.startsWith('/sign-in') ? '/checkout' : rawCallbackUrl;
+  const rawCallbackUrl = searchParams.get('callbackUrl') || searchParams.get('redirect_url');
+
+  // Compute smart callbackUrl:
+  // 1. If explicit query parameter is provided and not a login shim: use it.
+  // 2. If cart has items in localStorage, always prioritize /checkout so patrons never land on home page.
+  // 3. Fallback to /checkout.
+  const [callbackUrl, setCallbackUrl] = useState<string>(() => {
+    if (rawCallbackUrl && !rawCallbackUrl.startsWith('/login') && !rawCallbackUrl.startsWith('/sign-in')) {
+      return rawCallbackUrl;
+    }
+    return '/checkout';
+  });
+
+  useEffect(() => {
+    if (rawCallbackUrl && !rawCallbackUrl.startsWith('/login') && !rawCallbackUrl.startsWith('/sign-in')) {
+      setCallbackUrl(rawCallbackUrl);
+      return;
+    }
+    try {
+      const cartData = localStorage.getItem('shipfold_luxury_cart');
+      if (cartData) {
+        const items = JSON.parse(cartData);
+        if (Array.isArray(items) && items.length > 0) {
+          setCallbackUrl('/checkout');
+          return;
+        }
+      }
+    } catch {}
+    setCallbackUrl('/checkout');
+  }, [rawCallbackUrl]);
+
+  const navigateToDestination = (targetUrl: string = callbackUrl) => {
+    if (targetUrl === '/checkout' || targetUrl.includes('/checkout')) {
+      window.location.href = '/checkout';
+    } else {
+      router.replace(targetUrl);
+    }
+  };
 
   const { success, error: toastError } = useToast();
   const { isLoaded: isClerkLoaded, isSignedIn: isClerkSignedIn } = useUser();
@@ -26,11 +62,11 @@ function LoginContent() {
     if (isClerkLoaded && isClerkSignedIn) {
       // Sync Clerk user to local DB asynchronously
       fetch('/api/auth/sync', { method: 'POST' }).catch(() => {});
-      router.replace(callbackUrl);
+      navigateToDestination(callbackUrl);
     } else if (nextAuthStatus === 'authenticated') {
-      router.replace(callbackUrl);
+      navigateToDestination(callbackUrl);
     }
-  }, [isClerkLoaded, isClerkSignedIn, nextAuthStatus, callbackUrl, router]);
+  }, [isClerkLoaded, isClerkSignedIn, nextAuthStatus, callbackUrl]);
 
   // Mode: 'login' | 'register' | 'forgot'
   const [mode, setMode] = useState<'login' | 'register' | 'forgot'>('login');
@@ -102,7 +138,7 @@ function LoginContent() {
       if (clerkSuccess) {
         success('Welcome Back', 'Signed into your Shipfold patron account.');
         fetch('/api/auth/sync', { method: 'POST' }).catch(() => {});
-        router.replace(callbackUrl);
+        navigateToDestination(callbackUrl);
         return;
       }
 
@@ -115,7 +151,7 @@ function LoginContent() {
 
       if (nextAuthRes?.ok && !nextAuthRes?.error) {
         success('Welcome Back', 'Signed in successfully.');
-        router.replace(callbackUrl);
+        navigateToDestination(callbackUrl);
       } else {
         setErrorMessage('Invalid credentials. Please verify your email and password.');
       }
@@ -292,7 +328,7 @@ function LoginContent() {
       if (clerkSuccess || data.success) {
         success('Account Verified', 'Welcome to the Shipfold circle. Directing you to your destination...');
         fetch('/api/auth/sync', { method: 'POST' }).catch(() => {});
-        router.replace(callbackUrl);
+        navigateToDestination(callbackUrl);
       } else {
         setErrorMessage(data.message || 'Invalid 6-digit verification code. Please try again.');
       }
@@ -326,6 +362,15 @@ function LoginContent() {
           return;
         } catch (clerkErr: unknown) {
           console.warn('Clerk password reset request warning:', clerkErr);
+          const firstErr = (clerkErr as { errors?: Array<{ message?: string; longMessage?: string; code?: string }> })?.errors?.[0];
+          if (firstErr?.code !== 'form_identifier_not_found') {
+            const msg = firstErr?.longMessage || firstErr?.message;
+            if (msg) {
+              setErrorMessage(msg);
+              setLoading(false);
+              return;
+            }
+          }
         }
       }
 
@@ -333,7 +378,7 @@ function LoginContent() {
       const res = await fetch('/api/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, type: 'password_reset' }),
+        body: JSON.stringify({ email: email.trim(), type: 'password_reset' }),
       });
       const data = await res.json();
       if (data.success) {
@@ -358,7 +403,8 @@ function LoginContent() {
     e.preventDefault();
     clearMessages();
 
-    if (otp.length !== 6) {
+    const cleanOtp = otp.trim();
+    if (cleanOtp.length !== 6) {
       setErrorMessage('Please enter the 6-digit reset code.');
       return;
     }
@@ -369,42 +415,61 @@ function LoginContent() {
 
     setLoading(true);
     try {
-      let clerkSuccess = false;
-      if (isSignInLoaded && clerkSignIn) {
+      // 1. If Clerk reset is active in session
+      if (isSignInLoaded && clerkSignIn && clerkSignIn.status === 'needs_first_factor') {
         try {
           const result = await clerkSignIn.attemptFirstFactor({
             strategy: 'reset_password_email_code',
-            code: otp.trim(),
+            code: cleanOtp,
             password: newPassword,
           });
+
           if (result.status === 'complete' && setSignInActive) {
             await setSignInActive({ session: result.createdSessionId });
-            clerkSuccess = true;
+
+            // Sync updated password hash to Cloudflare D1
+            await fetch('/api/auth/reset-password', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: email.trim(), newPassword, clerkVerified: true }),
+            }).catch(() => {});
+
+            success('Password Updated', 'Your credentials have been reset. Directing to your destination...');
+            navigateToDestination(callbackUrl);
+            return;
           }
         } catch (clerkErr: unknown) {
-          console.warn('Clerk password reset confirm warning:', clerkErr);
+          console.error('Clerk password reset confirm error:', clerkErr);
+          const firstErr = (clerkErr as { errors?: Array<{ message?: string; longMessage?: string; code?: string }> })?.errors?.[0];
+          const clerkMsg = firstErr?.longMessage || firstErr?.message;
+          setErrorMessage(clerkMsg || 'Failed to verify reset code. Please check your code or password.');
+          setLoading(false);
+          return;
         }
       }
 
-      // Fallback
+      // 2. Cloudflare D1 fallback verification
       const res = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp, newPassword }),
+        body: JSON.stringify({ email: email.trim(), otp: cleanOtp, newPassword }),
       });
       const data = await res.json();
 
-      if (clerkSuccess || data.success) {
+      if (data.success) {
         success('Password Updated', 'Your credentials have been reset. Signing you in...');
         await signIn('credentials', {
           redirect: false,
-          email,
+          email: email.trim(),
           password: newPassword,
         });
-        router.push(callbackUrl);
-        router.refresh();
+        navigateToDestination(callbackUrl);
       } else {
-        setErrorMessage(data.message || 'Failed to reset password.');
+        if (data.message?.includes('Invalid or expired')) {
+          setErrorMessage('Invalid or expired reset code. If your code expired or you refreshed the page, please click "Resend Code" to receive a fresh code.');
+        } else {
+          setErrorMessage(data.message || 'Failed to reset password.');
+        }
       }
     } catch {
       setErrorMessage('Network error resetting password.');
@@ -430,11 +495,25 @@ function LoginContent() {
         } catch {}
       }
 
+      if (mode === 'forgot' && isSignInLoaded && clerkSignIn) {
+        try {
+          await clerkSignIn.create({
+            strategy: 'reset_password_email_code',
+            identifier: email.trim(),
+          });
+          setResendCooldown(60);
+          setInfoMessage(`A fresh 6-digit reset code has been dispatched to ${email}.`);
+          success('New Code Dispatched', 'Please check your inbox.');
+          setLoading(false);
+          return;
+        } catch {}
+      }
+
       const type = mode === 'register' ? 'signup_otp' : 'password_reset';
       const res = await fetch('/api/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name, type }),
+        body: JSON.stringify({ email: email.trim(), name, type }),
       });
       const data = await res.json();
       if (data.success) {

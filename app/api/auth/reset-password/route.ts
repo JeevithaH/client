@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAuthToken, updateUserPassword, getUserByEmail } from '@/lib/db';
+import { auth } from '@clerk/nextjs/server';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { email, otp, newPassword } = body;
+    const { email, otp, newPassword, clerkVerified } = body;
 
-    if (!email || !otp || !newPassword) {
+    if (!email || !newPassword) {
       return NextResponse.json(
-        { success: false, message: 'Email, reset code, and new password are required' },
+        { success: false, message: 'Email and new password are required' },
         { status: 400 }
       );
     }
@@ -24,8 +25,26 @@ export async function POST(req: NextRequest) {
 
     const emailClean = email.toLowerCase().trim();
 
-    // Verify reset token
-    const isValid = await verifyAuthToken(emailClean, otp, 'password_reset');
+    // 1. If verified by Clerk authentication flow
+    if (clerkVerified) {
+      const { userId } = auth();
+      // Update password in Cloudflare D1 so NextAuth credentials stay in sync
+      const updated = await updateUserPassword(emailClean, newPassword);
+      return NextResponse.json({
+        success: true,
+        message: 'Your password has been successfully updated in Cloudflare D1.',
+      });
+    }
+
+    // 2. Otherwise verify reset token in D1 auth_tokens
+    if (!otp) {
+      return NextResponse.json(
+        { success: false, message: 'Reset code is required' },
+        { status: 400 }
+      );
+    }
+
+    const isValid = await verifyAuthToken(emailClean, otp.trim(), 'password_reset');
     if (!isValid) {
       return NextResponse.json(
         { success: false, message: 'Invalid or expired reset code. Please request a new code.' },
