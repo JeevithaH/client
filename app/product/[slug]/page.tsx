@@ -340,7 +340,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
               <div className="flex items-center gap-1.5 flex-1">
                 <Users className="w-3.5 h-3.5 text-zinc-600" />
                 <span className="text-[11px] text-zinc-700">
-                  <strong className="font-medium text-[#0E0E0E]">{activeViewers} patrons</strong> are examining this piece currently.
+                  <strong className="font-medium text-[#0E0E0E]">{activeViewers} people</strong> are viewing this.
                 </span>
               </div>
             </div>
