@@ -35,7 +35,7 @@ const securityHeaders = [
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://cdn.jsdelivr.net https://*.clerk.accounts.dev https://*.clerk.com https://challenges.cloudflare.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
       "font-src 'self' https://fonts.gstatic.com data:",
-      "img-src 'self' data: blob: https://images.unsplash.com https://*.r2.dev https://pub-*.r2.dev https://cloudflare-ipfs.com https://cdn.shopify.com https://img.clerk.com https://images.clerk.dev",
+      "img-src 'self' data: blob: https://images.unsplash.com https://*.r2.dev https://pub-*.r2.dev https://cloudflare-ipfs.com https://cdn.shopify.com https://*.myshopify.com https://stitchclothes-shop.myshopify.com https://img.clerk.com https://images.clerk.dev",
       "connect-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://*.supabase.co https://*.r2.dev https://api.resend.com https://*.clerk.accounts.dev https://*.clerk.com https://clerk-telemetry.com https://*.trycloudflare.com",
       "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://*.clerk.accounts.dev https://challenges.cloudflare.com",
       "worker-src 'self' blob:",
@@ -68,6 +68,14 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'cdn.shopify.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.myshopify.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'stitchclothes-shop.myshopify.com',
       },
     ],
   },
