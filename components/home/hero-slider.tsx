@@ -90,7 +90,9 @@ export function HeroSlider({ slides = [] }: HeroSliderProps) {
             src={s.image_url}
             alt={s.title}
             fill
+            sizes="100vw"
             priority={index === 0}
+            loading={index === 0 ? 'eager' : 'lazy'}
             className="object-cover object-center brightness-[0.88]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />

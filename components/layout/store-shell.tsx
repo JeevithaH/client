@@ -12,20 +12,38 @@ import { ExitIntentModal } from './exit-intent-modal';
 import { MobileBottomNav } from './mobile-bottom-nav';
 import { AnnouncementMessage, SocialProofNotification, SiteSettings } from '@/lib/types';
 
+let cachedConfig: {
+  announcements?: AnnouncementMessage[];
+  socialProof?: SocialProofNotification[];
+  settings?: SiteSettings;
+} | null = null;
+
 export function StoreShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith('/admin') || pathname.startsWith('/nirvignastudio');
 
-  const [announcements, setAnnouncements] = useState<AnnouncementMessage[]>([]);
-  const [socialProof, setSocialProof] = useState<SocialProofNotification[]>([]);
-  const [settings, setSettings] = useState<SiteSettings | null>(null);
+  const [announcements, setAnnouncements] = useState<AnnouncementMessage[]>(cachedConfig?.announcements || []);
+  const [socialProof, setSocialProof] = useState<SocialProofNotification[]>(cachedConfig?.socialProof || []);
+  const [settings, setSettings] = useState<SiteSettings | null>(cachedConfig?.settings || null);
 
   useEffect(() => {
     if (isAdmin) return;
+    if (cachedConfig) {
+      if (cachedConfig.announcements) setAnnouncements(cachedConfig.announcements);
+      if (cachedConfig.socialProof) setSocialProof(cachedConfig.socialProof);
+      if (cachedConfig.settings) setSettings(cachedConfig.settings);
+      return;
+    }
+
     fetch('/api/store/config')
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
+          cachedConfig = {
+            announcements: data.announcements,
+            socialProof: data.socialProof,
+            settings: data.settings,
+          };
           if (data.announcements) setAnnouncements(data.announcements);
           if (data.socialProof) setSocialProof(data.socialProof);
           if (data.settings) setSettings(data.settings);

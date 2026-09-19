@@ -16,7 +16,7 @@ import {
   getActivePlacements
 } from '@/lib/db';
 
-export const revalidate = 0; // Real-time storefront rendering
+export const revalidate = 60; // Ultra-fast edge ISR cache (instant <50ms loads, revalidates in background)
 
 export default async function HomePage() {
   const [

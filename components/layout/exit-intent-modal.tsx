@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { X, Copy, Check, Sparkles } from 'lucide-react';
 import { useToast } from '@/context/toast-context';
 
@@ -20,20 +19,68 @@ export function ExitIntentModal({
   const [copied, setCopied] = useState(false);
   const { success } = useToast();
 
+  const closeModalPermanently = () => {
+    setIsOpen(false);
+    try {
+      localStorage.setItem('stitch_exit_intent_shown', 'true');
+      localStorage.setItem('stitch_exit_intent_dismissed', 'true');
+      sessionStorage.setItem('stitch_exit_intent_seen', 'true');
+    } catch {
+      // Ignore in case private browsing restricts storage
+    }
+  };
+
   useEffect(() => {
     if (!enabled) return;
-    const hasSeen = sessionStorage.getItem('stitch_exit_intent_seen');
-    if (hasSeen) return;
+
+    try {
+      // Check if user has EVER seen or dismissed this modal on this device/browser
+      const hasSeenEver =
+        localStorage.getItem('stitch_exit_intent_shown') === 'true' ||
+        localStorage.getItem('stitch_exit_intent_dismissed') === 'true' ||
+        sessionStorage.getItem('stitch_exit_intent_seen') === 'true';
+
+      if (hasSeenEver) {
+        return; // Strict: NEVER show again
+      }
+    } catch {
+      return;
+    }
+
+    // Do not trigger on touch screens / mobile devices (prevents unwanted pops when touching near address bar)
+    const isMobileDevice =
+      typeof window !== 'undefined' &&
+      (window.innerWidth < 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0);
+
+    if (isMobileDevice) {
+      return;
+    }
+
+    let isArmed = false;
+    // Wait at least 6 seconds of engagement before listening for exit intent
+    const armTimer = setTimeout(() => {
+      isArmed = true;
+    }, 6000);
 
     const handleMouseLeave = (e: MouseEvent) => {
-      if (e.clientY <= 15) {
+      if (!isArmed) return;
+
+      // When cursor leaves viewport through the top edge
+      if (e.clientY <= 10) {
         setIsOpen(true);
-        sessionStorage.setItem('stitch_exit_intent_seen', 'true');
+        try {
+          // Immediately mark as shown forever so it never appears again
+          localStorage.setItem('stitch_exit_intent_shown', 'true');
+          sessionStorage.setItem('stitch_exit_intent_seen', 'true');
+        } catch {}
       }
     };
 
     document.addEventListener('mouseleave', handleMouseLeave);
-    return () => document.removeEventListener('mouseleave', handleMouseLeave);
+    return () => {
+      clearTimeout(armTimer);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
   }, [enabled]);
 
   if (!isOpen) return null;
@@ -46,10 +93,17 @@ export function ExitIntentModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md bg-white border border-zinc-200 shadow-2xl p-6 sm:p-8 text-center">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+      onClick={closeModalPermanently}
+    >
+      <div
+        className="relative w-full max-w-md bg-white border border-zinc-200 shadow-2xl p-6 sm:p-8 text-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Top-right X button */}
         <button
-          onClick={() => setIsOpen(false)}
+          onClick={closeModalPermanently}
           className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-zinc-100 text-zinc-500 hover:text-black transition-colors"
           aria-label="Close"
         >
@@ -93,8 +147,9 @@ export function ExitIntentModal({
           </button>
         </div>
 
+        {/* Continue Shopping Button */}
         <button
-          onClick={() => setIsOpen(false)}
+          onClick={closeModalPermanently}
           className="w-full mt-4 py-3 bg-[#0E0E0E] hover:bg-zinc-800 text-white text-xs uppercase tracking-[0.2em] font-bold transition-all shadow-md"
         >
           Continue Shopping
