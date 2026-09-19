@@ -58,17 +58,17 @@ export function HeroBanner({ placement }: HeroBannerProps) {
         <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto px-4 sm:px-0">
           <Link
             href={linkUrl}
-            className="w-full sm:w-auto justify-center px-8 py-3.5 rounded-full bg-white text-[#0E0E0E] hover:bg-[#0E0E0E] hover:text-white text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-300 border border-white shadow-xl flex items-center gap-2"
+            className="w-full sm:w-auto justify-center px-8 py-3.5 rounded-full bg-white !text-[#0E0E0E] hover:!bg-[#0E0E0E] hover:!text-white text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-300 border border-white shadow-xl flex items-center gap-2 group"
           >
-            <span>{ctaText}</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <span className="!text-[#0E0E0E] group-hover:!text-white transition-colors">{ctaText}</span>
+            <ArrowRight className="w-3.5 h-3.5 !text-[#0E0E0E] group-hover:!text-white transition-colors" />
           </Link>
 
           <Link
             href="/shop?category=polos"
-            className="w-full sm:w-auto text-center px-8 py-3.5 rounded-full bg-black/40 backdrop-blur-md text-white hover:bg-white hover:text-[#0E0E0E] text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-300 border border-white/40"
+            className="w-full sm:w-auto text-center px-8 py-3.5 rounded-full bg-black/40 backdrop-blur-md !text-white hover:!bg-white hover:!text-[#0E0E0E] text-[11px] uppercase tracking-[0.25em] font-medium transition-all duration-300 border border-white/40 group"
           >
-            Luxury Polos
+            <span className="!text-white group-hover:!text-[#0E0E0E] transition-colors">Luxury Polos</span>
           </Link>
         </div>
 

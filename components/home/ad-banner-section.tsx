@@ -53,10 +53,10 @@ export function AdBannerSection({ campaignAd, promoStrip }: AdBannerSectionProps
               <div>
                 <Link
                   href={campaignAd.link_url || '/shop'}
-                  className="w-full sm:w-auto inline-flex justify-center items-center gap-3 px-8 py-3.5 bg-white text-[#0C1427] hover:bg-[#C5A880] hover:text-white text-[11px] uppercase tracking-[0.25em] font-semibold transition-all duration-300 shadow-xl"
+                  className="w-full sm:w-auto inline-flex justify-center items-center gap-3 px-8 py-3.5 bg-white !text-[#0C1427] hover:!bg-[#C5A880] hover:!text-white text-[11px] uppercase tracking-[0.25em] font-semibold transition-all duration-300 shadow-xl group"
                 >
-                  <span>{campaignAd.cta_text || 'Explore Collection'}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <span className="!text-[#0C1427] group-hover:!text-white transition-colors">{campaignAd.cta_text || 'Explore Collection'}</span>
+                  <ArrowRight className="w-3.5 h-3.5 !text-[#0C1427] group-hover:!text-white transition-colors" />
                 </Link>
               </div>
 

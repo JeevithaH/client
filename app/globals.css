@@ -35,30 +35,20 @@
     font-family: 'Playfair Display', Georgia, serif;
     letter-spacing: -0.01em;
   }
-}
 
-/* ==========================================================================
-   GLOBAL LINK CLEANSE & TYPOGRAPHY INTEGRITY
-   Eliminates all accidental browser and Bootstrap 5 default underlines & blues.
-   ========================================================================== */
-a,
-a:visited,
-a:hover,
-a:focus,
-a:active,
-.btn,
-.nav-link,
-button {
-  text-decoration: none !important;
-  color: inherit;
-}
+  /* Global link cleanse - in base layer so utility color classes take full precedence */
+  a,
+  .btn,
+  .nav-link,
+  button {
+    text-decoration: none;
+    color: inherit;
+  }
 
-/* Prevent any nested element inside <a> from inheriting underlines */
-a *,
-a:hover *,
-a:focus *,
-a:active * {
-  text-decoration: none;
+  a *,
+  button * {
+    text-decoration: none;
+  }
 }
 
 /* ==========================================================================
