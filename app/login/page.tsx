@@ -263,10 +263,16 @@ function LoginContent() {
             setLoading(false);
             return;
           }
+          const errMsg = firstErr?.longMessage || firstErr?.message;
+          if (errMsg) {
+            setErrorMessage(errMsg);
+            setLoading(false);
+            return;
+          }
         }
       }
 
-      // Fallback
+      // Fallback to local dispatch
       const res = await fetch('/api/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -295,42 +301,60 @@ function LoginContent() {
     e.preventDefault();
     clearMessages();
 
-    if (otp.length !== 6) {
+    const cleanOtp = otp.trim().replace(/\D/g, '');
+    if (cleanOtp.length !== 6) {
       setErrorMessage('Please enter the complete 6-digit code.');
       return;
     }
 
     setLoading(true);
     try {
-      let clerkSuccess = false;
-      if (isSignUpLoaded && clerkSignUp && clerkSignUp.status === 'missing_requirements') {
+      // 1. Try Clerk verification if clerkSignUp exists
+      if (isSignUpLoaded && clerkSignUp && clerkSignUp.id) {
         try {
           const completeSignUp = await clerkSignUp.attemptEmailAddressVerification({
-            code: otp.trim(),
+            code: cleanOtp,
           });
+
           if (completeSignUp.status === 'complete' && setSignUpActive) {
             await setSignUpActive({ session: completeSignUp.createdSessionId });
-            clerkSuccess = true;
+            success('Account Verified', 'Welcome to the Shipfold circle. Directing you to your destination...');
+            fetch('/api/auth/sync', { method: 'POST' }).catch(() => {});
+            navigateToDestination(callbackUrl);
+            return;
+          } else {
+            console.warn('Clerk sign-up status after attempt:', completeSignUp.status);
           }
         } catch (clerkErr: unknown) {
-          console.warn('Clerk email OTP attempt warning:', clerkErr);
+          console.warn('Clerk email OTP attempt error:', clerkErr);
+          const firstErr = (clerkErr as { errors?: Array<{ message?: string; longMessage?: string; code?: string }> })?.errors?.[0];
+          const clerkMsg = firstErr?.longMessage || firstErr?.message;
+          if (clerkMsg) {
+            setErrorMessage(clerkMsg);
+            setLoading(false);
+            return;
+          }
         }
       }
 
-      // Sync and store locally
+      // 2. Fallback to Cloudflare D1 local verification
       const res = await fetch('/api/auth/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name, password, otp, type: 'signup_otp' }),
+        body: JSON.stringify({ email: email.trim(), name, password, otp: cleanOtp, type: 'signup_otp' }),
       });
       const data = await res.json();
 
-      if (clerkSuccess || data.success) {
+      if (data.success) {
         success('Account Verified', 'Welcome to the Shipfold circle. Directing you to your destination...');
-        fetch('/api/auth/sync', { method: 'POST' }).catch(() => {});
+        await signIn('credentials', {
+          redirect: false,
+          email: email.trim(),
+          password,
+        });
         navigateToDestination(callbackUrl);
       } else {
-        setErrorMessage(data.message || 'Invalid 6-digit verification code. Please try again.');
+        setErrorMessage(data.message || 'Invalid or expired verification code. Please request a new code.');
       }
     } catch {
       setErrorMessage('Network error verifying code.');
@@ -484,15 +508,23 @@ function LoginContent() {
     clearMessages();
     setLoading(true);
     try {
-      if (mode === 'register' && isSignUpLoaded && clerkSignUp) {
+      if (mode === 'register' && isSignUpLoaded && clerkSignUp && clerkSignUp.id) {
         try {
           await clerkSignUp.prepareEmailAddressVerification({ strategy: 'email_code' });
           setResendCooldown(60);
-          setInfoMessage('A fresh verification code has been dispatched via Clerk.');
+          setInfoMessage(`A fresh verification code has been dispatched to ${email}.`);
           success('New Code Dispatched', 'Please check your email.');
           setLoading(false);
           return;
-        } catch {}
+        } catch (clerkErr: unknown) {
+          const firstErr = (clerkErr as { errors?: Array<{ message?: string; longMessage?: string }> })?.errors?.[0];
+          const errMsg = firstErr?.longMessage || firstErr?.message;
+          if (errMsg) {
+            setErrorMessage(errMsg);
+            setLoading(false);
+            return;
+          }
+        }
       }
 
       if (mode === 'forgot' && isSignInLoaded && clerkSignIn) {
@@ -757,10 +789,10 @@ function LoginContent() {
                   <input
                     type="password"
                     required
-                    minLength={6}
+                    minLength={8}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="At least 6 characters"
+                    placeholder="At least 8 characters"
                     className="w-full pl-9 pr-3 py-2 text-xs bg-zinc-50 border border-zinc-300 focus:outline-none focus:border-[#0C1427]"
                   />
                 </div>
