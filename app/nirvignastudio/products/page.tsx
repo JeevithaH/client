@@ -10,6 +10,7 @@ import { useToast } from '@/context/toast-context';
 export default function AdminProductsPage() {
   const { success, error } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -18,13 +19,21 @@ export default function AdminProductsPage() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/products?t=${Date.now()}`, { cache: 'no-store' });
-      const data = await res.json();
-      if (data.success) {
-        setProducts(data.products || []);
+      const [prodRes, catRes] = await Promise.all([
+        fetch(`/api/admin/products?t=${Date.now()}`, { cache: 'no-store' }),
+        fetch('/api/categories', { cache: 'no-store' })
+      ]);
+      const prodData = await prodRes.json();
+      const catData = await catRes.json();
+
+      if (prodData.success) {
+        setProducts(prodData.products || []);
+      }
+      if (catData.success && Array.isArray(catData.categories)) {
+        setCategories(catData.categories);
       }
     } catch (err) {
-      console.error('Failed to load products', err);
+      console.error('Failed to load products or categories', err);
     } finally {
       setLoading(false);
     }
@@ -107,10 +116,11 @@ export default function AdminProductsPage() {
           className="w-full sm:w-48 py-2 px-3 text-xs bg-zinc-50 border border-zinc-200 focus:outline-none focus:border-black"
         >
           <option value="all">All Categories</option>
-          <option value="cat-polos">Luxury Polos</option>
-          <option value="cat-crew-neck">Supima Crew Necks</option>
-          <option value="cat-henleys">Mercerized Henleys</option>
-          <option value="cat-oversized">Modern Oversized</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
         </select>
       </div>
 

@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { SiteSettings } from '@/lib/types';
 import { useToast } from '@/context/toast-context';
+import { R2ImageUploader } from '@/components/admin/r2-image-uploader';
 
 export default function AdminSettingsPage() {
   const { success, error } = useToast();
@@ -23,6 +24,7 @@ export default function AdminSettingsPage() {
 
   // Form states
   const [storeName, setStoreName] = useState('STITCHCLOTHES');
+  const [logoUrl, setLogoUrl] = useState('');
   const [supportEmail, setSupportEmail] = useState('the.stitchclothes@gmail.com');
   const [supportPhone, setSupportPhone] = useState('+916395463874');
   const [whatsappNumber, setWhatsappNumber] = useState('916395463874');
@@ -41,6 +43,7 @@ export default function AdminSettingsPage() {
         const s = data.settings as SiteSettings;
         setSettings(s);
         setStoreName(s.store_name || 'STITCHCLOTHES');
+        setLogoUrl(s.logo_url || '');
         setSupportEmail(s.support_email || 'the.stitchclothes@gmail.com');
         setSupportPhone(s.support_phone || '+916395463874');
         setWhatsappNumber(s.whatsapp_number || '916395463874');
@@ -88,6 +91,7 @@ export default function AdminSettingsPage() {
     try {
       await Promise.all([
         saveSingle('store_name', storeName),
+        saveSingle('logo_url', logoUrl),
         saveSingle('support_email', supportEmail),
         saveSingle('support_phone', supportPhone),
         saveSingle('whatsapp_number', whatsappNumber),
@@ -195,6 +199,16 @@ export default function AdminSettingsPage() {
                   className="w-full px-3 py-2 border border-zinc-300 text-black focus:outline-none focus:border-black text-sm font-mono"
                 />
               </div>
+            </div>
+
+            <div className="pt-3 border-t border-zinc-100">
+              <R2ImageUploader
+                label="Brand Store Logo"
+                recommendedRatio="Horizontal or Square (max 5MB)"
+                placeholder="https://... or upload custom brand logo to Cloudflare R2"
+                value={logoUrl}
+                onChange={setLogoUrl}
+              />
             </div>
           </div>
 

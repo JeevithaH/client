@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Placement, PlacementSlot } from '@/lib/types';
 import { useToast } from '@/context/toast-context';
+import { R2ImageUploader } from '@/components/admin/r2-image-uploader';
 
 const SLOTS: { id: PlacementSlot; label: string; description: string; previewHint: string }[] = [
   {
@@ -459,22 +460,18 @@ export default function AdminPlacementsPage() {
                 </p>
               </div>
 
-              {/* Image URL & Presets */}
-              <div>
-                <label className="block text-xs uppercase font-bold tracking-wider text-zinc-700 mb-1">
-                  High-Resolution Image URL *
-                </label>
-                <input
-                  type="url"
+              {/* Image URL with R2 Uploader & Presets */}
+              <div className="space-y-2">
+                <R2ImageUploader
+                  label="High-Resolution Banner Image *"
                   value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="https://images.unsplash.com/photo-..."
-                  className="w-full border border-zinc-300 p-2.5 text-xs text-black focus:outline-none focus:border-black font-mono"
-                  required
+                  onChange={(url) => setImageUrl(url)}
+                  recommendedRatio="1920x800 or 16:9"
+                  placeholder="https://... or upload from your device to Cloudflare R2"
                 />
-                
+
                 {/* Quick Presets */}
-                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
                   <span className="text-[10px] uppercase tracking-wider text-zinc-500">Curated Presets:</span>
                   {PRESET_IMAGES.map((preset) => (
                     <button
@@ -487,26 +484,6 @@ export default function AdminPlacementsPage() {
                     </button>
                   ))}
                 </div>
-
-                {/* Live Preview */}
-                {imageUrl && (
-                  <div className="mt-3 relative h-36 w-full bg-zinc-900 border border-zinc-200 overflow-hidden">
-                    <img
-                      src={imageUrl}
-                      alt="Banner Preview"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src =
-                          'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=800';
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
-                      <p className="text-white text-xs font-medium truncate">
-                        {title || 'Live Image Preview'}
-                      </p>
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Title & Badge */}

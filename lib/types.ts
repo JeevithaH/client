@@ -242,6 +242,7 @@ export interface SocialProofNotification {
 export interface SiteSettings {
   store_name: string;
   store_tagline?: string;
+  logo_url?: string;
   support_phone: string;
   support_email: string;
   whatsapp_number: string;

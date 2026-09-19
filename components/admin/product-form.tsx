@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Plus, Trash2, Upload, ArrowLeft, Check, Sparkles } from 'lucide-react';
+import { Plus, Trash2, Upload, ArrowLeft, Check, Sparkles, RefreshCw } from 'lucide-react';
 import { Product, ProductVariant } from '@/lib/types';
 import { useToast } from '@/context/toast-context';
 import Link from 'next/link';
@@ -13,11 +13,24 @@ interface ProductFormProps {
   isEdit?: boolean;
 }
 
-const CATEGORIES = [
+const DEFAULT_CATEGORIES = [
+  { id: 'cat_hoodies', name: 'Hoodies' },
+  { id: 'cat_oversized-t-shirt', name: 'Oversized T-Shirt' },
+  { id: 'cat_jeans-shirt', name: 'Jeans shirt' },
+  { id: 'cat_polo-t-shirts', name: 'Polo T-Shirts' },
+  { id: 'cat_t-shirts', name: 'T-Shirts' },
+  { id: 'cat_sweaters', name: 'Sweatshirt' },
+  { id: 'cat_lower-tshirt', name: 'Lower tshirt' },
+  { id: 'cat_best-selling', name: 'Best Selling' },
+  { id: 'cat_hot-sale', name: 'Hot sale' },
+  { id: 'cat_trending', name: 'Trending' },
+  { id: 'cat_unique-design-clothes', name: 'Unique Design Clothes' },
   { id: 'cat-polos', name: 'Luxury Polos' },
   { id: 'cat-crew-neck', name: 'Supima Crew Necks' },
   { id: 'cat-henleys', name: 'Mercerized Henleys' },
   { id: 'cat-oversized', name: 'Modern Relaxed & Oversized' },
+  { id: 'cat-graphic-art', name: 'Artisan & Graphic Editions' },
+  { id: 'cat-custom-bespoke', name: 'Bespoke & Custom Studio' },
 ];
 
 export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps) {
@@ -25,11 +38,16 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
   const { success, error } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingVariantIdx, setUploadingVariantIdx] = useState<number | null>(null);
+
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(DEFAULT_CATEGORIES);
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [customCatName, setCustomCatName] = useState('');
 
   const [title, setTitle] = useState(initialProduct?.title || '');
   const [slug, setSlug] = useState(initialProduct?.slug || '');
   const [tagline, setTagline] = useState(initialProduct?.tagline || '');
-  const [categoryId, setCategoryId] = useState(initialProduct?.category_id || 'cat-crew-neck');
+  const [categoryId, setCategoryId] = useState(initialProduct?.category_id || 'cat_hoodies');
   const [fit, setFit] = useState(initialProduct?.fit || 'Tailored Fit');
   const [price, setPrice] = useState<number | string>(initialProduct?.price || 1999);
   const [comparePrice, setComparePrice] = useState<number | string>(
@@ -52,6 +70,34 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
   const [isNew, setIsNew] = useState(Boolean(initialProduct?.is_new));
   const [isBestseller, setIsBestseller] = useState(Boolean(initialProduct?.is_bestseller));
 
+  // Load categories dynamically from D1
+  React.useEffect(() => {
+    async function loadCategories() {
+      try {
+        const res = await fetch('/api/categories');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.categories) && data.categories.length > 0) {
+          const map = new Map<string, { id: string; name: string }>();
+          // Put defaults first
+          DEFAULT_CATEGORIES.forEach((c) => map.set(c.id, c));
+          // Add/override from API
+          data.categories.forEach((c: { id: string; name: string }) => map.set(c.id, { id: c.id, name: c.name }));
+          // Ensure current product's category exists in map
+          if (initialProduct?.category_id && !map.has(initialProduct.category_id)) {
+            map.set(initialProduct.category_id, {
+              id: initialProduct.category_id,
+              name: initialProduct.category_name || initialProduct.category_id,
+            });
+          }
+          setCategories(Array.from(map.values()));
+        }
+      } catch (err) {
+        console.warn('Could not load categories dynamically, using defaults', err);
+      }
+    }
+    loadCategories();
+  }, [initialProduct]);
+
   // Variants list
   const [variants, setVariants] = useState<ProductVariant[]>(
     initialProduct?.variants && initialProduct.variants.length > 0
@@ -60,24 +106,24 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
           {
             id: `var_${Date.now()}_1`,
             product_id: initialProduct?.id || '',
-            color_name: 'Midnight Navy',
-            color_hex: '#0C172D',
+            color_name: 'Midnight Black',
+            color_hex: '#111111',
             size: 'M',
             stock: 20,
-            sku: 'SF-NAVY-M',
+            sku: 'ST-BLK-M',
             image_url:
-              'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=900&auto=format&fit=crop',
+              'https://stitchclothes-shop.myshopify.com/cdn/shop/files/Men_SSpiderPrintedHoodie.jpg?v=1737624764&width=800',
           },
           {
             id: `var_${Date.now()}_2`,
             product_id: initialProduct?.id || '',
-            color_name: 'Midnight Navy',
-            color_hex: '#0C172D',
+            color_name: 'Midnight Black',
+            color_hex: '#111111',
             size: 'L',
             stock: 15,
-            sku: 'SF-NAVY-L',
+            sku: 'ST-BLK-L',
             image_url:
-              'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=900&auto=format&fit=crop',
+              'https://stitchclothes-shop.myshopify.com/cdn/shop/files/Men_SSpiderPrintedHoodie.jpg?v=1737624764&width=800',
           },
         ]
   );
@@ -93,14 +139,12 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
     const newVariant: ProductVariant = {
       id: `var_${Date.now()}_${Math.random().toString(36).substring(2, 5)}`,
       product_id: initialProduct?.id || '',
-      color_name: variants[0]?.color_name || 'Chalk White',
-      color_hex: variants[0]?.color_hex || '#FFFFFF',
+      color_name: variants[0]?.color_name || 'Standard',
+      color_hex: variants[0]?.color_hex || '#111111',
       size: 'XL',
       stock: 15,
-      sku: `SF-${slug.substring(0, 4).toUpperCase()}-XL-${Math.floor(100 + Math.random() * 899)}`,
-      image_url:
-        variants[0]?.image_url ||
-        'https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=900&auto=format&fit=crop',
+      sku: `ST-${(slug || 'ITEM').substring(0, 4).toUpperCase()}-XL-${Math.floor(100 + Math.random() * 899)}`,
+      image_url: variants[0]?.image_url || '',
     };
     setVariants([...variants, newVariant]);
   };
@@ -124,7 +168,12 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setUploadingImage(true);
+    if (variantIndex !== undefined) {
+      setUploadingVariantIdx(variantIndex);
+    } else {
+      setUploadingImage(true);
+    }
+
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -139,23 +188,33 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
         if (variantIndex !== undefined) {
           handleUpdateVariant(variantIndex, 'image_url', data.url);
         } else {
-          // update all variants without an image
-          setVariants(variants.map((v) => ({ ...v, image_url: data.url })));
+          // update all variants without an image or apply to all
+          setVariants((prev) =>
+            prev.map((v) => (!v.image_url ? { ...v, image_url: data.url } : v))
+          );
         }
-        success('R2 Storage Upload', 'Image synced to Cloudflare R2 bucket.');
+        success('R2 Storage Upload', 'Image synced directly to Cloudflare R2 bucket.');
       } else {
-        error('Upload Failed', data.message);
+        error('Upload Failed', data.message || 'Cloudflare R2 rejected upload');
       }
     } catch {
       error('Upload Error', 'Could not transmit image to Cloudflare R2');
     } finally {
-      setUploadingImage(false);
+      if (variantIndex !== undefined) {
+        setUploadingVariantIdx(null);
+      } else {
+        setUploadingImage(false);
+      }
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !price || !categoryId) {
+    const finalCategoryId = isCustomCategory && customCatName.trim()
+      ? `cat_${customCatName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+      : categoryId;
+
+    if (!title || !price || !finalCategoryId) {
       error('Missing Information', 'Please complete all required garment attributes.');
       return;
     }
@@ -173,7 +232,7 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
         fit,
         price: Number(price),
         compare_at_price: comparePrice ? Number(comparePrice) : undefined,
-        category_id: categoryId,
+        category_id: finalCategoryId,
         is_featured: isFeatured,
         is_new: isNew,
         is_bestseller: isBestseller,
@@ -283,20 +342,40 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs uppercase tracking-wider font-semibold text-zinc-700 mb-1">
-                  Category *
-                </label>
-                <select
-                  value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-zinc-50 border border-zinc-300 focus:outline-none focus:border-black"
-                >
-                  {CATEGORIES.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs uppercase tracking-wider font-semibold text-zinc-700">
+                    Category *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setIsCustomCategory(!isCustomCategory)}
+                    className="text-[10px] text-zinc-500 hover:text-black underline"
+                  >
+                    {isCustomCategory ? 'Choose Existing' : '+ Custom Category'}
+                  </button>
+                </div>
+                {isCustomCategory ? (
+                  <input
+                    type="text"
+                    required
+                    value={customCatName}
+                    onChange={(e) => setCustomCatName(e.target.value)}
+                    placeholder="Enter custom category name (e.g. Winter Jackets)"
+                    className="w-full px-3 py-2 text-xs bg-zinc-50 border border-zinc-300 focus:outline-none focus:border-black"
+                  />
+                ) : (
+                  <select
+                    value={categoryId}
+                    onChange={(e) => setCategoryId(e.target.value)}
+                    className="w-full px-3 py-2 text-xs bg-zinc-50 border border-zinc-300 focus:outline-none focus:border-black"
+                  >
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div>
@@ -384,22 +463,30 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
                 >
                   {/* Thumbnail / Upload */}
                   <div className="relative w-14 h-16 bg-zinc-200 shrink-0 border border-zinc-300 overflow-hidden group-hover:border-black transition-colors">
-                    {variant.image_url ? (
+                    {uploadingVariantIdx === idx ? (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-black/80 text-white gap-1">
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span className="text-[8px] uppercase tracking-wider font-bold">R2 Upload</span>
+                      </div>
+                    ) : variant.image_url ? (
                       <Image src={variant.image_url} alt="" fill className="object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-[10px] text-zinc-400">
                         No image
                       </div>
                     )}
-                    <label className="absolute inset-0 bg-black/50 text-white opacity-0 hover:opacity-100 cursor-pointer flex items-center justify-center text-[10px] uppercase font-bold transition-opacity">
-                      Upload
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => handleR2Upload(e, idx)}
-                      />
-                    </label>
+                    {uploadingVariantIdx !== idx && (
+                      <label className="absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100 hover:!opacity-100 cursor-pointer flex flex-col items-center justify-center text-[9px] uppercase font-bold tracking-wider transition-opacity">
+                        <Upload className="w-3.5 h-3.5 mb-0.5" />
+                        <span>R2 Upload</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleR2Upload(e, idx)}
+                        />
+                      </label>
+                    )}
                   </div>
 
                   {/* Fields */}

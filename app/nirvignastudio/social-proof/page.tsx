@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { SocialProofNotification } from '@/lib/types';
 import { useToast } from '@/context/toast-context';
+import { R2ImageUploader } from '@/components/admin/r2-image-uploader';
 
 export default function AdminSocialProofPage() {
   const { success, error } = useToast();
@@ -307,19 +308,13 @@ export default function AdminSocialProofPage() {
                 />
               </div>
 
-              <div>
-                <label className="block text-zinc-700 font-medium uppercase tracking-wider mb-1">
-                  Product Thumbnail Image URL *
-                </label>
-                <input
-                  type="url"
-                  value={productImageUrl}
-                  onChange={(e) => setProductImageUrl(e.target.value)}
-                  placeholder="https://..."
-                  required
-                  className="w-full px-3 py-2 border border-zinc-300 text-black focus:outline-none focus:border-black text-sm font-mono"
-                />
-              </div>
+              <R2ImageUploader
+                label="Product Thumbnail Image *"
+                value={productImageUrl}
+                onChange={(url) => setProductImageUrl(url)}
+                recommendedRatio="1:1 (Square)"
+                placeholder="https://... or upload from your device to Cloudflare R2"
+              />
 
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <div>
