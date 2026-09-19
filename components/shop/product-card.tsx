@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Heart, Check, Plus, ShoppingBag } from 'lucide-react';
+import { Heart, Check, Plus, ShoppingBag, Eye } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
 import { useToast } from '@/context/toast-context';
+import { QuickViewModal } from './quick-view-modal';
 
 interface ProductCardProps {
   product: Product;
@@ -26,6 +27,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
   const [mobileQuickAddOpen, setMobileQuickAddOpen] = useState(false);
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
   const colors = product.available_colors || [];
   const currentColor = colors[selectedColorIndex] || {
@@ -97,6 +99,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Minimalist Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+          {product.compare_at_price && product.compare_at_price > product.price && (
+            <span className="bg-[#DC2626] text-white text-[9px] uppercase tracking-[0.2em] font-bold px-2 py-0.5 shadow-xs">
+              -{Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)}%
+            </span>
+          )}
           {product.is_bestseller && (
             <span className="bg-[#0E0E0E] text-white text-[9px] uppercase tracking-[0.25em] font-medium px-2 py-0.5">
               Bestseller
@@ -109,8 +116,8 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
 
-        {/* Wishlist Button */}
-        <div className="absolute top-3 right-3 z-10">
+        {/* Action Buttons: Wishlist & Quick View */}
+        <div className="absolute top-3 right-3 z-10 flex flex-col gap-1.5">
           <button
             onClick={(e) => {
               e.preventDefault();
@@ -126,6 +133,20 @@ export function ProductCard({ product }: ProductCardProps) {
             aria-label="Wishlist"
           >
             <Heart className={`w-3.5 h-3.5 ${isFavorited ? 'fill-rose-600 text-rose-600' : ''}`} />
+          </button>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsQuickViewOpen(true);
+            }}
+            className="p-2 rounded-full bg-white/80 hover:bg-white text-zinc-600 hover:text-black shadow-xs transition-all opacity-0 group-hover:opacity-100 hidden sm:flex items-center justify-center"
+            title="Quick View"
+            aria-label="Quick View"
+          >
+            <Eye className="w-3.5 h-3.5" />
           </button>
         </div>
 
@@ -242,6 +263,13 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
       </div>
+
+      {/* Quick View Modal */}
+      <QuickViewModal
+        product={product}
+        isOpen={isQuickViewOpen}
+        onClose={() => setIsQuickViewOpen(false)}
+      />
     </div>
   );
 }

@@ -82,3 +82,29 @@ export { saveAuthToken, verifyAuthToken } from './auth-tokens';
 // 11. Store & Shipping Settings
 export { getShippingSettings, updateShippingSettings, calculateShippingFee, DEFAULT_SHIPPING_SETTINGS } from './settings';
 export type { ShippingSettings } from './settings';
+
+// 12. Stitchclothes & Glozin Dynamic Elements
+export {
+  getActiveHeroSlides,
+  getAllHeroSlidesAdmin,
+  saveHeroSlide,
+  deleteHeroSlide,
+  getActiveAnnouncements,
+  getAllAnnouncementsAdmin,
+  saveAnnouncement,
+  deleteAnnouncement,
+  getActiveMarqueeItems,
+  getAllMarqueeItemsAdmin,
+  saveMarqueeItem,
+  deleteMarqueeItem,
+  getActiveTrustPillars,
+  getAllTrustPillarsAdmin,
+  saveTrustPillar,
+  getActiveSocialProofNotifications,
+  getAllSocialProofAdmin,
+  saveSocialProofNotification,
+  deleteSocialProofNotification,
+  getSiteSettings,
+  updateSiteSetting,
+  DEFAULT_SITE_SETTINGS
+} from './stitch';

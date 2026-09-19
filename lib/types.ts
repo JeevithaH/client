@@ -33,6 +33,7 @@ export interface Product {
   compare_at_price?: number;
   category_id: string;
   category_name?: string;
+  category_slug?: string;
   is_featured: boolean;
   is_new: boolean;
   is_bestseller: boolean;
@@ -181,5 +182,79 @@ export interface Placement {
   display_order: number;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface HeroSlide {
+  id: string;
+  title: string;
+  subtitle?: string;
+  badge_text?: string;
+  image_url: string;
+  mobile_image_url?: string;
+  button_text: string;
+  button_link: string;
+  text_alignment?: 'left' | 'center' | 'right';
+  display_order: number;
+  is_active: boolean;
+  created_at?: string;
+}
+
+export interface AnnouncementMessage {
+  id: string;
+  message: string;
+  link_url?: string;
+  display_order: number;
+  is_active: boolean;
+}
+
+export interface MarqueeItem {
+  id: string;
+  text: string;
+  icon_name?: string;
+  link_url?: string;
+  display_order: number;
+  is_active: boolean;
+}
+
+export interface TrustPillar {
+  id: string;
+  title: string;
+  description?: string;
+  subtitle?: string;
+  icon?: string;
+  icon_name?: string;
+  display_order: number;
+  is_active: boolean;
+}
+
+export interface SocialProofNotification {
+  id: string;
+  customer_name?: string;
+  product_title: string;
+  product_image?: string;
+  product_image_url?: string;
+  product_url?: string;
+  city: string;
+  time_ago?: string;
+  is_active: boolean;
+}
+
+export interface SiteSettings {
+  store_name: string;
+  store_tagline?: string;
+  support_phone: string;
+  support_email: string;
+  whatsapp_number: string;
+  instagram_url?: string;
+  facebook_url?: string;
+  pinterest_url?: string;
+  free_shipping_threshold: number;
+  standard_shipping_fee?: number;
+  cod_enabled?: boolean;
+  exit_intent_enabled: boolean;
+  exit_intent_coupon?: string;
+  exit_intent_discount_code?: string;
+  social_proof_enabled?: boolean;
+  social_proof_interval_sec?: number;
 }
 

@@ -4,13 +4,17 @@ import React, { useState } from 'react';
 import { MessageCircle, X, Sparkles, Send, Phone } from 'lucide-react';
 import { getWhatsAppConciergeUrl, CONCIERGE_PHONE_DISPLAY } from '@/lib/whatsapp';
 
-export function WhatsAppButton() {
+export function WhatsAppButton({ phoneNumber = '916395463874' }: { phoneNumber?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [customMsg, setCustomMsg] = useState('');
 
+  const displayPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
-    const url = getWhatsAppConciergeUrl(encodeURIComponent(customMsg || 'Hello Shipfold Concierge, I would like assistance with custom T-shirts & luxury orders.'));
+    const cleanPhone = phoneNumber.replace(/[^0-9]/g, '');
+    const text = encodeURIComponent(customMsg || 'Hello STiTCH Concierge, I would like assistance with streetwear drops & orders.');
+    const url = `https://wa.me/${cleanPhone}?text=${text}`;
     window.open(url, '_blank');
     setIsOpen(false);
     setCustomMsg('');
@@ -22,16 +26,16 @@ export function WhatsAppButton() {
       {isOpen && (
         <div className="mb-3 w-80 bg-white shadow-2xl border border-zinc-200 animate-in slide-in-from-bottom-5 duration-200 overflow-hidden">
           {/* Header */}
-          <div className="bg-[#0C1427] text-white p-4 flex items-center justify-between">
+          <div className="bg-[#0E0E0E] text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white">
                 <MessageCircle className="w-4 h-4" />
               </div>
               <div>
-                <p className="font-serif font-semibold text-xs text-white">Shipfold Atelier Concierge</p>
+                <p className="font-sans font-bold text-xs uppercase tracking-wider text-white">STiTCH Concierge</p>
                 <p className="text-[10px] text-emerald-400 flex items-center gap-1 font-mono">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>{CONCIERGE_PHONE_DISPLAY}</span>
+                  <span>{displayPhone}</span>
                 </p>
               </div>
             </div>

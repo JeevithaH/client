@@ -18,17 +18,28 @@ import {
   AlertTriangle,
   Image as ImageIcon,
   Truck,
+  Sliders,
+  Megaphone,
+  Repeat,
+  BellRing,
+  Settings,
 } from 'lucide-react';
 
 const ADMIN_NAV = [
   { label: 'Dashboard', href: '/nirvignastudio', icon: LayoutDashboard },
-  { label: 'Shipping & Delivery', href: '/nirvignastudio/shipping', icon: Truck },
-  { label: 'Ad & Placements', href: '/nirvignastudio/placements', icon: ImageIcon },
+  { label: 'Hero Slides', href: '/nirvignastudio/hero-slides', icon: Sliders },
+  { label: 'Announcements', href: '/nirvignastudio/announcements', icon: Megaphone },
+  { label: 'Marquee Ribbons', href: '/nirvignastudio/marquee', icon: Repeat },
+  { label: 'Trust Pillars', href: '/nirvignastudio/trust-pillars', icon: ShieldCheck },
+  { label: 'Social Proof Alerts', href: '/nirvignastudio/social-proof', icon: BellRing },
+  { label: 'Store Settings', href: '/nirvignastudio/settings', icon: Settings },
   { label: 'Product Archive', href: '/nirvignastudio/products', icon: Shirt },
   { label: 'Client Orders', href: '/nirvignastudio/orders', icon: ShoppingBag },
   { label: 'Privilege Coupons', href: '/nirvignastudio/coupons', icon: Tag },
   { label: 'Inventory & Stock', href: '/nirvignastudio/inventory', icon: Boxes },
   { label: 'Patron Registry', href: '/nirvignastudio/users', icon: Users },
+  { label: 'Shipping & Delivery', href: '/nirvignastudio/shipping', icon: Truck },
+  { label: 'Ad & Placements', href: '/nirvignastudio/placements', icon: ImageIcon },
 ];
 
 export default function NirvignaStudioLayout({ children }: { children: React.ReactNode }) {

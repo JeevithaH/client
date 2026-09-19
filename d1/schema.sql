@@ -173,3 +173,61 @@ CREATE TABLE IF NOT EXISTS placements (
 );
 CREATE INDEX IF NOT EXISTS idx_placements_slot ON placements(slot_key);
 
+-- Stitchclothes & Glozin Theme Tables
+CREATE TABLE IF NOT EXISTS hero_slides (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    subtitle TEXT,
+    badge_text TEXT,
+    image_url TEXT NOT NULL,
+    mobile_image_url TEXT,
+    button_text TEXT DEFAULT 'Shop Collection',
+    button_link TEXT DEFAULT '/collections/all',
+    text_alignment TEXT DEFAULT 'left',
+    display_order INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS announcement_messages (
+    id TEXT PRIMARY KEY,
+    message TEXT NOT NULL,
+    link_url TEXT,
+    display_order INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS marquee_items (
+    id TEXT PRIMARY KEY,
+    text TEXT NOT NULL,
+    icon_name TEXT DEFAULT 'Sparkles',
+    display_order INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS trust_pillars (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    icon_name TEXT NOT NULL,
+    display_order INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS social_proof_notifications (
+    id TEXT PRIMARY KEY,
+    product_title TEXT NOT NULL,
+    product_image TEXT NOT NULL,
+    product_url TEXT NOT NULL,
+    city TEXT NOT NULL,
+    time_ago TEXT DEFAULT 'a few minutes ago',
+    is_active BOOLEAN DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS site_settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+

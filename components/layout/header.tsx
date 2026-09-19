@@ -72,43 +72,73 @@ export function Header() {
               </button>
 
               <Link href="/" className="flex flex-col">
-                <span className="font-sans text-2xl font-bold tracking-[0.25em] text-[#0E0E0E] uppercase leading-none">
-                  Shipfold
+                <span className="font-sans text-2xl font-black tracking-[0.2em] text-[#0E0E0E] uppercase leading-none">
+                  STiTCH
                 </span>
-                <span className="text-[8px] uppercase tracking-[0.35em] text-zinc-400 font-medium mt-1">
-                  Premium T-Shirts
+                <span className="text-[8px] uppercase tracking-[0.35em] text-zinc-400 font-bold mt-1">
+                  Streetwear Atelier
                 </span>
               </Link>
             </div>
 
             {/* 2. Center: Clean Horizontal Navigation Links (Desktop) */}
-            <nav className="hidden lg:flex items-center space-x-8">
+            <nav className="hidden lg:flex items-center space-x-7">
               <Link
-                href="/shop"
-                className={`text-xs uppercase tracking-[0.2em] font-medium transition-colors ${
-                  pathname === '/shop' ? 'text-[#0E0E0E] font-bold border-b border-[#0E0E0E] pb-1' : 'text-zinc-600 hover:text-black luxury-link'
+                href="/collections/all"
+                className={`text-xs uppercase tracking-[0.18em] font-semibold transition-colors ${
+                  pathname === '/collections/all' || pathname === '/shop'
+                    ? 'text-[#0E0E0E] font-bold border-b border-[#0E0E0E] pb-1'
+                    : 'text-zinc-600 hover:text-black luxury-link'
                 }`}
               >
-                All T-Shirts
+                All Drops
+              </Link>
+
+              <Link
+                href="/collections/hoodies"
+                className={`text-xs uppercase tracking-[0.18em] font-semibold transition-colors ${
+                  pathname === '/collections/hoodies'
+                    ? 'text-[#0E0E0E] font-bold border-b border-[#0E0E0E] pb-1'
+                    : 'text-zinc-600 hover:text-black luxury-link'
+                }`}
+              >
+                Hoodies
+              </Link>
+
+              <Link
+                href="/collections/oversized-t-shirt"
+                className={`text-xs uppercase tracking-[0.18em] font-semibold transition-colors ${
+                  pathname === '/collections/oversized-t-shirt'
+                    ? 'text-[#0E0E0E] font-bold border-b border-[#0E0E0E] pb-1'
+                    : 'text-zinc-600 hover:text-black luxury-link'
+                }`}
+              >
+                Oversized
+              </Link>
+
+              <Link
+                href="/collections/best-selling"
+                className={`text-xs uppercase tracking-[0.18em] font-semibold transition-colors ${
+                  pathname === '/collections/best-selling'
+                    ? 'text-[#0E0E0E] font-bold border-b border-[#0E0E0E] pb-1'
+                    : 'text-zinc-600 hover:text-black luxury-link'
+                }`}
+              >
+                Best Sellers
               </Link>
 
               <Link
                 href="/custom"
-                className={`text-xs uppercase tracking-[0.2em] font-semibold transition-colors flex items-center gap-1.5 ${
-                  pathname === '/custom' ? 'text-[#C5A880] font-bold border-b border-[#C5A880] pb-1' : 'text-zinc-800 hover:text-[#C5A880] luxury-link'
+                className={`text-xs uppercase tracking-[0.18em] font-bold transition-colors flex items-center gap-1.5 ${
+                  pathname === '/custom'
+                    ? 'text-[#DC2626] font-bold border-b border-[#DC2626] pb-1'
+                    : 'text-zinc-900 hover:text-[#DC2626] luxury-link'
                 }`}
               >
-                <span>Custom &amp; Bulk Orders</span>
-                <span className="text-[9px] uppercase tracking-wider font-bold bg-[#0C1427] text-[#C5A880] px-1.5 py-0.5 shadow-sm">
+                <span>Custom Orders</span>
+                <span className="text-[8px] uppercase tracking-wider font-extrabold bg-black text-white px-1.5 py-0.5 shadow-xs">
                   Bulk
                 </span>
-              </Link>
-
-              <Link
-                href="/custom?tab=request"
-                className="text-xs uppercase tracking-[0.2em] font-medium text-zinc-600 hover:text-black transition-colors luxury-link"
-              >
-                Request a Design
               </Link>
             </nav>
 
@@ -242,45 +272,59 @@ export function Header() {
           <div className="lg:hidden border-t border-zinc-200 bg-white px-6 py-6 space-y-4 animate-in slide-in-from-top-2 duration-200 shadow-xl">
             <nav className="space-y-3">
               <Link
-                href="/shop"
+                href="/collections/all"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block text-sm uppercase tracking-widest font-semibold text-zinc-900 hover:text-[#C5A880]"
+                className="block text-sm uppercase tracking-widest font-semibold text-zinc-900 hover:text-black"
               >
-                All T-Shirts
+                All Streetwear Drops
+              </Link>
+              <Link
+                href="/collections/hoodies"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block text-sm uppercase tracking-widest font-semibold text-zinc-800 hover:text-black"
+              >
+                Hoodies &amp; Sweatshirts
+              </Link>
+              <Link
+                href="/collections/oversized-t-shirt"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block text-sm uppercase tracking-widest font-semibold text-zinc-800 hover:text-black"
+              >
+                Oversized T-Shirts
+              </Link>
+              <Link
+                href="/collections/best-selling"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block text-sm uppercase tracking-widest font-semibold text-zinc-800 hover:text-black"
+              >
+                Best Sellers
               </Link>
               <Link
                 href="/custom"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block text-sm uppercase tracking-widest font-semibold text-[#C5A880] hover:text-[#0C1427]"
+                className="block text-sm uppercase tracking-widest font-bold text-[#DC2626]"
               >
                 Custom &amp; Bulk Orders
-              </Link>
-              <Link
-                href="/custom?tab=request"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block text-sm uppercase tracking-widest font-medium text-zinc-700 hover:text-black"
-              >
-                Request a Design
               </Link>
               <Link
                 href="/account"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="block text-xs uppercase tracking-widest text-zinc-500 hover:text-black pt-2 border-t border-zinc-100"
               >
-                Track Orders
+                Track Orders &amp; Profile
               </Link>
             </nav>
 
             <div className="pt-3 border-t border-zinc-200 flex items-center justify-between text-xs">
               <a
-                href="tel:+918310246790"
+                href="tel:+916395463874"
                 className="text-zinc-800 font-semibold flex items-center gap-1.5"
               >
-                <Phone className="w-3.5 h-3.5 text-[#C5A880]" />
-                <span>+91 8310246790</span>
+                <Phone className="w-3.5 h-3.5 text-black" />
+                <span>+91 6395463874</span>
               </a>
               <a
-                href="https://wa.me/918310246790?text=Hello%20Shipfold%2C%20I%20would%20like%20to%20inquire%20about%20custom%20T-shirts."
+                href="https://wa.me/916395463874?text=Hello%20STiTCH%2C%20I%20would%20like%20to%20inquire%20about%20orders."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-emerald-700 font-semibold flex items-center gap-1"

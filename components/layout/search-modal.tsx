@@ -20,7 +20,7 @@ interface Suggestion {
   imageUrl: string;
 }
 
-const TRENDING_TAGS = ['Supima Cotton', 'Mercerized Polo', 'Henleys', 'Oversized', 'Midnight Navy', 'Jacquard'];
+const TRENDING_TAGS = ['t-shirt', 'hoodie', 'oversized t-shirt', 'polo t-shirts', 'anime', 'sweatshirt'];
 
 export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [query, setQuery] = useState('');
