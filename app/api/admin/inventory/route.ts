@@ -28,14 +28,15 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
     const { variantId, stock } = body;
 
-    if (!variantId || stock === undefined || stock < 0) {
+    const stockNum = Number(stock);
+    if (!variantId || stock === undefined || !Number.isInteger(stockNum) || stockNum < 0) {
       return NextResponse.json(
-        { success: false, message: 'Invalid variant ID or negative stock value' },
+        { success: false, message: 'Invalid variant ID or stock must be a whole number (0 or more)' },
         { status: 400 }
       );
     }
 
-    const updated = await updateVariantStock(variantId, Number(stock));
+    const updated = await updateVariantStock(variantId, stockNum);
     if (!updated) {
       return NextResponse.json({ success: false, message: 'Variant not found' }, { status: 404 });
     }

@@ -338,6 +338,7 @@ export async function deleteProductAdmin(productId: string): Promise<boolean> {
  */
 export async function getAllInventoryVariants(lowStock?: boolean): Promise<
   Array<{
+    id: string;
     variant_id: string;
     product_id: string;
     product_title: string;
@@ -351,6 +352,7 @@ export async function getAllInventoryVariants(lowStock?: boolean): Promise<
   }>
 > {
   let query = `SELECT 
+        v.id as id,
         v.id as variant_id,
         v.product_id,
         p.title as product_title,
@@ -365,7 +367,7 @@ export async function getAllInventoryVariants(lowStock?: boolean): Promise<
        JOIN products p ON v.product_id = p.id`;
 
   if (lowStock) {
-    query += ` WHERE v.stock <= 5`;
+    query += ` WHERE v.stock <= 10`;
   }
 
   query += ` ORDER BY p.title ASC, v.color_name ASC, v.size ASC`;
@@ -373,6 +375,7 @@ export async function getAllInventoryVariants(lowStock?: boolean): Promise<
   const res = await db
     .prepare(query)
     .all<{
+      id: string;
       variant_id: string;
       product_id: string;
       product_title: string;
@@ -392,9 +395,11 @@ export async function getAllInventoryVariants(lowStock?: boolean): Promise<
  * Updates stock quantity for an individual garment variant directly in Cloudflare D1.
  */
 export async function updateVariantStock(variantId: string, newStock: number): Promise<boolean> {
-  await db
+  const res = await db
     .prepare('UPDATE product_variants SET stock = ? WHERE id = ?')
-    .bind(Math.max(0, newStock), variantId)
+    .bind(Math.max(0, Math.floor(newStock)), variantId)
     .run();
-  return true;
+  const changes = (res as { meta?: { changes?: number } })?.meta?.changes;
+  // If the driver doesn't report changes, assume success
+  return changes === undefined ? true : changes > 0;
 }

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { useUser, useClerk } from '@clerk/nextjs';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import {
   LayoutDashboard,
   Shirt,
@@ -22,7 +23,6 @@ import {
   Megaphone,
   Repeat,
   BellRing,
-  Settings,
 } from 'lucide-react';
 
 const ADMIN_NAV = [
@@ -30,9 +30,7 @@ const ADMIN_NAV = [
   { label: 'Hero Slides', href: '/nirvignastudio/hero-slides', icon: Sliders },
   { label: 'Announcements', href: '/nirvignastudio/announcements', icon: Megaphone },
   { label: 'Marquee Ribbons', href: '/nirvignastudio/marquee', icon: Repeat },
-  { label: 'Trust Pillars', href: '/nirvignastudio/trust-pillars', icon: ShieldCheck },
   { label: 'Social Proof Alerts', href: '/nirvignastudio/social-proof', icon: BellRing },
-  { label: 'Store Settings', href: '/nirvignastudio/settings', icon: Settings },
   { label: 'Product Archive', href: '/nirvignastudio/products', icon: Shirt },
   { label: 'Client Orders', href: '/nirvignastudio/orders', icon: ShoppingBag },
   { label: 'Privilege Coupons', href: '/nirvignastudio/coupons', icon: Tag },
@@ -108,7 +106,14 @@ export default function NirvignaStudioLayout({ children }: { children: React.Rea
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] flex flex-col lg:flex-row">
+    <div className="ns-admin min-h-screen bg-[#FAFAFA] flex flex-col lg:flex-row">
+      <style>{`
+        :where(.ns-admin) a { color: inherit; text-decoration: none; }
+        :where(.ns-admin) :where(h1, h2, h3, h4, p, label) { margin-bottom: 0; }
+        :where(.ns-admin) :where(h1, h2, h3) { line-height: 1.2; }
+        :where(.ns-admin) button:focus:not(:focus-visible) { outline: none; }
+        :where(.ns-admin) ::selection { background: #000; color: #fff; }
+      `}</style>
       {/* Sidebar: Plain Black & White Premium */}
       <aside className="w-full lg:w-64 bg-[#0A0A0A] text-white flex flex-col justify-between shrink-0 border-r border-zinc-800">
         <div>

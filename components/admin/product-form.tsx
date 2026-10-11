@@ -1,9 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Plus, Trash2, Upload, ArrowLeft, Check, Sparkles, RefreshCw } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  Upload,
+  ArrowLeft,
+  Check,
+  Sparkles,
+  RefreshCw,
+  X,
+  Palette,
+  Minus,
+  Layers,
+  Boxes,
+} from 'lucide-react';
 import { Product, ProductVariant } from '@/lib/types';
 import { useToast } from '@/context/toast-context';
 import Link from 'next/link';
@@ -33,12 +46,110 @@ const DEFAULT_CATEGORIES = [
   { id: 'cat-custom-bespoke', name: 'Bespoke & Custom Studio' },
 ];
 
+const STANDARD_SIZES = ['S', 'M', 'L', 'XL', 'XXL', '3XL'];
+
+const COLOR_PRESETS = [
+  { name: 'Midnight Black', hex: '#111111' },
+  { name: 'Pure White', hex: '#FFFFFF' },
+  { name: 'Heather Grey', hex: '#71717A' },
+  { name: 'Navy Blue', hex: '#0C172D' },
+  { name: 'Olive Green', hex: '#3F4A3C' },
+  { name: 'Sand / Beige', hex: '#D4C5B9' },
+  { name: 'Burgundy / Maroon', hex: '#631D24' },
+];
+
+interface SizeConfig {
+  size: string;
+  enabled: boolean;
+  stock: number;
+  sku: string;
+  id?: string;
+}
+
+interface ColorwayGroup {
+  id: string;
+  color_name: string;
+  color_hex: string;
+  image_url: string;
+  sizes: SizeConfig[];
+  customSizeInput?: string;
+}
+
+function generateDefaultSku(productSlug: string, colorName: string, size: string): string {
+  const cleanSlug = (productSlug || 'ITEM').replace(/[^a-zA-Z0-9]/g, '').substring(0, 4).toUpperCase();
+  const cleanColor = (colorName || 'CLR').replace(/[^a-zA-Z0-9]/g, '').substring(0, 3).toUpperCase();
+  const cleanSize = (size || 'M').toUpperCase();
+  return `ST-${cleanSlug}-${cleanColor}-${cleanSize}`;
+}
+
+function initializeColorways(variants?: ProductVariant[], currentSlug: string = 'ITEM'): ColorwayGroup[] {
+  if (!variants || variants.length === 0) {
+    return [
+      {
+        id: `cw_${Date.now()}_1`,
+        color_name: 'Midnight Black',
+        color_hex: '#111111',
+        image_url: 'https://stitchclothes-shop.myshopify.com/cdn/shop/files/Men_SSpiderPrintedHoodie.jpg?v=1737624764&width=800',
+        sizes: STANDARD_SIZES.map((size) => ({
+          size,
+          enabled: ['S', 'M', 'L', 'XL'].includes(size),
+          stock: size === 'M' ? 20 : 15,
+          sku: generateDefaultSku(currentSlug, 'Midnight Black', size),
+        })),
+      },
+    ];
+  }
+
+  // Group existing variants by color_name
+  const colorMap = new Map<string, { hex: string; image_url: string; variantList: ProductVariant[] }>();
+  variants.forEach((v) => {
+    const key = v.color_name || 'Standard';
+    if (!colorMap.has(key)) {
+      colorMap.set(key, {
+        hex: v.color_hex || '#111111',
+        image_url: v.image_url || '',
+        variantList: [],
+      });
+    }
+    colorMap.get(key)!.variantList.push(v);
+  });
+
+  const result: ColorwayGroup[] = [];
+  let idx = 1;
+  colorMap.forEach((data, colorName) => {
+    // Collect all sizes used in these variants
+    const usedSizes = data.variantList.map((v) => v.size);
+    // Combine standard sizes with any non-standard sizes that exist
+    const allSizesSet = new Set([...STANDARD_SIZES, ...usedSizes]);
+    const sizes: SizeConfig[] = Array.from(allSizesSet).map((size) => {
+      const match = data.variantList.find((v) => v.size === size);
+      return {
+        size,
+        enabled: Boolean(match),
+        stock: match ? match.stock : 15,
+        sku: match ? match.sku : generateDefaultSku(currentSlug, colorName, size),
+        id: match?.id,
+      };
+    });
+
+    result.push({
+      id: `cw_${Date.now()}_${idx++}`,
+      color_name: colorName,
+      color_hex: data.hex,
+      image_url: data.image_url,
+      sizes,
+    });
+  });
+
+  return result.length > 0 ? result : initializeColorways(undefined, currentSlug);
+}
+
 export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps) {
   const router = useRouter();
   const { success, error } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [uploadingVariantIdx, setUploadingVariantIdx] = useState<number | null>(null);
+  const [uploadingColorwayIdx, setUploadingColorwayIdx] = useState<number | null>(null);
 
   const [categories, setCategories] = useState<{ id: string; name: string }[]>(DEFAULT_CATEGORIES);
   const [isCustomCategory, setIsCustomCategory] = useState(false);
@@ -70,19 +181,21 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
   const [isNew, setIsNew] = useState(Boolean(initialProduct?.is_new));
   const [isBestseller, setIsBestseller] = useState(Boolean(initialProduct?.is_bestseller));
 
-  // Load categories dynamically from D1
-  React.useEffect(() => {
+  // Structured Colorways with per-size stock
+  const [colorways, setColorways] = useState<ColorwayGroup[]>(() =>
+    initializeColorways(initialProduct?.variants, initialProduct?.slug || 'ITEM')
+  );
+
+  // Dynamic Categories from D1
+  useEffect(() => {
     async function loadCategories() {
       try {
         const res = await fetch('/api/categories');
         const data = await res.json();
         if (data.success && Array.isArray(data.categories) && data.categories.length > 0) {
           const map = new Map<string, { id: string; name: string }>();
-          // Put defaults first
           DEFAULT_CATEGORIES.forEach((c) => map.set(c.id, c));
-          // Add/override from API
           data.categories.forEach((c: { id: string; name: string }) => map.set(c.id, { id: c.id, name: c.name }));
-          // Ensure current product's category exists in map
           if (initialProduct?.category_id && !map.has(initialProduct.category_id)) {
             map.set(initialProduct.category_id, {
               id: initialProduct.category_id,
@@ -98,78 +211,158 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
     loadCategories();
   }, [initialProduct]);
 
-  // Variants list
-  const [variants, setVariants] = useState<ProductVariant[]>(
-    initialProduct?.variants && initialProduct.variants.length > 0
-      ? initialProduct.variants
-      : [
-          {
-            id: `var_${Date.now()}_1`,
-            product_id: initialProduct?.id || '',
-            color_name: 'Midnight Black',
-            color_hex: '#111111',
-            size: 'M',
-            stock: 20,
-            sku: 'ST-BLK-M',
-            image_url:
-              'https://stitchclothes-shop.myshopify.com/cdn/shop/files/Men_SSpiderPrintedHoodie.jpg?v=1737624764&width=800',
-          },
-          {
-            id: `var_${Date.now()}_2`,
-            product_id: initialProduct?.id || '',
-            color_name: 'Midnight Black',
-            color_hex: '#111111',
-            size: 'L',
-            stock: 15,
-            sku: 'ST-BLK-L',
-            image_url:
-              'https://stitchclothes-shop.myshopify.com/cdn/shop/files/Men_SSpiderPrintedHoodie.jpg?v=1737624764&width=800',
-          },
-        ]
-  );
-
   const handleTitleChange = (val: string) => {
     setTitle(val);
     if (!isEdit) {
-      setSlug(val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
+      const generatedSlug = val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      setSlug(generatedSlug);
     }
   };
 
-  const handleAddVariant = () => {
-    const newVariant: ProductVariant = {
-      id: `var_${Date.now()}_${Math.random().toString(36).substring(2, 5)}`,
-      product_id: initialProduct?.id || '',
-      color_name: variants[0]?.color_name || 'Standard',
-      color_hex: variants[0]?.color_hex || '#111111',
-      size: 'XL',
-      stock: 15,
-      sku: `ST-${(slug || 'ITEM').substring(0, 4).toUpperCase()}-XL-${Math.floor(100 + Math.random() * 899)}`,
-      image_url: variants[0]?.image_url || '',
+  // Colorway handlers
+  const handleAddColorway = () => {
+    // Pick next unused color preset
+    const usedNames = colorways.map((cw) => cw.color_name.toLowerCase());
+    const nextPreset = COLOR_PRESETS.find((p) => !usedNames.includes(p.name.toLowerCase())) || {
+      name: `Colorway ${colorways.length + 1}`,
+      hex: '#27272A',
     };
-    setVariants([...variants, newVariant]);
+
+    const newCw: ColorwayGroup = {
+      id: `cw_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      color_name: nextPreset.name,
+      color_hex: nextPreset.hex,
+      image_url: colorways[0]?.image_url || '',
+      sizes: STANDARD_SIZES.map((size) => ({
+        size,
+        enabled: ['S', 'M', 'L', 'XL'].includes(size),
+        stock: 15,
+        sku: generateDefaultSku(slug, nextPreset.name, size),
+      })),
+    };
+    setColorways([...colorways, newCw]);
   };
 
-  const handleRemoveVariant = (index: number) => {
-    if (variants.length <= 1) {
-      error('Minimum Variant Required', 'A garment must possess at least one size/colour variant.');
+  const handleRemoveColorway = (cwIndex: number) => {
+    if (colorways.length <= 1) {
+      error('Minimum Colorway Required', 'A garment must have at least one color style.');
       return;
     }
-    setVariants(variants.filter((_, i) => i !== index));
+    setColorways(colorways.filter((_, idx) => idx !== cwIndex));
   };
 
-  const handleUpdateVariant = (index: number, field: keyof ProductVariant, value: unknown) => {
-    const updated = [...variants];
-    updated[index] = { ...updated[index], [field]: value };
-    setVariants(updated);
+  const handleUpdateColorway = (cwIndex: number, field: keyof ColorwayGroup, value: unknown) => {
+    setColorways((prev) => {
+      const updated = [...prev];
+      updated[cwIndex] = { ...updated[cwIndex], [field]: value };
+      // If color name changed, update SKUs
+      if (field === 'color_name') {
+        const newColorName = String(value);
+        updated[cwIndex].sizes = updated[cwIndex].sizes.map((s) => ({
+          ...s,
+          sku: generateDefaultSku(slug, newColorName, s.size),
+        }));
+      }
+      return updated;
+    });
   };
 
-  // Image upload handler (R2 API)
-  const handleR2Upload = async (e: React.ChangeEvent<HTMLInputElement>, variantIndex?: number) => {
+  const handleToggleSize = (cwIndex: number, sizeName: string) => {
+    setColorways((prev) => {
+      const updated = [...prev];
+      const cw = updated[cwIndex];
+      cw.sizes = cw.sizes.map((s) => {
+        if (s.size === sizeName) {
+          const nextEnabled = !s.enabled;
+          return {
+            ...s,
+            enabled: nextEnabled,
+            stock: nextEnabled && s.stock === 0 ? 15 : s.stock,
+            sku: s.sku || generateDefaultSku(slug, cw.color_name, s.size),
+          };
+        }
+        return s;
+      });
+      return updated;
+    });
+  };
+
+  const handleUpdateSizeStock = (cwIndex: number, sizeName: string, newStock: number) => {
+    const safeStock = Math.max(0, Math.floor(newStock));
+    setColorways((prev) => {
+      const updated = [...prev];
+      updated[cwIndex].sizes = updated[cwIndex].sizes.map((s) =>
+        s.size === sizeName ? { ...s, stock: safeStock } : s
+      );
+      return updated;
+    });
+  };
+
+  const handleUpdateSizeSku = (cwIndex: number, sizeName: string, newSku: string) => {
+    setColorways((prev) => {
+      const updated = [...prev];
+      updated[cwIndex].sizes = updated[cwIndex].sizes.map((s) =>
+        s.size === sizeName ? { ...s, sku: newSku } : s
+      );
+      return updated;
+    });
+  };
+
+  const handleSetAllStockForColorway = (cwIndex: number, stockQty: number) => {
+    const safeStock = Math.max(0, Math.floor(stockQty));
+    setColorways((prev) => {
+      const updated = [...prev];
+      updated[cwIndex].sizes = updated[cwIndex].sizes.map((s) =>
+        s.enabled ? { ...s, stock: safeStock } : s
+      );
+      return updated;
+    });
+    success('Bulk Stock Updated', `All active sizes in this colour set to ${safeStock} units.`);
+  };
+
+  const handleSelectAllSizesForColorway = (cwIndex: number) => {
+    setColorways((prev) => {
+      const updated = [...prev];
+      const cw = updated[cwIndex];
+      updated[cwIndex].sizes = cw.sizes.map((s) => ({
+        ...s,
+        enabled: true,
+        stock: s.stock === 0 ? 15 : s.stock,
+        sku: s.sku || generateDefaultSku(slug, cw.color_name, s.size),
+      }));
+      return updated;
+    });
+  };
+
+  const handleAddCustomSize = (cwIndex: number, customSize: string) => {
+    const trimmed = customSize.trim().toUpperCase();
+    if (!trimmed) return;
+    setColorways((prev) => {
+      const updated = [...prev];
+      const cw = updated[cwIndex];
+      const exists = cw.sizes.some((s) => s.size === trimmed);
+      if (exists) {
+        // Just enable it
+        cw.sizes = cw.sizes.map((s) => (s.size === trimmed ? { ...s, enabled: true } : s));
+      } else {
+        cw.sizes.push({
+          size: trimmed,
+          enabled: true,
+          stock: 15,
+          sku: generateDefaultSku(slug, cw.color_name, trimmed),
+        });
+      }
+      return updated;
+    });
+  };
+
+  // Cloudflare R2 Upload
+  const handleR2Upload = async (e: React.ChangeEvent<HTMLInputElement>, cwIndex?: number) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (variantIndex !== undefined) {
-      setUploadingVariantIdx(variantIndex);
+    if (cwIndex !== undefined) {
+      setUploadingColorwayIdx(cwIndex);
     } else {
       setUploadingImage(true);
     }
@@ -185,12 +378,12 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
       const data = await res.json();
 
       if (data.success && data.url) {
-        if (variantIndex !== undefined) {
-          handleUpdateVariant(variantIndex, 'image_url', data.url);
+        if (cwIndex !== undefined) {
+          handleUpdateColorway(cwIndex, 'image_url', data.url);
         } else {
-          // update all variants without an image or apply to all
-          setVariants((prev) =>
-            prev.map((v) => (!v.image_url ? { ...v, image_url: data.url } : v))
+          // apply to all colourways missing an image
+          setColorways((prev) =>
+            prev.map((cw) => (!cw.image_url ? { ...cw, image_url: data.url } : cw))
           );
         }
         success('R2 Storage Upload', 'Image synced directly to Cloudflare R2 bucket.');
@@ -200,22 +393,50 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
     } catch {
       error('Upload Error', 'Could not transmit image to Cloudflare R2');
     } finally {
-      if (variantIndex !== undefined) {
-        setUploadingVariantIdx(null);
+      if (cwIndex !== undefined) {
+        setUploadingColorwayIdx(null);
       } else {
         setUploadingImage(false);
       }
     }
   };
 
+  // Convert structured colorways back into flattened ProductVariant[]
+  const flattenVariants = (): ProductVariant[] => {
+    const flattened: ProductVariant[] = [];
+    colorways.forEach((cw) => {
+      const enabledSizes = cw.sizes.filter((s) => s.enabled);
+      enabledSizes.forEach((s) => {
+        flattened.push({
+          id: s.id || `var_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          product_id: initialProduct?.id || '',
+          color_name: cw.color_name || 'Standard',
+          color_hex: cw.color_hex || '#111111',
+          size: s.size,
+          stock: Number(s.stock) || 0,
+          sku: s.sku || generateDefaultSku(slug, cw.color_name, s.size),
+          image_url: cw.image_url || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=900&auto=format&fit=crop',
+        });
+      });
+    });
+    return flattened;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const finalCategoryId = isCustomCategory && customCatName.trim()
-      ? `cat_${customCatName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
-      : categoryId;
+    const finalCategoryId =
+      isCustomCategory && customCatName.trim()
+        ? `cat_${customCatName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+        : categoryId;
 
     if (!title || !price || !finalCategoryId) {
       error('Missing Information', 'Please complete all required garment attributes.');
+      return;
+    }
+
+    const variants = flattenVariants();
+    if (variants.length === 0) {
+      error('No Sizes Selected', 'Please enable at least one size for your garment colourway.');
       return;
     }
 
@@ -254,7 +475,7 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
       if (data.success) {
         success(
           isEdit ? 'Archive Updated' : 'Garment Catalogued',
-          `${title} is now active in the collection.`
+          `${title} is now active with ${variants.length} variant configuration${variants.length > 1 ? 's' : ''}.`
         );
         router.push('/nirvignastudio/products');
         router.refresh();
@@ -267,6 +488,19 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
       setSubmitting(false);
     }
   };
+
+  // Calculated totals for summary banner
+  const totalColors = colorways.length;
+  const totalVariantsCount = colorways.reduce(
+    (acc, cw) => acc + cw.sizes.filter((s) => s.enabled).length,
+    0
+  );
+  const totalStockCount = colorways.reduce(
+    (acc, cw) =>
+      acc +
+      cw.sizes.filter((s) => s.enabled).reduce((sAcc, s) => sAcc + (Number(s.stock) || 0), 0),
+    0
+  );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 max-w-5xl">
@@ -289,7 +523,7 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left 2 Cols: Main Attributes */}
+        {/* Left 2 Cols: Main Attributes & Colourway/Size Manager */}
         <div className="lg:col-span-2 space-y-6">
           {/* General Information Card */}
           <div className="bg-white p-6 border border-zinc-200 shadow-sm space-y-4">
@@ -306,8 +540,8 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
                 required
                 value={title}
                 onChange={(e) => handleTitleChange(e.target.value)}
-                placeholder="e.g. The Sovereign Supima Crew Neck"
-                className="w-full px-3 py-2 text-sm bg-zinc-50 border border-zinc-300 focus:outline-none focus:border-black"
+                placeholder="e.g. Sovereign Heavyweight Supima T-Shirt"
+                className="w-full px-3 py-2 text-sm bg-zinc-50 border border-zinc-300 focus:outline-none focus:border-black font-medium"
               />
             </div>
 
@@ -321,7 +555,7 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
                   required
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
-                  placeholder="sovereign-supima-crew"
+                  placeholder="sovereign-heavyweight-tshirt"
                   className="w-full px-3 py-2 text-xs font-mono bg-zinc-50 border border-zinc-300 focus:outline-none focus:border-black"
                 />
               </div>
@@ -360,7 +594,7 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
                     required
                     value={customCatName}
                     onChange={(e) => setCustomCatName(e.target.value)}
-                    placeholder="Enter custom category name (e.g. Winter Jackets)"
+                    placeholder="Enter custom category name"
                     className="w-full px-3 py-2 text-xs bg-zinc-50 border border-zinc-300 focus:outline-none focus:border-black"
                   />
                 ) : (
@@ -392,6 +626,7 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
                   <option value="Custom Fit">Custom Fit</option>
                   <option value="Relaxed Boxy Fit">Relaxed Boxy Fit</option>
                   <option value="Regular European Fit">Regular European Fit</option>
+                  <option value="Oversized Streetwear">Oversized Streetwear</option>
                 </select>
               </div>
             </div>
@@ -435,159 +670,426 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
             </div>
           </div>
 
-          {/* Variant Matrix & Inventory Builder */}
-          <div className="bg-white p-6 border border-zinc-200 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+          {/* COLOURWAYS, SIZES & REAL-TIME STOCK MANAGER */}
+          <div className="bg-white p-6 border border-zinc-200 shadow-sm space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-200 pb-4">
               <div>
-                <h3 className="font-serif text-base font-semibold text-zinc-900">
-                  Colourways, Sizes & Real-Time Stock
-                </h3>
-                <p className="text-[11px] text-zinc-500">
-                  Configure specific SKUs and Cloudflare R2 images per variant
+                <div className="flex items-center gap-2">
+                  <Palette className="w-4 h-4 text-black" />
+                  <h3 className="font-sans text-base font-bold text-black uppercase tracking-wider">
+                    Styles, Colours &amp; Size Inventory
+                  </h3>
+                </div>
+                <p className="text-xs text-zinc-500 mt-0.5">
+                  Choose each colourway, select which sizes exist (S, M, L, etc.), and enter how much stock for each size.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={handleAddVariant}
-                className="px-3 py-1.5 border border-zinc-800 text-zinc-900 text-xs uppercase tracking-wider hover:bg-zinc-900 hover:text-white transition-colors flex items-center gap-1.5"
-              >
-                <Plus className="w-3.5 h-3.5" /> Add Variant
-              </button>
+
+              {/* Summary Stats Pill */}
+              <div className="flex items-center gap-3 bg-zinc-50 px-3 py-1.5 border border-zinc-200 text-xs">
+                <span className="font-semibold text-black">{totalColors} Colour{totalColors > 1 ? 's' : ''}</span>
+                <span className="text-zinc-300">•</span>
+                <span className="text-zinc-700">{totalVariantsCount} Sizes</span>
+                <span className="text-zinc-300">•</span>
+                <span className="font-mono font-bold text-black">{totalStockCount} Total Pcs</span>
+              </div>
             </div>
 
-            <div className="space-y-4">
-              {variants.map((variant, idx) => (
-                <div
-                  key={variant.id || idx}
-                  className="p-4 border border-zinc-200 bg-zinc-50 flex flex-col sm:flex-row items-start sm:items-center gap-4 relative group"
-                >
-                  {/* Thumbnail / Upload */}
-                  <div className="relative w-14 h-16 bg-zinc-200 shrink-0 border border-zinc-300 overflow-hidden group-hover:border-black transition-colors">
-                    {uploadingVariantIdx === idx ? (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-black/80 text-white gap-1">
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                        <span className="text-[8px] uppercase tracking-wider font-bold">R2 Upload</span>
-                      </div>
-                    ) : variant.image_url ? (
-                      <Image src={variant.image_url} alt="" fill className="object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[10px] text-zinc-400">
-                        No image
-                      </div>
-                    )}
-                    {uploadingVariantIdx !== idx && (
-                      <label className="absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100 hover:!opacity-100 cursor-pointer flex flex-col items-center justify-center text-[9px] uppercase font-bold tracking-wider transition-opacity">
-                        <Upload className="w-3.5 h-3.5 mb-0.5" />
-                        <span>R2 Upload</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => handleR2Upload(e, idx)}
-                        />
-                      </label>
-                    )}
-                  </div>
+            {/* List of Individual Styles / Colourways */}
+            <div className="space-y-6">
+              {colorways.map((cw, cwIdx) => {
+                const activeSizes = cw.sizes.filter((s) => s.enabled);
+                const colorTotalStock = activeSizes.reduce((sum, s) => sum + (Number(s.stock) || 0), 0);
 
-                  {/* Fields */}
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 flex-1 w-full">
-                    <div>
-                      <label className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold block mb-0.5">
-                        Color Name
-                      </label>
-                      <input
-                        type="text"
-                        value={variant.color_name}
-                        onChange={(e) => handleUpdateVariant(idx, 'color_name', e.target.value)}
-                        placeholder="Navy"
-                        className="w-full px-2 py-1 text-xs bg-white border border-zinc-300"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold block mb-0.5">
-                        HEX Swatch
-                      </label>
-                      <div className="flex items-center gap-1.5">
-                        <input
-                          type="color"
-                          value={variant.color_hex}
-                          onChange={(e) => handleUpdateVariant(idx, 'color_hex', e.target.value)}
-                          className="w-7 h-7 p-0 border border-zinc-300 cursor-pointer"
-                        />
-                        <input
-                          type="text"
-                          value={variant.color_hex}
-                          onChange={(e) => handleUpdateVariant(idx, 'color_hex', e.target.value)}
-                          className="w-full px-1.5 py-1 text-xs font-mono bg-white border border-zinc-300 uppercase"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold block mb-0.5">
-                        Size
-                      </label>
-                      <select
-                        value={variant.size}
-                        onChange={(e) => handleUpdateVariant(idx, 'size', e.target.value)}
-                        className="w-full px-2 py-1 text-xs bg-white border border-zinc-300"
-                      >
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L">L</option>
-                        <option value="XL">XL</option>
-                        <option value="XXL">XXL</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold block mb-0.5">
-                        Stock Units
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        value={variant.stock}
-                        onChange={(e) => handleUpdateVariant(idx, 'stock', Number(e.target.value))}
-                        className="w-full px-2 py-1 text-xs bg-white border border-zinc-300 font-semibold"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold block mb-0.5">
-                        SKU
-                      </label>
-                      <input
-                        type="text"
-                        value={variant.sku}
-                        onChange={(e) => handleUpdateVariant(idx, 'sku', e.target.value)}
-                        placeholder="SF-POLO-M"
-                        className="w-full px-2 py-1 text-xs font-mono bg-white border border-zinc-300"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Remove Button */}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveVariant(idx)}
-                    className="text-zinc-400 hover:text-rose-600 p-1 self-center"
-                    title="Remove variant"
+                return (
+                  <div
+                    key={cw.id || cwIdx}
+                    className="p-5 border border-zinc-300 bg-[#FAFAFA] space-y-5 transition-shadow hover:shadow-sm"
                   >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+                    {/* Top Bar for this Colourway */}
+                    <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
+                      <div className="flex items-center gap-3">
+                        <span
+                          className="w-5 h-5 rounded-full border border-zinc-400 shadow-xs shrink-0"
+                          style={{ backgroundColor: cw.color_hex }}
+                        />
+                        <div>
+                          <span className="font-sans text-sm font-bold text-black uppercase tracking-wider">
+                            Colourway #{cwIdx + 1}: {cw.color_name || 'Untitled Colour'}
+                          </span>
+                          <span className="text-[11px] text-zinc-500 block">
+                            {activeSizes.length} size{activeSizes.length === 1 ? '' : 's'} active ({colorTotalStock} pieces in stock)
+                          </span>
+                        </div>
+                      </div>
+
+                      {colorways.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveColorway(cwIdx)}
+                          className="text-xs text-zinc-400 hover:text-red-600 flex items-center gap-1 font-medium transition-colors"
+                          title="Remove this entire colourway"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Remove Colour
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+                      {/* Left: Image / R2 Upload for this Colourway */}
+                      <div className="md:col-span-4 space-y-2">
+                        <label className="block text-[10px] uppercase tracking-wider font-bold text-zinc-700">
+                          Colourway Photo (R2 Storage)
+                        </label>
+                        <div className="relative w-full aspect-3/4 max-w-[180px] bg-zinc-200 border border-zinc-300 overflow-hidden group">
+                          {uploadingColorwayIdx === cwIdx ? (
+                            <div className="w-full h-full flex flex-col items-center justify-center bg-black/80 text-white gap-2 p-2 text-center">
+                              <RefreshCw className="w-5 h-5 animate-spin" />
+                              <span className="text-[10px] uppercase font-bold tracking-wider">
+                                Uploading to R2...
+                              </span>
+                            </div>
+                          ) : cw.image_url ? (
+                            <>
+                              <Image src={cw.image_url} alt="" fill className="object-cover" />
+                              <div className="absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-2 p-3 transition-opacity">
+                                <label className="cursor-pointer text-[10px] uppercase font-bold tracking-wider bg-white text-black px-3 py-1.5 hover:bg-zinc-100">
+                                  Change Photo
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => handleR2Upload(e, cwIdx)}
+                                  />
+                                </label>
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateColorway(cwIdx, 'image_url', '')}
+                                  className="text-[10px] text-zinc-300 hover:text-white underline"
+                                >
+                                  Clear
+                                </button>
+                              </div>
+                            </>
+                          ) : (
+                            <label className="w-full h-full flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-zinc-100 transition-colors text-center">
+                              <Upload className="w-6 h-6 text-zinc-400 mb-1" />
+                              <span className="text-[10px] uppercase font-bold text-zinc-700 tracking-wider">
+                                Upload Photo
+                              </span>
+                              <span className="text-[9px] text-zinc-400 mt-0.5">Direct to R2</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => handleR2Upload(e, cwIdx)}
+                              />
+                            </label>
+                          )}
+                        </div>
+
+                        {/* Direct URL input fallback */}
+                        <div>
+                          <input
+                            type="text"
+                            value={cw.image_url}
+                            onChange={(e) => handleUpdateColorway(cwIdx, 'image_url', e.target.value)}
+                            placeholder="Or paste image URL directly..."
+                            className="w-full px-2 py-1 text-[11px] bg-white border border-zinc-300 font-mono"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Right: Color Details & Size Selection */}
+                      <div className="md:col-span-8 space-y-4">
+                        {/* Colour Name & Hex Swatch */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-white p-3 border border-zinc-200">
+                          <div>
+                            <label className="block text-[10px] uppercase tracking-wider font-bold text-zinc-700 mb-1">
+                              Colour Name *
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              value={cw.color_name}
+                              onChange={(e) => handleUpdateColorway(cwIdx, 'color_name', e.target.value)}
+                              placeholder="e.g. Midnight Black, Heather Grey"
+                              className="w-full px-2.5 py-1.5 text-xs bg-zinc-50 border border-zinc-300 font-semibold focus:outline-none focus:border-black"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] uppercase tracking-wider font-bold text-zinc-700 mb-1">
+                              HEX Colour Swatch
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="color"
+                                value={cw.color_hex}
+                                onChange={(e) => handleUpdateColorway(cwIdx, 'color_hex', e.target.value)}
+                                className="w-8 h-8 p-0 border border-zinc-300 cursor-pointer shrink-0"
+                              />
+                              <input
+                                type="text"
+                                value={cw.color_hex}
+                                onChange={(e) => handleUpdateColorway(cwIdx, 'color_hex', e.target.value)}
+                                className="w-full px-2 py-1.5 text-xs font-mono uppercase bg-zinc-50 border border-zinc-300 focus:outline-none focus:border-black"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Quick color preset chips */}
+                          <div className="sm:col-span-2 pt-1 border-t border-zinc-100">
+                            <span className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block mb-1">
+                              Quick Presets:
+                            </span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {COLOR_PRESETS.map((p) => (
+                                <button
+                                  type="button"
+                                  key={p.name}
+                                  onClick={() => {
+                                    handleUpdateColorway(cwIdx, 'color_name', p.name);
+                                    handleUpdateColorway(cwIdx, 'color_hex', p.hex);
+                                  }}
+                                  className="px-2 py-0.5 text-[10px] bg-zinc-100 hover:bg-zinc-200 border border-zinc-300 text-zinc-800 flex items-center gap-1 transition-colors"
+                                >
+                                  <span
+                                    className="w-2.5 h-2.5 rounded-full border border-zinc-400"
+                                    style={{ backgroundColor: p.hex }}
+                                  />
+                                  <span>{p.name}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Size Selection (Which sizes exist for this colour?) */}
+                        <div className="bg-white p-3.5 border border-zinc-200 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="text-[10px] uppercase tracking-wider font-bold text-black block">
+                                Which Sizes Are Available?
+                              </span>
+                              <span className="text-[11px] text-zinc-500">
+                                Click a size to add or remove it from this colourway.
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => handleSelectAllSizesForColorway(cwIdx)}
+                                className="px-2 py-1 text-[10px] uppercase tracking-wider font-semibold border border-zinc-300 hover:bg-zinc-100 text-zinc-700"
+                              >
+                                Select All
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Size Pills Toggle */}
+                          <div className="flex flex-wrap gap-2">
+                            {cw.sizes.map((s) => (
+                              <button
+                                type="button"
+                                key={s.size}
+                                onClick={() => handleToggleSize(cwIdx, s.size)}
+                                className={`px-3 py-1.5 text-xs font-mono font-bold border transition-all flex items-center gap-1.5 ${
+                                  s.enabled
+                                    ? 'bg-black text-white border-black shadow-xs'
+                                    : 'bg-zinc-50 text-zinc-400 border-zinc-200 hover:border-zinc-400 hover:text-black'
+                                }`}
+                              >
+                                <span>{s.size}</span>
+                                {s.enabled ? (
+                                  <Check className="w-3 h-3 stroke-[2.5]" />
+                                ) : (
+                                  <Plus className="w-3 h-3 text-zinc-300" />
+                                )}
+                              </button>
+                            ))}
+                          </div>
+
+                          {/* Add Custom Size Form */}
+                          <div className="pt-2 border-t border-zinc-100 flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={cw.customSizeInput || ''}
+                              onChange={(e) => handleUpdateColorway(cwIdx, 'customSizeInput', e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  handleAddCustomSize(cwIdx, cw.customSizeInput || '');
+                                  handleUpdateColorway(cwIdx, 'customSizeInput', '');
+                                }
+                              }}
+                              placeholder="Add custom size (e.g. XS, Free Size, 28, 30)..."
+                              className="px-2.5 py-1 text-xs bg-zinc-50 border border-zinc-300 w-64"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleAddCustomSize(cwIdx, cw.customSizeInput || '');
+                                handleUpdateColorway(cwIdx, 'customSizeInput', '');
+                              }}
+                              className="px-2.5 py-1 text-xs bg-zinc-100 border border-zinc-300 hover:bg-zinc-200 text-black font-semibold uppercase tracking-wider"
+                            >
+                              + Add Size
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* REAL-TIME STOCK PER SIZE TABLE ("how much for S and how much for M") */}
+                        {activeSizes.length > 0 ? (
+                          <div className="bg-white border border-zinc-200 overflow-hidden shadow-xs">
+                            <div className="bg-zinc-100 px-3.5 py-2 border-b border-zinc-200 flex items-center justify-between">
+                              <span className="text-[10px] uppercase tracking-wider font-bold text-black flex items-center gap-1.5">
+                                <Boxes className="w-3.5 h-3.5" /> Stock Quantity Per Selected Size
+                              </span>
+
+                              {/* Quick Bulk Stock Fill */}
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[10px] text-zinc-500">Set all to:</span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  defaultValue={15}
+                                  id={`bulk_stock_${cwIdx}`}
+                                  className="w-12 px-1.5 py-0.5 text-xs text-center border border-zinc-300 bg-white font-mono"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const inputEl = document.getElementById(
+                                      `bulk_stock_${cwIdx}`
+                                    ) as HTMLInputElement | null;
+                                    const val = inputEl ? Number(inputEl.value) : 15;
+                                    handleSetAllStockForColorway(cwIdx, val);
+                                  }}
+                                  className="px-2 py-0.5 text-[10px] uppercase font-bold bg-black text-white hover:bg-zinc-800"
+                                >
+                                  Apply
+                                </button>
+                              </div>
+                            </div>
+
+                            <table className="w-full text-left text-xs">
+                              <thead className="bg-zinc-50 text-zinc-500 uppercase tracking-wider text-[9px] border-b border-zinc-200">
+                                <tr>
+                                  <th className="py-2 px-3 font-bold w-16">Size</th>
+                                  <th className="py-2 px-3 font-bold">Stock Units (In-Stock Quantity)</th>
+                                  <th className="py-2 px-3 font-bold">SKU Identifier</th>
+                                  <th className="py-2 px-3 font-bold text-right w-10">Remove</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-zinc-100">
+                                {activeSizes.map((s) => (
+                                  <tr key={s.size} className="hover:bg-zinc-50 transition-colors">
+                                    <td className="py-2 px-3 font-mono font-bold text-black text-sm">
+                                      <span className="px-2 py-0.5 bg-zinc-100 border border-zinc-300">
+                                        {s.size}
+                                      </span>
+                                    </td>
+
+                                    {/* Stock Input with - and + buttons */}
+                                    <td className="py-2 px-3">
+                                      <div className="flex items-center gap-1">
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            handleUpdateSizeStock(cwIdx, s.size, s.stock - 1)
+                                          }
+                                          disabled={s.stock <= 0}
+                                          className="w-6 h-6 flex items-center justify-center border border-zinc-300 hover:border-black text-black disabled:opacity-30 bg-zinc-50"
+                                          title="Decrease 1"
+                                        >
+                                          <Minus className="w-3 h-3" />
+                                        </button>
+                                        <input
+                                          type="number"
+                                          min="0"
+                                          value={s.stock}
+                                          onChange={(e) =>
+                                            handleUpdateSizeStock(
+                                              cwIdx,
+                                              s.size,
+                                              Number(e.target.value)
+                                            )
+                                          }
+                                          className="w-16 px-2 py-1 text-xs text-center font-bold bg-white border border-zinc-300 focus:outline-none focus:border-black"
+                                        />
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            handleUpdateSizeStock(cwIdx, s.size, s.stock + 1)
+                                          }
+                                          className="w-6 h-6 flex items-center justify-center border border-zinc-300 hover:border-black text-black bg-zinc-50"
+                                          title="Increase 1"
+                                        >
+                                          <Plus className="w-3 h-3" />
+                                        </button>
+                                        <span className="text-[11px] text-zinc-500 ml-1">pieces</span>
+                                      </div>
+                                    </td>
+
+                                    {/* SKU */}
+                                    <td className="py-2 px-3 font-mono">
+                                      <input
+                                        type="text"
+                                        value={s.sku}
+                                        onChange={(e) =>
+                                          handleUpdateSizeSku(cwIdx, s.size, e.target.value)
+                                        }
+                                        className="w-full max-w-[200px] px-2 py-1 text-[11px] bg-white border border-zinc-300"
+                                      />
+                                    </td>
+
+                                    {/* Remove this size button */}
+                                    <td className="py-2 px-3 text-right">
+                                      <button
+                                        type="button"
+                                        onClick={() => handleToggleSize(cwIdx, s.size)}
+                                        className="text-zinc-400 hover:text-red-600 p-1"
+                                        title={`Remove size ${s.size}`}
+                                      >
+                                        <X className="w-3.5 h-3.5" />
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <div className="p-4 bg-zinc-100 border border-dashed border-zinc-300 text-center text-xs text-zinc-500">
+                            No sizes selected for this colour. Click the size buttons above to add S, M, L, etc.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Add Another Colour / Style Button */}
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={handleAddColorway}
+                className="w-full py-3.5 border-2 border-dashed border-zinc-300 hover:border-black bg-white hover:bg-zinc-50 text-black text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2 transition-all shadow-xs"
+              >
+                <Plus className="w-4 h-4 stroke-[2]" /> + Add Another Colour / Style (e.g. White, Grey, Olive)
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Right 1 Col: Pricing, Status Badges & Image Helper */}
+        {/* Right 1 Col: Pricing, Status Badges & R2 Helper */}
         <div className="space-y-6">
           {/* Pricing Card */}
           <div className="bg-white p-6 border border-zinc-200 shadow-sm space-y-4">
-            <h3 className="font-serif text-base font-semibold text-zinc-900 border-b border-zinc-100 pb-2">
+            <h3 className="font-sans text-base font-bold text-black border-b border-zinc-100 pb-2">
               Privilege Pricing (INR)
             </h3>
 
