@@ -89,8 +89,13 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/account?tab=addresses" className="hover:text-white transition-colors">
-                  Shipping Addresses
+                <Link href="/shipping-policy" className="hover:text-white transition-colors">
+                  Delivery &amp; Shipping Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/refund-policy" className="hover:text-white transition-colors">
+                  7-Day Returns &amp; Exchanges
                 </Link>
               </li>
               <li>
@@ -104,10 +109,9 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <span className="text-zinc-500">7 Days Return Guarantee</span>
-              </li>
-              <li>
-                <span className="text-zinc-500">Free Express Delivery &gt; ₹499</span>
+                <Link href="/contact" className="hover:text-white transition-colors">
+                  Contact &amp; Concierge Desk
+                </Link>
               </li>
             </ul>
           </div>
@@ -138,10 +142,41 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Legal & Policy Quick Navigation Bar */}
+        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-6 gap-y-2.5 pt-4 text-[11px] text-zinc-400">
+          <Link href="/privacy-policy" className="hover:text-white transition-colors">
+            Privacy Policy
+          </Link>
+          <span className="text-zinc-700 hidden sm:inline">•</span>
+          <Link href="/shipping-policy" className="hover:text-white transition-colors">
+            Delivery &amp; Shipping Policy
+          </Link>
+          <span className="text-zinc-700 hidden sm:inline">•</span>
+          <Link href="/refund-policy" className="hover:text-white transition-colors">
+            Returns &amp; Refunds
+          </Link>
+          <span className="text-zinc-700 hidden sm:inline">•</span>
+          <Link href="/terms" className="hover:text-white transition-colors">
+            Terms of Service
+          </Link>
+          <span className="text-zinc-700 hidden sm:inline">•</span>
+          <Link href="/copyright" className="hover:text-white transition-colors">
+            Copyright &amp; IP Notice
+          </Link>
+          <span className="text-zinc-700 hidden sm:inline">•</span>
+          <Link href="/contact" className="hover:text-white transition-colors">
+            Contact Us
+          </Link>
+        </div>
+
         {/* Bottom Bar: Copyright & Payment Badges */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-zinc-500 text-center sm:text-left">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-zinc-500 text-center sm:text-left pt-2 border-t border-zinc-800/80">
+          <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
             <span>© {new Date().getFullYear()} STiTCH (Stitchclothes). All rights reserved.</span>
+            <span className="text-zinc-700 hidden sm:inline">•</span>
+            <Link href="/copyright" className="text-zinc-400 hover:text-white underline">
+              IP Declaration
+            </Link>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-2 text-[10px] text-zinc-400">
