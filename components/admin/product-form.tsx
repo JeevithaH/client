@@ -16,6 +16,7 @@ import {
   Minus,
   Layers,
   Boxes,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { Product, ProductVariant } from '@/lib/types';
 import { useToast } from '@/context/toast-context';
@@ -78,6 +79,9 @@ interface ColorwayGroup {
   color_name: string;
   color_hex: string;
   image_url: string;
+  secondary_image_url?: string;
+  gallery_images?: string[];
+  galleryUrlInput?: string;
   sizes: SizeConfig[];
   customSizeInput?: string;
 }
@@ -97,6 +101,8 @@ function initializeColorways(variants?: ProductVariant[], currentSlug: string = 
         color_name: 'Midnight Black',
         color_hex: '#111111',
         image_url: 'https://stitchclothes-shop.myshopify.com/cdn/shop/files/Men_SSpiderPrintedHoodie.jpg?v=1737624764&width=800',
+        secondary_image_url: '',
+        gallery_images: [],
         sizes: STANDARD_SIZES.map((size) => ({
           size,
           enabled: ['S', 'M', 'L', 'XL'].includes(size),
@@ -108,13 +114,14 @@ function initializeColorways(variants?: ProductVariant[], currentSlug: string = 
   }
 
   // Group existing variants by color_name
-  const colorMap = new Map<string, { hex: string; image_url: string; variantList: ProductVariant[] }>();
+  const colorMap = new Map<string, { hex: string; image_url: string; secondary_image_url?: string; variantList: ProductVariant[] }>();
   variants.forEach((v) => {
     const key = v.color_name || 'Standard';
     if (!colorMap.has(key)) {
       colorMap.set(key, {
         hex: v.color_hex || '#111111',
         image_url: v.image_url || '',
+        secondary_image_url: v.secondary_image_url || '',
         variantList: [],
       });
     }
@@ -144,6 +151,8 @@ function initializeColorways(variants?: ProductVariant[], currentSlug: string = 
       color_name: colorName,
       color_hex: data.hex,
       image_url: data.image_url,
+      secondary_image_url: data.secondary_image_url || '',
+      gallery_images: [],
       sizes,
     });
   });
@@ -262,6 +271,8 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
       color_name: name,
       color_hex: hex,
       image_url: colorways[0]?.image_url || '',
+      secondary_image_url: colorways[0]?.secondary_image_url || '',
+      gallery_images: [],
       sizes: templateSizes.map((s) => ({
         size: s.size,
         enabled: s.enabled,
@@ -397,12 +408,19 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
     });
   };
 
+  const [uploadingTarget, setUploadingTarget] = useState<string | null>(null);
+
   // Cloudflare R2 Upload
-  const handleR2Upload = async (e: React.ChangeEvent<HTMLInputElement>, cwIndex?: number) => {
+  const handleR2Upload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    cwIndex?: number,
+    field: 'image_url' | 'secondary_image_url' | 'gallery' = 'image_url'
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (cwIndex !== undefined) {
+      setUploadingTarget(`cw_${cwIndex}_${field}`);
       setUploadingColorwayIdx(cwIndex);
     } else {
       setUploadingImage(true);
@@ -420,7 +438,16 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
 
       if (data.success && data.url) {
         if (cwIndex !== undefined) {
-          handleUpdateColorway(cwIndex, 'image_url', data.url);
+          if (field === 'gallery') {
+            setColorways((prev) => {
+              const updated = [...prev];
+              const cw = updated[cwIndex];
+              cw.gallery_images = [...(cw.gallery_images || []), data.url];
+              return updated;
+            });
+          } else {
+            handleUpdateColorway(cwIndex, field, data.url);
+          }
         } else {
           // apply to all colourways missing an image
           setColorways((prev) =>
@@ -434,12 +461,33 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
     } catch {
       error('Upload Error', 'Could not transmit image to Cloudflare R2');
     } finally {
+      setUploadingTarget(null);
       if (cwIndex !== undefined) {
         setUploadingColorwayIdx(null);
       } else {
         setUploadingImage(false);
       }
     }
+  };
+
+  const handleRemoveGalleryImage = (cwIndex: number, imgIndex: number) => {
+    setColorways((prev) => {
+      const updated = [...prev];
+      const cw = updated[cwIndex];
+      cw.gallery_images = (cw.gallery_images || []).filter((_, idx) => idx !== imgIndex);
+      return updated;
+    });
+  };
+
+  const handleAddGalleryUrl = (cwIndex: number, url: string) => {
+    if (!url || !url.trim()) return;
+    setColorways((prev) => {
+      const updated = [...prev];
+      const cw = updated[cwIndex];
+      cw.gallery_images = [...(cw.gallery_images || []), url.trim()];
+      cw.galleryUrlInput = '';
+      return updated;
+    });
   };
 
   // Convert structured colorways back into flattened ProductVariant[]
@@ -457,6 +505,7 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
           stock: Number(s.stock) || 0,
           sku: s.sku || generateDefaultSku(slug, cw.color_name, s.size),
           image_url: cw.image_url || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=900&auto=format&fit=crop',
+          secondary_image_url: cw.secondary_image_url || undefined,
         });
       });
     });
@@ -839,6 +888,42 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
               </div>
             </div>
 
+            {/* Garment Photos & Quick Default Upload Bar */}
+            <div className="bg-white p-4 border border-zinc-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-zinc-100 border border-zinc-300 text-black shrink-0">
+                  <ImageIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs uppercase tracking-wider font-bold text-black flex items-center gap-1.5">
+                    Garment Photos &amp; Image Management (Cloudflare R2)
+                  </h4>
+                  <p className="text-[11px] text-zinc-500 mt-0.5">
+                    Add front, back, and detail angle photos for each colourway below. All images sync directly to high-speed Cloudflare R2 object storage.
+                  </p>
+                </div>
+              </div>
+
+              <label className="cursor-pointer px-3.5 py-2 bg-black text-white hover:bg-zinc-800 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shrink-0 transition-colors shadow-xs">
+                {uploadingImage ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Uploading to R2...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-3.5 h-3.5" /> + Quick Upload Default Photo
+                  </>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={uploadingImage}
+                  onChange={(e) => handleR2Upload(e)}
+                />
+              </label>
+            </div>
+
             {/* List of Individual Styles / Colourways */}
             <div className="space-y-6">
               {colorways.map((cw, cwIdx) => {
@@ -890,135 +975,316 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
-                      {/* Left: Image / R2 Upload for this Colourway */}
-                      <div className="md:col-span-4 space-y-2">
-                        <label className="block text-[10px] uppercase tracking-wider font-bold text-zinc-700">
-                          Colourway Photo (R2 Storage)
+                    {/* 1. Colour Name & Swatch Bar */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-white p-3.5 border border-zinc-200">
+                      <div>
+                        <label className="block text-[10px] uppercase tracking-wider font-bold text-zinc-700 mb-1">
+                          Colour Name *
                         </label>
-                        <div className="relative w-full aspect-3/4 max-w-[180px] bg-zinc-200 border border-zinc-300 overflow-hidden group">
-                          {uploadingColorwayIdx === cwIdx ? (
-                            <div className="w-full h-full flex flex-col items-center justify-center bg-black/80 text-white gap-2 p-2 text-center">
-                              <RefreshCw className="w-5 h-5 animate-spin" />
-                              <span className="text-[10px] uppercase font-bold tracking-wider">
-                                Uploading to R2...
-                              </span>
-                            </div>
-                          ) : cw.image_url ? (
-                            <>
-                              <Image src={cw.image_url} alt="" fill className="object-cover" />
-                              <div className="absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-2 p-3 transition-opacity">
-                                <label className="cursor-pointer text-[10px] uppercase font-bold tracking-wider bg-white text-black px-3 py-1.5 hover:bg-zinc-100">
-                                  Change Photo
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={(e) => handleR2Upload(e, cwIdx)}
-                                  />
-                                </label>
-                                <button
-                                  type="button"
-                                  onClick={() => handleUpdateColorway(cwIdx, 'image_url', '')}
-                                  className="text-[10px] text-zinc-300 hover:text-white underline"
-                                >
-                                  Clear
-                                </button>
-                              </div>
-                            </>
-                          ) : (
-                            <label className="w-full h-full flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-zinc-100 transition-colors text-center">
-                              <Upload className="w-6 h-6 text-zinc-400 mb-1" />
-                              <span className="text-[10px] uppercase font-bold text-zinc-700 tracking-wider">
-                                Upload Photo
-                              </span>
-                              <span className="text-[9px] text-zinc-400 mt-0.5">Direct to R2</span>
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={(e) => handleR2Upload(e, cwIdx)}
-                              />
-                            </label>
-                          )}
-                        </div>
+                        <input
+                          type="text"
+                          required
+                          value={cw.color_name}
+                          onChange={(e) => handleUpdateColorway(cwIdx, 'color_name', e.target.value)}
+                          placeholder="e.g. Midnight Black, Heather Grey"
+                          className="w-full px-2.5 py-1.5 text-xs bg-zinc-50 border border-zinc-300 font-semibold focus:outline-none focus:border-black"
+                        />
+                      </div>
 
-                        {/* Direct URL input fallback */}
-                        <div>
+                      <div>
+                        <label className="block text-[10px] uppercase tracking-wider font-bold text-zinc-700 mb-1">
+                          HEX Colour Swatch
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            value={cw.color_hex}
+                            onChange={(e) => handleUpdateColorway(cwIdx, 'color_hex', e.target.value)}
+                            className="w-8 h-8 p-0 border border-zinc-300 cursor-pointer shrink-0"
+                          />
                           <input
                             type="text"
-                            value={cw.image_url}
-                            onChange={(e) => handleUpdateColorway(cwIdx, 'image_url', e.target.value)}
-                            placeholder="Or paste image URL directly..."
-                            className="w-full px-2 py-1 text-[11px] bg-white border border-zinc-300 font-mono"
+                            value={cw.color_hex}
+                            onChange={(e) => handleUpdateColorway(cwIdx, 'color_hex', e.target.value)}
+                            className="w-full px-2 py-1.5 text-xs font-mono uppercase bg-zinc-50 border border-zinc-300 focus:outline-none focus:border-black"
                           />
                         </div>
                       </div>
 
-                      {/* Right: Color Details & Size Selection */}
-                      <div className="md:col-span-8 space-y-4">
-                        {/* Colour Name & Hex Swatch */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-white p-3 border border-zinc-200">
-                          <div>
-                            <label className="block text-[10px] uppercase tracking-wider font-bold text-zinc-700 mb-1">
-                              Colour Name *
+                      {/* Quick color preset chips */}
+                      <div className="sm:col-span-2 pt-1 border-t border-zinc-100">
+                        <span className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block mb-1">
+                          Quick Presets:
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {COLOR_PRESETS.map((p) => (
+                            <button
+                              type="button"
+                              key={p.name}
+                              onClick={() => {
+                                handleUpdateColorway(cwIdx, 'color_name', p.name);
+                                handleUpdateColorway(cwIdx, 'color_hex', p.hex);
+                              }}
+                              className="px-2 py-0.5 text-[10px] bg-zinc-100 hover:bg-zinc-200 border border-zinc-300 text-zinc-800 flex items-center gap-1 transition-colors"
+                            >
+                              <span
+                                className="w-2.5 h-2.5 rounded-full border border-zinc-400"
+                                style={{ backgroundColor: p.hex }}
+                              />
+                              <span>{p.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 2. DEDICATED IMAGE SECTION FOR THIS COLOURWAY */}
+                    <div className="bg-white p-4 border border-zinc-200 space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-zinc-100 pb-2">
+                        <span className="text-[11px] uppercase tracking-wider font-bold text-black flex items-center gap-1.5">
+                          <ImageIcon className="w-4 h-4 text-black" />
+                          Photos for {cw.color_name || `Colourway #${cwIdx + 1}`}
+                        </span>
+                        <span className="text-[10px] text-zinc-500">
+                          Front view, back view &amp; detail shots · Uploads directly to Cloudflare R2
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                        {/* 1. MAIN FRONT PHOTO */}
+                        <div className="border border-zinc-200 p-3 bg-zinc-50 space-y-2.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] uppercase tracking-wider font-bold text-black">
+                              Main Front Photo *
+                            </span>
+                            <span className="text-[9px] px-1.5 py-0.5 bg-black text-white font-mono uppercase">
+                              Catalog View
+                            </span>
+                          </div>
+
+                          <div className="relative w-full aspect-3/4 max-w-[200px] mx-auto bg-zinc-200 border border-zinc-300 overflow-hidden group">
+                            {uploadingTarget === `cw_${cwIdx}_image_url` ? (
+                              <div className="w-full h-full flex flex-col items-center justify-center bg-black/85 text-white gap-2 p-2 text-center">
+                                <RefreshCw className="w-5 h-5 animate-spin" />
+                                <span className="text-[10px] uppercase font-bold tracking-wider">
+                                  Uploading to R2...
+                                </span>
+                              </div>
+                            ) : cw.image_url ? (
+                              <>
+                                <Image src={cw.image_url} alt="" fill className="object-cover" />
+                                <div className="absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-2 p-2 transition-opacity">
+                                  <label className="cursor-pointer text-[10px] uppercase font-bold tracking-wider bg-white text-black px-2.5 py-1 hover:bg-zinc-100">
+                                    Change Photo
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      className="hidden"
+                                      onChange={(e) => handleR2Upload(e, cwIdx, 'image_url')}
+                                    />
+                                  </label>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUpdateColorway(cwIdx, 'image_url', '')}
+                                    className="text-[10px] text-red-300 hover:text-red-100 underline"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              </>
+                            ) : (
+                              <label className="w-full h-full flex flex-col items-center justify-center p-3 cursor-pointer hover:bg-zinc-100 transition-colors text-center border-2 border-dashed border-zinc-300">
+                                <Upload className="w-6 h-6 text-zinc-400 mb-1" />
+                                <span className="px-3 py-1 bg-black text-white text-[10px] uppercase font-bold tracking-wider mb-1">
+                                  + Add Main Photo
+                                </span>
+                                <span className="text-[9px] text-zinc-500">Cloudflare R2</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={(e) => handleR2Upload(e, cwIdx, 'image_url')}
+                                />
+                              </label>
+                            )}
+                          </div>
+
+                          {/* Fallback direct URL */}
+                          <div className="pt-1">
+                            <label className="block text-[9px] uppercase tracking-wider text-zinc-500 mb-0.5">
+                              Or Image URL:
                             </label>
                             <input
                               type="text"
-                              required
-                              value={cw.color_name}
-                              onChange={(e) => handleUpdateColorway(cwIdx, 'color_name', e.target.value)}
-                              placeholder="e.g. Midnight Black, Heather Grey"
-                              className="w-full px-2.5 py-1.5 text-xs bg-zinc-50 border border-zinc-300 font-semibold focus:outline-none focus:border-black"
+                              value={cw.image_url}
+                              onChange={(e) => handleUpdateColorway(cwIdx, 'image_url', e.target.value)}
+                              placeholder="https://..."
+                              className="w-full px-2 py-1 text-[11px] bg-white border border-zinc-300 font-mono"
                             />
                           </div>
+                        </div>
 
-                          <div>
-                            <label className="block text-[10px] uppercase tracking-wider font-bold text-zinc-700 mb-1">
-                              HEX Colour Swatch
-                            </label>
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="color"
-                                value={cw.color_hex}
-                                onChange={(e) => handleUpdateColorway(cwIdx, 'color_hex', e.target.value)}
-                                className="w-8 h-8 p-0 border border-zinc-300 cursor-pointer shrink-0"
-                              />
-                              <input
-                                type="text"
-                                value={cw.color_hex}
-                                onChange={(e) => handleUpdateColorway(cwIdx, 'color_hex', e.target.value)}
-                                className="w-full px-2 py-1.5 text-xs font-mono uppercase bg-zinc-50 border border-zinc-300 focus:outline-none focus:border-black"
-                              />
-                            </div>
+                        {/* 2. BACK / HOVER PHOTO */}
+                        <div className="border border-zinc-200 p-3 bg-zinc-50 space-y-2.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] uppercase tracking-wider font-bold text-black">
+                              Back / Hover Photo
+                            </span>
+                            <span className="text-[9px] px-1.5 py-0.5 bg-zinc-200 text-zinc-700 font-mono uppercase">
+                              Flip on Hover
+                            </span>
                           </div>
 
-                          {/* Quick color preset chips */}
-                          <div className="sm:col-span-2 pt-1 border-t border-zinc-100">
-                            <span className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold block mb-1">
-                              Quick Presets:
-                            </span>
-                            <div className="flex flex-wrap gap-1.5">
-                              {COLOR_PRESETS.map((p) => (
-                                <button
-                                  type="button"
-                                  key={p.name}
-                                  onClick={() => {
-                                    handleUpdateColorway(cwIdx, 'color_name', p.name);
-                                    handleUpdateColorway(cwIdx, 'color_hex', p.hex);
-                                  }}
-                                  className="px-2 py-0.5 text-[10px] bg-zinc-100 hover:bg-zinc-200 border border-zinc-300 text-zinc-800 flex items-center gap-1 transition-colors"
-                                >
-                                  <span
-                                    className="w-2.5 h-2.5 rounded-full border border-zinc-400"
-                                    style={{ backgroundColor: p.hex }}
-                                  />
-                                  <span>{p.name}</span>
-                                </button>
-                              ))}
-                            </div>
+                          <div className="relative w-full aspect-3/4 max-w-[200px] mx-auto bg-zinc-200 border border-zinc-300 overflow-hidden group">
+                            {uploadingTarget === `cw_${cwIdx}_secondary_image_url` ? (
+                              <div className="w-full h-full flex flex-col items-center justify-center bg-black/85 text-white gap-2 p-2 text-center">
+                                <RefreshCw className="w-5 h-5 animate-spin" />
+                                <span className="text-[10px] uppercase font-bold tracking-wider">
+                                  Uploading to R2...
+                                </span>
+                              </div>
+                            ) : cw.secondary_image_url ? (
+                              <>
+                                <Image src={cw.secondary_image_url} alt="" fill className="object-cover" />
+                                <div className="absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-2 p-2 transition-opacity">
+                                  <label className="cursor-pointer text-[10px] uppercase font-bold tracking-wider bg-white text-black px-2.5 py-1 hover:bg-zinc-100">
+                                    Change Photo
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      className="hidden"
+                                      onChange={(e) => handleR2Upload(e, cwIdx, 'secondary_image_url')}
+                                    />
+                                  </label>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUpdateColorway(cwIdx, 'secondary_image_url', '')}
+                                    className="text-[10px] text-red-300 hover:text-red-100 underline"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              </>
+                            ) : (
+                              <label className="w-full h-full flex flex-col items-center justify-center p-3 cursor-pointer hover:bg-zinc-100 transition-colors text-center border-2 border-dashed border-zinc-300">
+                                <Upload className="w-6 h-6 text-zinc-400 mb-1" />
+                                <span className="px-3 py-1 bg-zinc-800 text-white text-[10px] uppercase font-bold tracking-wider mb-1">
+                                  + Add Back Photo
+                                </span>
+                                <span className="text-[9px] text-zinc-500">Shop Catalog Hover</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={(e) => handleR2Upload(e, cwIdx, 'secondary_image_url')}
+                                />
+                              </label>
+                            )}
+                          </div>
+
+                          {/* Fallback direct URL */}
+                          <div className="pt-1">
+                            <label className="block text-[9px] uppercase tracking-wider text-zinc-500 mb-0.5">
+                              Or Back Image URL:
+                            </label>
+                            <input
+                              type="text"
+                              value={cw.secondary_image_url || ''}
+                              onChange={(e) => handleUpdateColorway(cwIdx, 'secondary_image_url', e.target.value)}
+                              placeholder="https://..."
+                              className="w-full px-2 py-1 text-[11px] bg-white border border-zinc-300 font-mono"
+                            />
                           </div>
                         </div>
+
+                        {/* 3. EXTRA GALLERY ANGLES */}
+                        <div className="border border-zinc-200 p-3 bg-zinc-50 space-y-2.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] uppercase tracking-wider font-bold text-black">
+                              Extra Gallery Angles
+                            </span>
+                            <span className="text-[9px] px-1.5 py-0.5 bg-zinc-200 text-zinc-700 font-mono uppercase">
+                              {(cw.gallery_images || []).length} Photo{(cw.gallery_images || []).length === 1 ? '' : 's'}
+                            </span>
+                          </div>
+
+                          {/* Upload button for gallery */}
+                          <label className="w-full p-2.5 bg-white border border-dashed border-zinc-300 hover:border-black flex items-center justify-center gap-2 cursor-pointer transition-colors text-center">
+                            {uploadingTarget === `cw_${cwIdx}_gallery` ? (
+                              <>
+                                <RefreshCw className="w-3.5 h-3.5 animate-spin text-black" />
+                                <span className="text-[10px] uppercase font-bold tracking-wider text-black">
+                                  Uploading Angle...
+                                </span>
+                              </>
+                            ) : (
+                              <>
+                                <Plus className="w-3.5 h-3.5 text-black" />
+                                <span className="text-[10px] uppercase font-bold tracking-wider text-black">
+                                  + Add Angle Photo
+                                </span>
+                              </>
+                            )}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => handleR2Upload(e, cwIdx, 'gallery')}
+                            />
+                          </label>
+
+                          {/* Thumbnails grid */}
+                          {(cw.gallery_images || []).length > 0 ? (
+                            <div className="grid grid-cols-3 gap-1.5 max-h-32 overflow-y-auto p-1 bg-white border border-zinc-200">
+                              {(cw.gallery_images || []).map((imgUrl, imgIdx) => (
+                                <div key={imgIdx} className="relative aspect-square bg-zinc-100 group border border-zinc-200">
+                                  <Image src={imgUrl} alt="" fill className="object-cover" />
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveGalleryImage(cwIdx, imgIdx)}
+                                    className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full p-0.5 opacity-80 group-hover:opacity-100 transition-opacity"
+                                    title="Remove angle"
+                                  >
+                                    <X className="w-2.5 h-2.5" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="p-3 text-center bg-white border border-zinc-200 text-[10px] text-zinc-400">
+                              No additional angle photos added yet.
+                            </div>
+                          )}
+
+                          {/* Direct URL adder */}
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="text"
+                              value={cw.galleryUrlInput || ''}
+                              onChange={(e) => handleUpdateColorway(cwIdx, 'galleryUrlInput', e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  handleAddGalleryUrl(cwIdx, cw.galleryUrlInput || '');
+                                }
+                              }}
+                              placeholder="Or paste angle URL..."
+                              className="w-full px-2 py-1 text-[11px] bg-white border border-zinc-300 font-mono"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleAddGalleryUrl(cwIdx, cw.galleryUrlInput || '')}
+                              className="px-2 py-1 text-[10px] uppercase font-bold bg-zinc-800 text-white hover:bg-black shrink-0"
+                            >
+                              Add
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 3. SIZE SELECTION & STOCK INVENTORY */}
+                    <div className="space-y-4">
 
                         {/* Size Selection (Which sizes exist for this colour?) */}
                         <div className="bg-white p-3.5 border border-zinc-200 space-y-3">
@@ -1222,8 +1488,7 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
                         )}
                       </div>
                     </div>
-                  </div>
-                );
+                  );
               })}
             </div>
 
