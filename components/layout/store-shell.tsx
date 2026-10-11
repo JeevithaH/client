@@ -73,7 +73,7 @@ export function StoreShell({ children }: { children: React.ReactNode }) {
       <SocialProofToast notifications={socialProof} />
       <ExitIntentModal
         enabled={settings ? Boolean(settings.exit_intent_enabled) : true}
-        couponCode={settings?.exit_intent_discount_code || 'STITCH10'}
+        couponCode={settings?.exit_intent_coupon || settings?.exit_intent_discount_code || 'STITCH10'}
       />
       <MobileBottomNav />
       <Footer />
