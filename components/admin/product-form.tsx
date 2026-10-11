@@ -52,10 +52,17 @@ const COLOR_PRESETS = [
   { name: 'Midnight Black', hex: '#111111' },
   { name: 'Pure White', hex: '#FFFFFF' },
   { name: 'Heather Grey', hex: '#71717A' },
+  { name: 'Charcoal Grey', hex: '#27272A' },
   { name: 'Navy Blue', hex: '#0C172D' },
+  { name: 'Royal Blue', hex: '#1E3A8A' },
   { name: 'Olive Green', hex: '#3F4A3C' },
+  { name: 'Forest Green', hex: '#14532D' },
   { name: 'Sand / Beige', hex: '#D4C5B9' },
   { name: 'Burgundy / Maroon', hex: '#631D24' },
+  { name: 'Crimson Red', hex: '#B91C1C' },
+  { name: 'Dusty Pink', hex: '#F472B6' },
+  { name: 'Lavender', hex: '#C084FC' },
+  { name: 'Mustard Yellow', hex: '#CA8A04' },
 ];
 
 interface SizeConfig {
@@ -219,28 +226,62 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
     }
   };
 
+  const [newColorNameInput, setNewColorNameInput] = useState('');
+  const [newColorHexInput, setNewColorHexInput] = useState('#111111');
+
   // Colorway handlers
-  const handleAddColorway = () => {
-    // Pick next unused color preset
-    const usedNames = colorways.map((cw) => cw.color_name.toLowerCase());
-    const nextPreset = COLOR_PRESETS.find((p) => !usedNames.includes(p.name.toLowerCase())) || {
-      name: `Colorway ${colorways.length + 1}`,
-      hex: '#27272A',
-    };
+  const handleAddColorway = (customName?: string, customHex?: string) => {
+    let name = customName?.trim();
+    let hex = customHex?.trim();
+
+    if (!name) {
+      // Pick next unused color preset
+      const usedNames = colorways.map((cw) => cw.color_name.toLowerCase());
+      const nextPreset = COLOR_PRESETS.find((p) => !usedNames.includes(p.name.toLowerCase())) || {
+        name: `Colour ${colorways.length + 1}`,
+        hex: '#27272A',
+      };
+      name = nextPreset.name;
+      hex = hex || nextPreset.hex;
+    }
+
+    if (!hex) {
+      hex = '#111111';
+    }
+
+    // Inherit the active sizes from the first colourway so user doesn't have to re-select sizes every time!
+    const templateSizes = colorways[0]?.sizes || STANDARD_SIZES.map((size) => ({
+      size,
+      enabled: ['S', 'M', 'L', 'XL'].includes(size),
+      stock: 15,
+      sku: '',
+    }));
 
     const newCw: ColorwayGroup = {
       id: `cw_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-      color_name: nextPreset.name,
-      color_hex: nextPreset.hex,
+      color_name: name,
+      color_hex: hex,
       image_url: colorways[0]?.image_url || '',
-      sizes: STANDARD_SIZES.map((size) => ({
-        size,
-        enabled: ['S', 'M', 'L', 'XL'].includes(size),
-        stock: 15,
-        sku: generateDefaultSku(slug, nextPreset.name, size),
+      sizes: templateSizes.map((s) => ({
+        size: s.size,
+        enabled: s.enabled,
+        stock: s.enabled ? (s.stock > 0 ? s.stock : 15) : 0,
+        sku: generateDefaultSku(slug, name!, s.size),
       })),
     };
-    setColorways([...colorways, newCw]);
+
+    setColorways((prev) => [...prev, newCw]);
+    success('Colour Added', `Added "${name}" style to garment.`);
+  };
+
+  const handleCreateCustomColorway = () => {
+    const trimmed = newColorNameInput.trim();
+    if (!trimmed) {
+      error('Colour Name Required', 'Please enter a colour name (e.g. Pink, Yellow, Lavender).');
+      return;
+    }
+    handleAddColorway(trimmed, newColorHexInput);
+    setNewColorNameInput('');
   };
 
   const handleRemoveColorway = (cwIndex: number) => {
@@ -681,17 +722,120 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
                   </h3>
                 </div>
                 <p className="text-xs text-zinc-500 mt-0.5">
-                  Choose each colourway, select which sizes exist (S, M, L, etc.), and enter how much stock for each size.
+                  Configure each colourway, choose which sizes exist (S, M, L, etc.), and enter how much stock for each size.
                 </p>
               </div>
 
-              {/* Summary Stats Pill */}
-              <div className="flex items-center gap-3 bg-zinc-50 px-3 py-1.5 border border-zinc-200 text-xs">
-                <span className="font-semibold text-black">{totalColors} Colour{totalColors > 1 ? 's' : ''}</span>
-                <span className="text-zinc-300">•</span>
-                <span className="text-zinc-700">{totalVariantsCount} Sizes</span>
-                <span className="text-zinc-300">•</span>
-                <span className="font-mono font-bold text-black">{totalStockCount} Total Pcs</span>
+              <div className="flex items-center gap-3">
+                {/* Summary Stats Pill */}
+                <div className="flex items-center gap-2 bg-zinc-50 px-3 py-1.5 border border-zinc-200 text-xs">
+                  <span className="font-semibold text-black">{totalColors} Colour{totalColors > 1 ? 's' : ''}</span>
+                  <span className="text-zinc-300">•</span>
+                  <span className="text-zinc-700">{totalVariantsCount} Sizes</span>
+                  <span className="text-zinc-300">•</span>
+                  <span className="font-mono font-bold text-black">{totalStockCount} Total Pcs</span>
+                </div>
+
+                {/* Primary Add Colour Button */}
+                <button
+                  type="button"
+                  onClick={() => handleAddColorway()}
+                  className="px-3.5 py-1.5 bg-black text-white hover:bg-zinc-800 text-xs uppercase tracking-wider font-bold flex items-center gap-1.5 shadow-sm transition-all"
+                >
+                  <Plus className="w-4 h-4" /> Add Colour
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Add Colours to Garment Toolbar */}
+            <div className="bg-zinc-50 p-4 border border-zinc-300 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                <span className="text-xs uppercase tracking-wider font-bold text-black flex items-center gap-1.5">
+                  <Palette className="w-3.5 h-3.5" /> Select &amp; Add Colours to This Garment:
+                </span>
+                <span className="text-[11px] text-zinc-500">
+                  Click any colour preset below to instantly add it to your product
+                </span>
+              </div>
+
+              {/* Color Presets Palette */}
+              <div className="flex flex-wrap gap-1.5">
+                {COLOR_PRESETS.map((p) => {
+                  const isAlreadyAdded = colorways.some(
+                    (cw) => cw.color_name.toLowerCase() === p.name.toLowerCase()
+                  );
+                  return (
+                    <button
+                      type="button"
+                      key={p.name}
+                      onClick={() => {
+                        if (!isAlreadyAdded) {
+                          handleAddColorway(p.name, p.hex);
+                        }
+                      }}
+                      disabled={isAlreadyAdded}
+                      className={`px-2.5 py-1 text-xs border flex items-center gap-1.5 transition-all ${
+                        isAlreadyAdded
+                          ? 'bg-zinc-200 text-zinc-500 border-zinc-300 opacity-60 cursor-default'
+                          : 'bg-white hover:bg-black hover:text-white border-zinc-300 text-black font-semibold shadow-xs'
+                      }`}
+                      title={isAlreadyAdded ? `${p.name} is already added` : `Add ${p.name}`}
+                    >
+                      <span
+                        className="w-3 h-3 rounded-full border border-zinc-400 shrink-0 shadow-xs"
+                        style={{ backgroundColor: p.hex }}
+                      />
+                      <span>{p.name}</span>
+                      {isAlreadyAdded ? (
+                        <Check className="w-3 h-3 text-emerald-600 stroke-[2.5]" />
+                      ) : (
+                        <Plus className="w-3 h-3 text-zinc-400" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Add Custom Colour Form */}
+              <div className="pt-2 border-t border-zinc-200 flex flex-wrap items-center gap-2">
+                <span className="text-[11px] uppercase tracking-wider font-bold text-zinc-700">
+                  + Add Custom Colour:
+                </span>
+                <input
+                  type="text"
+                  value={newColorNameInput}
+                  onChange={(e) => setNewColorNameInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleCreateCustomColorway();
+                    }
+                  }}
+                  placeholder="Colour name (e.g. Baby Pink, Lavender, Coral)..."
+                  className="px-2.5 py-1.5 text-xs bg-white border border-zinc-300 w-60 focus:outline-none focus:border-black font-medium"
+                />
+                <div className="flex items-center gap-1.5 bg-white px-2 py-1 border border-zinc-300">
+                  <span className="text-[10px] uppercase font-mono text-zinc-500 font-bold">Swatch:</span>
+                  <input
+                    type="color"
+                    value={newColorHexInput}
+                    onChange={(e) => setNewColorHexInput(e.target.value)}
+                    className="w-5 h-5 p-0 border-0 cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={newColorHexInput}
+                    onChange={(e) => setNewColorHexInput(e.target.value)}
+                    className="w-16 text-xs font-mono uppercase bg-transparent border-0 focus:outline-none font-bold"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCreateCustomColorway}
+                  className="px-3.5 py-1.5 bg-black text-white hover:bg-zinc-800 text-xs uppercase tracking-wider font-bold transition-all flex items-center gap-1 shadow-xs"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Add Colour
+                </button>
               </div>
             </div>
 
@@ -723,16 +867,27 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
                         </div>
                       </div>
 
-                      {colorways.length > 1 && (
+                      <div className="flex items-center gap-2">
                         <button
                           type="button"
-                          onClick={() => handleRemoveColorway(cwIdx)}
-                          className="text-xs text-zinc-400 hover:text-red-600 flex items-center gap-1 font-medium transition-colors"
-                          title="Remove this entire colourway"
+                          onClick={() => handleAddColorway()}
+                          className="px-2.5 py-1 text-xs uppercase tracking-wider font-bold text-black border border-zinc-300 hover:border-black bg-white hover:bg-zinc-100 flex items-center gap-1 transition-colors"
+                          title="Add another colour"
                         >
-                          <Trash2 className="w-3.5 h-3.5" /> Remove Colour
+                          <Plus className="w-3.5 h-3.5" /> Add Another Colour
                         </button>
-                      )}
+
+                        {colorways.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveColorway(cwIdx)}
+                            className="text-xs text-zinc-400 hover:text-red-600 flex items-center gap-1 font-medium transition-colors px-2 py-1"
+                            title="Remove this entire colourway"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" /> Remove
+                          </button>
+                        )}
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
@@ -1076,10 +1231,10 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
             <div className="pt-2">
               <button
                 type="button"
-                onClick={handleAddColorway}
+                onClick={() => handleAddColorway()}
                 className="w-full py-3.5 border-2 border-dashed border-zinc-300 hover:border-black bg-white hover:bg-zinc-50 text-black text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2 transition-all shadow-xs"
               >
-                <Plus className="w-4 h-4 stroke-[2]" /> + Add Another Colour / Style (e.g. White, Grey, Olive)
+                <Plus className="w-4 h-4 stroke-[2]" /> Add Another Colour / Style (e.g. White, Grey, Olive, Navy, Red)
               </button>
             </div>
           </div>
