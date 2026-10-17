@@ -161,7 +161,7 @@ export function Footer() {
           </Link>
           <span className="text-zinc-700 hidden sm:inline">•</span>
           <Link href="/copyright" className="hover:text-white transition-colors">
-            Copyright &amp; IP Notice
+            Copyright
           </Link>
           <span className="text-zinc-700 hidden sm:inline">•</span>
           <Link href="/contact" className="hover:text-white transition-colors">
@@ -175,7 +175,7 @@ export function Footer() {
             <span>© {new Date().getFullYear()} STiTCH (Stitchclothes). All rights reserved.</span>
             <span className="text-zinc-700 hidden sm:inline">•</span>
             <Link href="/copyright" className="text-zinc-400 hover:text-white underline">
-              IP Declaration
+              Copyright
             </Link>
           </div>
 

@@ -10,7 +10,7 @@ const POLICY_LINKS = [
   { href: '/shipping-policy', label: 'Delivery & Shipping', icon: Truck },
   { href: '/refund-policy', label: 'Returns & Refunds', icon: RotateCcw },
   { href: '/terms', label: 'Terms of Service', icon: FileText },
-  { href: '/copyright', label: 'Copyright & IP', icon: Copyright },
+  { href: '/copyright', label: 'Copyright', icon: Copyright },
   { href: '/contact', label: 'Contact Us', icon: HelpCircle },
 ];
 
