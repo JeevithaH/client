@@ -101,11 +101,11 @@ export default function CopyrightPage() {
                 <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider block">Official Contact</span>
                 <span className="font-semibold text-black text-xs flex items-center gap-1.5">
                   <Mail className="w-3.5 h-3.5 text-zinc-600" />
-                  the.stitchclothes@gmail.com
+                  snfabricsenquiry@gmail.com
                 </span>
               </div>
               <a
-                href="mailto:the.stitchclothes@gmail.com?subject=Brand%20Inquiry%20-%20STiTCH"
+                href="mailto:snfabricsenquiry@gmail.com?subject=Brand%20Inquiry%20-%20STiTCH"
                 className="px-4 py-2 bg-black text-white text-xs font-semibold uppercase tracking-wider hover:bg-zinc-800 shrink-0 text-center"
               >
                 Send Email

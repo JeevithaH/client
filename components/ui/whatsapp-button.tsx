@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { MessageCircle, X, Sparkles, Send, Phone } from 'lucide-react';
 import { getWhatsAppConciergeUrl, CONCIERGE_PHONE_DISPLAY } from '@/lib/whatsapp';
 
-export function WhatsAppButton({ phoneNumber = '916395463874' }: { phoneNumber?: string }) {
+export function WhatsAppButton({ phoneNumber = '918310274918' }: { phoneNumber?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [customMsg, setCustomMsg] = useState('');
 

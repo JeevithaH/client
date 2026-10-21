@@ -186,8 +186,8 @@ export default function PrivacyPolicyPage() {
                 <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Email Grievance Desk</span>
                 <p className="font-semibold text-black flex items-center gap-2">
                   <Mail className="w-3.5 h-3.5" />
-                  <a href="mailto:the.stitchclothes@gmail.com" className="hover:underline">
-                    the.stitchclothes@gmail.com
+                  <a href="mailto:snfabricsenquiry@gmail.com" className="hover:underline">
+                    snfabricsenquiry@gmail.com
                   </a>
                 </p>
               </div>
@@ -196,8 +196,8 @@ export default function PrivacyPolicyPage() {
                 <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Concierge Helpline</span>
                 <p className="font-semibold text-black flex items-center gap-2">
                   <Phone className="w-3.5 h-3.5" />
-                  <a href="tel:+916395463874" className="hover:underline">
-                    +91 6395463874
+                  <a href="tel:+918310274918" className="hover:underline">
+                    +91 8310274918
                   </a>
                 </p>
               </div>

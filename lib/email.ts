@@ -154,7 +154,7 @@ export async function sendVerificationOtpEmail(to: string, name: string, otp: st
     <tr>
       <td style="padding: 24px 40px; border-top: 1px solid #F3F4F6; background-color: #FAFAFA; text-align: center;">
         <p style="margin: 0; font-size: 11px; color: #9CA3AF; letter-spacing: 0.05em;">
-          Shipfold Clothiers &bull; Concierge Hotline: +91 8310246790 &bull; Bengaluru, India
+          Shipfold Clothiers &bull; Concierge Hotline: +91 8310274918 &bull; Bengaluru, India
         </p>
       </td>
     </tr>
@@ -229,7 +229,7 @@ export async function sendPasswordResetEmail(to: string, name: string, otp: stri
     <tr>
       <td style="padding: 24px 40px; border-top: 1px solid #F3F4F6; background-color: #FAFAFA; text-align: center;">
         <p style="margin: 0; font-size: 11px; color: #9CA3AF; letter-spacing: 0.05em;">
-          Shipfold Clothiers &bull; Concierge Hotline: +91 8310246790 &bull; Bengaluru, India
+          Shipfold Clothiers &bull; Concierge Hotline: +91 8310274918 &bull; Bengaluru, India
         </p>
       </td>
     </tr>

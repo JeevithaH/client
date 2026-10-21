@@ -572,7 +572,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
                 className="w-full py-3.5 rounded-full bg-white border border-[#0E0E0E] text-[#0E0E0E] hover:bg-[#0E0E0E] hover:text-white text-[11px] uppercase tracking-[0.22em] font-medium flex items-center justify-center gap-2 transition-all shadow-sm"
               >
                 <MessageCircle className="w-4 h-4 text-emerald-600" />
-                <span>Order via WhatsApp (8310246790)</span>
+                <span>Order via WhatsApp (8310274918)</span>
               </a>
 
 

@@ -20,7 +20,7 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-3 pt-2">
               <a
-                href="https://wa.me/916395463874?text=Hello%20STiTCH%2C%20I%20would%20like%20to%20inquire%20about%20orders."
+                href="https://wa.me/918310274918?text=Hello%20STiTCH%2C%20I%20would%20like%20to%20inquire%20about%20orders."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-3.5 py-2 bg-emerald-950/70 border border-emerald-700/60 text-emerald-300 hover:bg-emerald-900/70 text-[11px] uppercase tracking-wider font-semibold transition-colors"
@@ -29,11 +29,11 @@ export function Footer() {
                 <span>WhatsApp Concierge</span>
               </a>
               <a
-                href="tel:+916395463874"
+                href="tel:+918310274918"
                 className="flex items-center gap-2 px-3.5 py-2 bg-zinc-900 border border-zinc-700 text-zinc-200 hover:border-white hover:text-white text-[11px] uppercase tracking-wider font-semibold transition-colors"
               >
                 <Phone className="w-3.5 h-3.5" />
-                <span>+91 6395463874</span>
+                <span>+91 8310274918</span>
               </a>
             </div>
           </div>
@@ -124,14 +124,14 @@ export function Footer() {
             <div className="space-y-2 text-xs text-zinc-400">
               <p className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
-                <a href="mailto:the.stitchclothes@gmail.com" className="hover:text-white truncate">
-                  the.stitchclothes@gmail.com
+                <a href="mailto:snfabricsenquiry@gmail.com" className="hover:text-white truncate">
+                  snfabricsenquiry@gmail.com
                 </a>
               </p>
               <p className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
-                <a href="tel:+916395463874" className="hover:text-white">
-                  +91 6395463874
+                <a href="tel:+918310274918" className="hover:text-white">
+                  +91 8310274918
                 </a>
               </p>
               <p className="flex items-center gap-2 text-zinc-500 pt-1">

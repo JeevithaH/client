@@ -14,7 +14,7 @@ interface AnnouncementBarProps {
 
 export function AnnouncementBar({
   messages = [],
-  supportPhone = '+916395463874',
+  supportPhone = '+918310274918',
   instagramUrl = 'https://instagram.com/stitchclothes',
   facebookUrl = 'https://facebook.com/stitchclothes',
 }: AnnouncementBarProps) {

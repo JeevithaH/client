@@ -180,7 +180,7 @@ export default function ShippingPolicyPage() {
               </div>
             </div>
             <p>
-              In the unlikely event of transit damage or missing items, contact us within <strong>48 hours of delivery</strong> at <a href="mailto:the.stitchclothes@gmail.com" className="font-semibold underline">the.stitchclothes@gmail.com</a> or via WhatsApp concierge with photos/video of the outer carton and garments. We will dispatch a brand-new replacement immediately at zero additional expense.
+              In the unlikely event of transit damage or missing items, contact us within <strong>48 hours of delivery</strong> at <a href="mailto:snfabricsenquiry@gmail.com" className="font-semibold underline">snfabricsenquiry@gmail.com</a> or via WhatsApp concierge with photos/video of the outer carton and garments. We will dispatch a brand-new replacement immediately at zero additional expense.
             </p>
           </div>
         </section>
@@ -192,7 +192,7 @@ export default function ShippingPolicyPage() {
             <p className="text-xs text-zinc-400 mt-0.5">Contact our shipping logistics desk on WhatsApp for instant assistance.</p>
           </div>
           <a
-            href="https://wa.me/916395463874?text=Hello%20STiTCH%2C%20I%20have%20an%20inquiry%20regarding%20my%20delivery."
+            href="https://wa.me/918310274918?text=Hello%20STiTCH%2C%20I%20have%20an%20inquiry%20regarding%20my%20delivery."
             target="_blank"
             rel="noopener noreferrer"
             className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shrink-0 transition-colors"

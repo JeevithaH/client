@@ -119,7 +119,7 @@ export default function RefundPolicyPage() {
                 <div>
                   <strong className="text-black text-xs block">Contact Customer Care</strong>
                   <span className="text-zinc-600">
-                    Send a WhatsApp message to <a href="https://wa.me/916395463874" className="font-semibold underline text-black">+91 6395463874</a> or email <a href="mailto:the.stitchclothes@gmail.com" className="font-semibold underline text-black">the.stitchclothes@gmail.com</a> with your Order ID and reason for return or desired exchange size.
+                    Send a WhatsApp message to <a href="https://wa.me/918310274918" className="font-semibold underline text-black">+91 8310274918</a> or email <a href="mailto:snfabricsenquiry@gmail.com" className="font-semibold underline text-black">snfabricsenquiry@gmail.com</a> with your Order ID and reason for return or desired exchange size.
                   </span>
                 </div>
               </div>
@@ -203,7 +203,7 @@ export default function RefundPolicyPage() {
             <p className="text-xs text-zinc-400 mt-0.5">Drop a quick message on WhatsApp and our team will schedule reverse pickup.</p>
           </div>
           <a
-            href="https://wa.me/916395463874?text=Hello%20STiTCH%2C%20I%20would%20like%20to%20request%20a%20return%20or%20exchange%20for%20my%20order."
+            href="https://wa.me/918310274918?text=Hello%20STiTCH%2C%20I%20would%20like%20to%20request%20a%20return%20or%20exchange%20for%20my%20order."
             target="_blank"
             rel="noopener noreferrer"
             className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shrink-0 transition-colors"

@@ -317,14 +317,14 @@ export function Header() {
 
             <div className="pt-3 border-t border-zinc-200 flex items-center justify-between text-xs">
               <a
-                href="tel:+916395463874"
+                href="tel:+918310274918"
                 className="text-zinc-800 font-semibold flex items-center gap-1.5"
               >
                 <Phone className="w-3.5 h-3.5 text-black" />
-                <span>+91 6395463874</span>
+                <span>+91 8310274918</span>
               </a>
               <a
-                href="https://wa.me/916395463874?text=Hello%20STiTCH%2C%20I%20would%20like%20to%20inquire%20about%20orders."
+                href="https://wa.me/918310274918?text=Hello%20STiTCH%2C%20I%20would%20like%20to%20inquire%20about%20orders."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-emerald-700 font-semibold flex items-center gap-1"

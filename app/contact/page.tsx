@@ -58,7 +58,7 @@ export default function ContactPage() {
             </p>
             <div className="pt-2">
               <a
-                href="https://wa.me/916395463874?text=Hello%20STiTCH%20Concierge%2C%20I%20need%20assistance%20with%20an%20order."
+                href="https://wa.me/918310274918?text=Hello%20STiTCH%20Concierge%2C%20I%20need%20assistance%20with%20an%20order."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider transition-colors"
@@ -80,10 +80,10 @@ export default function ContactPage() {
             </p>
             <div className="pt-2">
               <a
-                href="mailto:the.stitchclothes@gmail.com"
+                href="mailto:snfabricsenquiry@gmail.com"
                 className="text-xs font-bold font-mono text-black underline hover:text-zinc-600 break-all"
               >
-                the.stitchclothes@gmail.com
+                snfabricsenquiry@gmail.com
               </a>
             </div>
           </div>
@@ -100,10 +100,10 @@ export default function ContactPage() {
             </p>
             <div className="pt-2">
               <a
-                href="tel:+916395463874"
+                href="tel:+918310274918"
                 className="text-xs font-bold font-mono text-black underline hover:text-zinc-600"
               >
-                +91 6395463874
+                +91 8310274918
               </a>
             </div>
           </div>

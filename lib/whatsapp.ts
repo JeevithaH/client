@@ -4,9 +4,9 @@
 
 import { CartItem, Product, Address } from './types';
 
-export const CONCIERGE_PHONE = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '918310246790';
-export const CONCIERGE_PHONE_DISPLAY = process.env.NEXT_PUBLIC_HOTLINE_DISPLAY || '+91 8310246790';
-export const CONCIERGE_PHONE_RAW = process.env.NEXT_PUBLIC_WHATSAPP_RAW || '8310246790';
+export const CONCIERGE_PHONE = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '918310274918';
+export const CONCIERGE_PHONE_DISPLAY = process.env.NEXT_PUBLIC_HOTLINE_DISPLAY || '+91 8310274918';
+export const CONCIERGE_PHONE_RAW = process.env.NEXT_PUBLIC_WHATSAPP_RAW || '8310274918';
 
 export function getWhatsAppConciergeUrl(customMessage?: string): string {
   const text = customMessage || encodeURIComponent(

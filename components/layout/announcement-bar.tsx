@@ -20,12 +20,12 @@ export function AnnouncementBar() {
           </Link>
           <span className="text-zinc-700">•</span>
           <a
-            href="tel:+918310246790"
+            href="tel:+918310274918"
             className="text-zinc-300 hover:text-white shrink-0 flex items-center gap-1 font-medium"
             title="Call Atelier"
           >
             <Phone className="w-2.5 h-2.5 text-[#C5A880]" />
-            <span>8310246790</span>
+            <span>8310274918</span>
           </a>
         </div>
 
@@ -46,12 +46,12 @@ export function AnnouncementBar() {
             </Link>
             <span className="text-zinc-700">•</span>
             <a
-              href="tel:+918310246790"
+              href="tel:+918310274918"
               className="text-zinc-300 hover:text-white transition-colors flex items-center gap-1 font-medium"
               title="Call Atelier"
             >
               <Phone className="w-3 h-3 text-[#C5A880]" />
-              <span>+91 8310246790</span>
+              <span>+91 8310274918</span>
             </a>
           </div>
         </div>

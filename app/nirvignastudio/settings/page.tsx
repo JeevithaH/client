@@ -25,9 +25,9 @@ export default function AdminSettingsPage() {
   // Form states
   const [storeName, setStoreName] = useState('STITCHCLOTHES');
   const [logoUrl, setLogoUrl] = useState('');
-  const [supportEmail, setSupportEmail] = useState('the.stitchclothes@gmail.com');
-  const [supportPhone, setSupportPhone] = useState('+916395463874');
-  const [whatsappNumber, setWhatsappNumber] = useState('916395463874');
+  const [supportEmail, setSupportEmail] = useState('snfabricsenquiry@gmail.com');
+  const [supportPhone, setSupportPhone] = useState('+918310274918');
+  const [whatsappNumber, setWhatsappNumber] = useState('918310274918');
   const [freeShippingThreshold, setFreeShippingThreshold] = useState(499);
   const [exitIntentEnabled, setExitIntentEnabled] = useState(true);
   const [exitIntentDiscountCode, setExitIntentDiscountCode] = useState('STITCH10');
@@ -44,9 +44,9 @@ export default function AdminSettingsPage() {
         setSettings(s);
         setStoreName(s.store_name || 'STITCHCLOTHES');
         setLogoUrl(s.logo_url || '');
-        setSupportEmail(s.support_email || 'the.stitchclothes@gmail.com');
-        setSupportPhone(s.support_phone || '+916395463874');
-        setWhatsappNumber(s.whatsapp_number || '916395463874');
+        setSupportEmail(s.support_email || 'snfabricsenquiry@gmail.com');
+        setSupportPhone(s.support_phone || '+918310274918');
+        setWhatsappNumber(s.whatsapp_number || '918310274918');
         setFreeShippingThreshold(s.free_shipping_threshold ?? 499);
         setExitIntentEnabled(Boolean(s.exit_intent_enabled));
         setExitIntentDiscountCode(s.exit_intent_discount_code || 'STITCH10');
@@ -195,7 +195,7 @@ export default function AdminSettingsPage() {
                   type="text"
                   value={whatsappNumber}
                   onChange={(e) => setWhatsappNumber(e.target.value)}
-                  placeholder="916395463874"
+                  placeholder="918310274918"
                   className="w-full px-3 py-2 border border-zinc-300 text-black focus:outline-none focus:border-black text-sm font-mono"
                 />
               </div>

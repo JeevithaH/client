@@ -233,7 +233,7 @@ export default function CustomTShirtPage() {
       '----------------------------------------\n' +
       'Please confirm manufacturing feasibility, turnaround time, and quote.';
 
-    const url = `https://wa.me/918310246790?text=${encodeURIComponent(message)}`;
+    const url = `https://wa.me/918310274918?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
     success('Submitting your custom product request directly to WhatsApp!');
   };
@@ -272,21 +272,21 @@ export default function CustomTShirtPage() {
           {/* Contact Strip Bar */}
           <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
             <a
-              href="tel:+918310246790"
+              href="tel:+918310274918"
               className="flex items-center gap-2.5 px-6 py-3.5 bg-white text-[#0C1427] hover:bg-[#C5A880] hover:text-white text-xs uppercase tracking-[0.2em] font-semibold transition-all shadow-xl"
             >
               <Phone className="w-4 h-4" />
-              <span>Call Atelier: +91 8310246790</span>
+              <span>Call Atelier: +91 8310274918</span>
             </a>
 
             <a
-              href="https://wa.me/918310246790?text=Hello%20Shipfold%2C%20I%20would%20like%20to%20inquire%20about%20custom%20T-shirt%20embroidery%20and%20orders."
+              href="https://wa.me/918310274918?text=Hello%20Shipfold%2C%20I%20would%20like%20to%20inquire%20about%20custom%20T-shirt%20embroidery%20and%20orders."
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2.5 px-6 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs uppercase tracking-[0.2em] font-semibold transition-all shadow-xl"
             >
               <MessageCircle className="w-4 h-4" />
-              <span>WhatsApp Direct: 8310246790</span>
+              <span>WhatsApp Direct: 8310274918</span>
             </a>
           </div>
 
@@ -543,7 +543,7 @@ export default function CustomTShirtPage() {
                     type="tel"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    placeholder="e.g. 8310246790"
+                    placeholder="e.g. 8310274918"
                     className="w-full border border-zinc-300 p-2.5 text-xs text-[#0C1427] bg-white focus:outline-none focus:border-[#0C1427]"
                   />
                 </div>
@@ -620,7 +620,7 @@ export default function CustomTShirtPage() {
                   className="w-full py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2.5 transition-all shadow-lg"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  <span>Order on WhatsApp (8310246790)</span>
+                  <span>Order on WhatsApp (8310274918)</span>
                 </button>
 
                 <button
@@ -658,7 +658,7 @@ export default function CustomTShirtPage() {
                   href={`tel:+${CONCIERGE_PHONE_RAW}`}
                   className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#C5A880] hover:text-white font-semibold luxury-underline-gold"
                 >
-                  <span>Tap to Call +91 8310246790</span>
+                  <span>Tap to Call +91 8310274918</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </a>
               </div>
@@ -828,7 +828,7 @@ export default function CustomTShirtPage() {
                   type="tel"
                   value={reqCustomerPhone}
                   onChange={(e) => setReqCustomerPhone(e.target.value)}
-                  placeholder="e.g. 8310246790"
+                  placeholder="e.g. 8310274918"
                   className="w-full border border-zinc-300 p-2.5 text-xs text-[#0C1427] bg-white focus:outline-none focus:border-[#0C1427]"
                 />
               </div>
@@ -842,7 +842,7 @@ export default function CustomTShirtPage() {
                 className="w-full py-4 bg-emerald-700 hover:bg-emerald-800 text-white text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2.5 transition-all shadow-xl"
               >
                 <MessageCircle className="w-5 h-5" />
-                <span>Send Request to WhatsApp (8310246790)</span>
+                <span>Send Request to WhatsApp (8310274918)</span>
               </button>
 
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-zinc-50 border border-zinc-200 text-xs">
@@ -851,10 +851,10 @@ export default function CustomTShirtPage() {
                   <span className="text-zinc-600">Need instant atelier consultation?</span>
                 </div>
                 <a
-                  href="tel:+918310246790"
+                  href="tel:+918310274918"
                   className="font-bold text-black hover:text-zinc-600 transition-colors luxury-link"
                 >
-                  <span>Call Master Tailor: +91 8310246790</span>
+                  <span>Call Master Tailor: +91 8310274918</span>
                 </a>
               </div>
             </div>
@@ -939,7 +939,7 @@ export default function CustomTShirtPage() {
             {
               step: '01',
               title: 'Design Consultation',
-              desc: 'Share your artwork, monogram initials, or company logo with our concierge on WhatsApp (8310246790).',
+              desc: 'Share your artwork, monogram initials, or company logo with our concierge on WhatsApp (8310274918).',
             },
             {
               step: '02',
@@ -995,7 +995,7 @@ export default function CustomTShirtPage() {
                 How quickly can my custom order be delivered?
               </h4>
               <p className="text-xs text-zinc-600 font-light leading-relaxed">
-                Sample orders and small runs (1-20 pieces) are tailored and dispatched within 3 to 5 business days. Express rush production is available upon request through our hotline at +91 8310246790.
+                Sample orders and small runs (1-20 pieces) are tailored and dispatched within 3 to 5 business days. Express rush production is available upon request through our hotline at +91 8310274918.
               </p>
             </div>
 
@@ -1013,7 +1013,7 @@ export default function CustomTShirtPage() {
                 Can I order physical fabric swatches or a blank sample first?
               </h4>
               <p className="text-xs text-zinc-600 font-light leading-relaxed">
-                Yes! We can dispatch a curated fabric swatch book and blank sample sizing kit to your office or residence anywhere in India. Reach out on WhatsApp at 8310246790 to coordinate.
+                Yes! We can dispatch a curated fabric swatch book and blank sample sizing kit to your office or residence anywhere in India. Reach out on WhatsApp at 8310274918 to coordinate.
               </p>
             </div>
           </div>

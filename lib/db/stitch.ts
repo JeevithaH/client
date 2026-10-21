@@ -353,9 +353,9 @@ export async function deleteSocialProofNotification(id: string): Promise<boolean
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   store_name: 'Stitchclothes',
   store_tagline: 'Premium Streetwear & Anime Clothiers',
-  support_phone: '+916395463874',
-  support_email: 'the.stitchclothes@gmail.com',
-  whatsapp_number: '8310246790',
+  support_phone: '+918310274918',
+  support_email: 'snfabricsenquiry@gmail.com',
+  whatsapp_number: '8310274918',
   instagram_url: 'https://instagram.com/stitchclothes',
   facebook_url: 'https://facebook.com/stitchclothes',
   pinterest_url: 'https://pinterest.com/stitchclothes',

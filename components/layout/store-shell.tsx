@@ -62,14 +62,14 @@ export function StoreShell({ children }: { children: React.ReactNode }) {
     <div className="flex flex-col min-h-screen pb-16 lg:pb-0">
       <AnnouncementBar
         messages={announcements}
-        supportPhone={settings?.support_phone || '+916395463874'}
+        supportPhone={settings?.support_phone || '+918310274918'}
         instagramUrl={settings?.instagram_url || 'https://instagram.com/stitchclothes'}
         facebookUrl={settings?.facebook_url || 'https://facebook.com/stitchclothes'}
       />
       <Header />
       <main className="flex-1">{children}</main>
       <CartDrawer />
-      <WhatsAppButton phoneNumber={settings?.whatsapp_number || '916395463874'} />
+      <WhatsAppButton phoneNumber={settings?.whatsapp_number || '918310274918'} />
       <SocialProofToast notifications={socialProof} />
       <ExitIntentModal
         enabled={settings ? Boolean(settings.exit_intent_enabled) : true}
