@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowRight, Flame, Sparkles } from 'lucide-react';
 import { HeroSlider } from '@/components/home/hero-slider';
 import { InteractiveClothingRackHero } from '@/components/home/interactive-clothing-rack-hero';
+import { MovingHoodieCampaignBanner } from '@/components/home/moving-hoodie-campaign-banner';
 import { CollectionCards } from '@/components/home/collection-cards';
 import { MarqueeTicker } from '@/components/home/marquee-ticker';
 import { TrustPillars } from '@/components/home/trust-pillars';
@@ -85,64 +86,8 @@ export default async function HomePage() {
       {/* 4. Marquee Slogan Ticker Ribbon */}
       <MarqueeTicker items={marqueeItems} />
 
-      {/* 5. Editorial Mid-Page Campaign Feature Banner */}
-      {campaignAd ? (
-        <section className="py-12 bg-[#0E0E0E] text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="relative aspect-[21/9] min-h-[300px] w-full overflow-hidden border border-zinc-800 flex items-center justify-center text-center p-6">
-              <div
-                className="absolute inset-0 bg-cover bg-center opacity-60"
-                style={{ backgroundImage: `url(${campaignAd.image_url})` }}
-              />
-              <div className="relative z-10 max-w-xl space-y-3">
-                {campaignAd.badge_text && (
-                  <span className="px-2.5 py-1 bg-[#EAB308] text-black text-[9px] uppercase font-bold tracking-widest inline-block">
-                    {campaignAd.badge_text}
-                  </span>
-                )}
-                <h3 className="text-2xl sm:text-4xl font-bold uppercase tracking-tight">
-                  {campaignAd.title}
-                </h3>
-                {campaignAd.subtitle && (
-                  <p className="text-xs sm:text-sm text-zinc-300 font-light">
-                    {campaignAd.subtitle}
-                  </p>
-                )}
-                <div className="pt-2">
-                  <Link
-                    href={campaignAd.link_url || '/collections/all'}
-                    className="inline-block px-6 py-3 bg-white text-black hover:bg-zinc-200 text-xs uppercase tracking-widest font-bold transition-colors"
-                  >
-                    {campaignAd.cta_text || 'Shop Now'}
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      ) : (
-        <section className="py-14 sm:py-16 bg-[#0E0E0E] text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-            <span className="text-[10px] font-bold uppercase tracking-[0.35em] text-[#EAB308]">
-              Artisanal Oversized Fits
-            </span>
-            <h3 className="text-2xl sm:text-4xl font-bold uppercase tracking-tight">
-              Exclusive Anime &amp; Heavyweight Hoodies
-            </h3>
-            <p className="text-xs sm:text-sm text-zinc-400 max-w-lg mx-auto font-light leading-relaxed">
-              Engineered with 380 GSM fleece and 240 GSM combed cotton. Built for all-day comfort and street presence.
-            </p>
-            <div className="pt-2">
-              <Link
-                href="/collections/hoodies"
-                className="inline-block px-7 py-3.5 bg-white text-black hover:bg-zinc-200 text-xs uppercase tracking-widest font-bold transition-all shadow-md"
-              >
-                Explore Hoodies Collection
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
+      {/* 5. Moving Anime & Heavyweight Hoodies Campaign Section */}
+      <MovingHoodieCampaignBanner />
 
       {/* 6. Best Sellers Section */}
       <section className="py-14 sm:py-20 bg-[#FAF8F5]">

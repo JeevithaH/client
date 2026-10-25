@@ -113,11 +113,6 @@ export default function ShippingPolicyPage() {
                     <td className="p-3 font-mono text-zinc-900">₹60 Flat Shipping</td>
                     <td className="p-3 text-zinc-600 font-mono">2 – 5 Days</td>
                   </tr>
-                  <tr>
-                    <td className="p-3 font-semibold text-zinc-900">Cash on Delivery (COD)</td>
-                    <td className="p-3 font-mono text-zinc-900">₹50 Courier Handling Fee</td>
-                    <td className="p-3 text-zinc-600 font-mono">3 – 5 Days</td>
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -150,19 +145,19 @@ export default function ShippingPolicyPage() {
           </div>
         </section>
 
-        {/* Section 4: Cash on Delivery Terms */}
+        {/* Section 4: 100% Prepaid Secure Dispatch Policy */}
         <section className="space-y-4">
           <h2 className="text-lg sm:text-xl font-serif font-bold text-black border-b border-zinc-200 pb-2">
-            4. Cash on Delivery (COD) Guidelines
+            4. 100% Secure Prepaid Dispatch Policy
           </h2>
           <div className="p-5 bg-white border border-zinc-200 text-xs text-zinc-600 space-y-3 leading-relaxed">
             <p>
-              Cash on Delivery is available for most serviceable pin codes. To guarantee successful delivery:
+              To ensure contactless, tamper-proof, and priority express transit across India, all orders are fulfilled via 100% secure online prepaid payments (UPI, Debit/Credit Cards, and Net Banking).
             </p>
             <ul className="list-disc pl-4 space-y-1">
-              <li>Please keep exact cash ready or request the delivery associate to show their official QR code for digital UPI payment on arrival.</li>
-              <li>Our team sends an automated verification prompt on WhatsApp prior to shipment. Orders that remain unverified after 48 hours may be cancelled automatically.</li>
-              <li>Refusal of verified COD orders without legitimate damage or cause may restrict future COD access for that delivery address.</li>
+              <li>Instant payment confirmation via 256-bit SSL encrypted Razorpay gateway.</li>
+              <li>Priority express dispatch within 24 to 48 hours directly from our atelier.</li>
+              <li>Zero contactless handling disputes or courier cash surcharge on delivery.</li>
             </ul>
           </div>
         </section>

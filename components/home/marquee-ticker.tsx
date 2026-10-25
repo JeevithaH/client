@@ -13,7 +13,7 @@ export function MarqueeTicker({ items = [] }: MarqueeTickerProps) {
     { id: '1', text: 'Diwali sale discount off 50%', is_active: true, display_order: 1 },
     { id: '2', text: 'Free shipping on all India orders above ₹499', is_active: true, display_order: 2 },
     { id: '3', text: 'Limited Edition Balaclava Drops', is_active: true, display_order: 3 },
-    { id: '4', text: '100% Secure Payment via UPI & COD', is_active: true, display_order: 4 },
+    { id: '4', text: '100% Secure Payment via UPI, Cards & Netbanking', is_active: true, display_order: 4 },
   ];
 
   const activeItems = items.length > 0 ? items.filter(i => i.is_active) : defaultItems;

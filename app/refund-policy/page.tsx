@@ -153,29 +153,15 @@ export default function RefundPolicyPage() {
             4. Refund Timelines &amp; Payout Channels
           </h2>
           <div className="p-5 bg-white border border-zinc-200 text-xs text-zinc-600 space-y-3 leading-relaxed">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-zinc-50 border border-zinc-200 space-y-2">
-                <span className="text-black font-bold uppercase tracking-wider text-[11px] block">
-                  Prepaid Orders (UPI / Cards / Net Banking)
-                </span>
-                <p className="text-zinc-600">
-                  Refunds are credited directly back to the original source of payment via our Razorpay payment gateway.
-                </p>
-                <div className="p-2 bg-white border border-zinc-200 font-mono text-[11px] text-black font-semibold">
-                  Timeline: 5 to 7 Business Days
-                </div>
-              </div>
-
-              <div className="p-4 bg-zinc-50 border border-zinc-200 space-y-2">
-                <span className="text-black font-bold uppercase tracking-wider text-[11px] block">
-                  Cash on Delivery (COD) Orders
-                </span>
-                <p className="text-zinc-600">
-                  For COD purchases, our team will request your preferred UPI ID (GPay/PhonePe/Paytm) or bank account details via secure WhatsApp/Email link.
-                </p>
-                <div className="p-2 bg-white border border-zinc-200 font-mono text-[11px] text-black font-semibold">
-                  Timeline: 24 to 48 Hours via Instant UPI
-                </div>
+            <div className="p-4 bg-zinc-50 border border-zinc-200 space-y-2">
+              <span className="text-black font-bold uppercase tracking-wider text-[11px] block">
+                Prepaid Online Orders (UPI / Cards / Net Banking)
+              </span>
+              <p className="text-zinc-600">
+                All approved refunds are credited directly back to the original source of payment (bank account, debit/credit card, or UPI VPA) via our secure Razorpay payment gateway.
+              </p>
+              <div className="p-2 bg-white border border-zinc-200 font-mono text-[11px] text-black font-semibold inline-block">
+                Timeline: 5 to 7 Business Days (Instant for UPI in most cases)
               </div>
             </div>
           </div>

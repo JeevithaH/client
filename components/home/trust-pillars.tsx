@@ -37,7 +37,7 @@ export function TrustPillars({ pillars = [] }: TrustPillarsProps) {
     {
       id: 'tp-4',
       title: '100% PAYMENT SECURE',
-      description: 'We ensure secure payment with Gpay, Paytm, UPI and Cash on Delivery.',
+      description: 'We ensure secure payment with Gpay, Paytm, UPI, Cards & Netbanking.',
       icon_name: 'ShieldCheck',
       display_order: 4,
       is_active: true,

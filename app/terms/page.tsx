@@ -88,7 +88,7 @@ export default function TermsPage() {
               <li>Product unavailability or fabric stock depletion</li>
               <li>Inability to obtain payment authorization via Razorpay</li>
               <li>Identification of suspected fraudulent, reseller, or automated bot activity</li>
-              <li>Unverified Cash on Delivery (COD) address details</li>
+              <li>Incomplete or unverified destination shipping address details</li>
             </ul>
           </div>
         </section>

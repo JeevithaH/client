@@ -102,7 +102,7 @@ export default function PrivacyPolicyPage() {
               </p>
             </div>
             <p>
-              For Cash on Delivery (COD) orders, our customer concierge team may verify your order via automated SMS or WhatsApp OTP to curb fraudulent consignments.
+              For all consignments, our customer concierge team may verify your shipping address and order confirmation via automated SMS, email, or WhatsApp notification.
             </p>
           </div>
         </section>

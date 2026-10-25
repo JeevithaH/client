@@ -347,11 +347,11 @@ export default function OrderTrackingPage({ params }: { params: { id: string } }
               <span>Payment Status</span>
               {order.payment_status === 'Paid' ? (
                 <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800">
-                  Paid & Verified
+                  Paid &amp; Verified
                 </span>
               ) : (
                 <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-100 text-amber-800">
-                  Cash on Delivery (Pending)
+                  Payment Pending
                 </span>
               )}
             </div>
@@ -359,11 +359,6 @@ export default function OrderTrackingPage({ params }: { params: { id: string } }
               <span>Total Amount</span>
               <span className="font-serif">₹{order.total_amount.toLocaleString('en-IN')}</span>
             </div>
-            {order.payment_method?.includes('COD') && order.payment_status !== 'Paid' && (
-              <p className="text-[11px] text-amber-700 bg-amber-50 p-2 rounded border border-amber-200 mt-2 font-medium">
-                💡 Please keep ₹{order.total_amount.toLocaleString('en-IN')} ready in cash or UPI for the courier upon arrival.
-              </p>
-            )}
           </div>
         </div>
 

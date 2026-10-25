@@ -182,7 +182,7 @@ export function Footer() {
           <div className="flex flex-wrap items-center justify-center gap-2 text-[10px] text-zinc-400">
             <span className="px-2 py-1 bg-zinc-900 border border-zinc-800 rounded-xs">UPI / GPay / Paytm</span>
             <span className="px-2 py-1 bg-zinc-900 border border-zinc-800 rounded-xs">Credit &amp; Debit Cards</span>
-            <span className="px-2 py-1 bg-zinc-900 border border-zinc-800 rounded-xs">Cash on Delivery</span>
+            <span className="px-2 py-1 bg-zinc-900 border border-zinc-800 rounded-xs">Netbanking &amp; Cards</span>
             <span className="px-2 py-1 bg-zinc-900 border border-zinc-800 rounded-xs">100% Secure SSL</span>
           </div>
         </div>

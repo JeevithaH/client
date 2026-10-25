@@ -250,9 +250,9 @@ export default function ContactPage() {
               </div>
 
               <div className="p-4 bg-white border border-zinc-200 space-y-1">
-                <span className="font-bold text-black block">Is Cash on Delivery available?</span>
+                <span className="font-bold text-black block">What payment methods are accepted?</span>
                 <p className="text-zinc-600 leading-relaxed">
-                  Yes, Cash on Delivery is active across 27,000+ pin codes pan-India with a nominal courier handling fee.
+                  We accept 100% secure online prepaid payments including UPI (Google Pay, PhonePe, Paytm), Debit/Credit Cards (Visa, MasterCard, RuPay), and Netbanking via Razorpay. All orders are strictly prepaid.
                 </p>
               </div>
 
