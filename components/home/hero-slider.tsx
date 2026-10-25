@@ -31,7 +31,7 @@ export function HeroSlider({ slides = [] }: HeroSliderProps) {
       badge_text: 'LIMITED EDITION',
       image_url: 'https://stitchclothes-shop.myshopify.com/cdn/shop/files/Untitled_design_-_2024-12-27T173455.563.png?v=1737616950&width=1920',
       button_text: 'Shop Collection',
-      button_link: '/collections/best-selling',
+      button_link: '/collections/all',
       text_alignment: 'center',
       display_order: 2,
       is_active: true,

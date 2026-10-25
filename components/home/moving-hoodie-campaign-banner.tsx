@@ -43,7 +43,7 @@ const CAMPAIGN_SLIDES: CampaignSlide[] = [
     title: 'SOVEREIGN 400 GSM BOX CUTS',
     subtitle: 'Double-layered hoods with anti-sag structure and brushed interior warmth for all-day comfort.',
     ctaText: 'Discover Boxy Fits',
-    ctaLink: '/collections/best-selling',
+    ctaLink: '/collections/all',
     badge: 'CORE ESSENTIAL',
     bgImage: 'https://images.unsplash.com/photo-1578587018452-892bacefd3f2?q=80&w=1920&auto=format&fit=crop',
   },

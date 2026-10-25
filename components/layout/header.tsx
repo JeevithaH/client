@@ -117,17 +117,6 @@ export function Header() {
               </Link>
 
               <Link
-                href="/collections/best-selling"
-                className={`text-xs uppercase tracking-[0.18em] font-semibold transition-colors ${
-                  pathname === '/collections/best-selling'
-                    ? 'text-[#0E0E0E] font-bold border-b border-[#0E0E0E] pb-1'
-                    : 'text-zinc-600 hover:text-black luxury-link'
-                }`}
-              >
-                Best Sellers
-              </Link>
-
-              <Link
                 href="/custom"
                 className={`text-xs uppercase tracking-[0.18em] font-bold transition-colors flex items-center gap-1.5 ${
                   pathname === '/custom'
@@ -291,13 +280,6 @@ export function Header() {
                 className="block text-sm uppercase tracking-widest font-semibold text-zinc-800 hover:text-black"
               >
                 Oversized T-Shirts
-              </Link>
-              <Link
-                href="/collections/best-selling"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block text-sm uppercase tracking-widest font-semibold text-zinc-800 hover:text-black"
-              >
-                Best Sellers
               </Link>
               <Link
                 href="/custom"

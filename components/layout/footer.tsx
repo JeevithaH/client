@@ -65,11 +65,6 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/collections/best-selling" className="hover:text-white transition-colors">
-                  Best Selling
-                </Link>
-              </li>
-              <li>
                 <Link href="/collections/hot-sale" className="hover:text-white transition-colors">
                   Hot Sale Drops
                 </Link>

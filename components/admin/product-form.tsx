@@ -35,7 +35,6 @@ const DEFAULT_CATEGORIES = [
   { id: 'cat_t-shirts', name: 'T-Shirts' },
   { id: 'cat_sweaters', name: 'Sweatshirt' },
   { id: 'cat_lower-tshirt', name: 'Lower tshirt' },
-  { id: 'cat_best-selling', name: 'Best Selling' },
   { id: 'cat_hot-sale', name: 'Hot sale' },
   { id: 'cat_trending', name: 'Trending' },
   { id: 'cat_unique-design-clothes', name: 'Unique Design Clothes' },
@@ -1582,19 +1581,6 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
                 <div>
                   <span className="font-semibold block">New Arrival Collection</span>
                   <span className="text-[11px] text-zinc-500">Displays contemporary seasonal badge</span>
-                </div>
-              </label>
-
-              <label className="flex items-center gap-3 text-xs text-zinc-800 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isBestseller}
-                  onChange={(e) => setIsBestseller(e.target.checked)}
-                  className="w-4 h-4 text-black border-zinc-300 rounded-none focus:ring-0"
-                />
-                <div>
-                  <span className="font-semibold block">Patron Bestseller</span>
-                  <span className="text-[11px] text-zinc-500">Highlights highest rated piece</span>
                 </div>
               </label>
             </div>

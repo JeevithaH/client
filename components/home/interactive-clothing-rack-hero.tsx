@@ -128,7 +128,7 @@ const RACK_GARMENTS: RackGarment[] = [
     fabric: '100% Combed Compact Cotton',
     price: 1999,
     compareAtPrice: 2699,
-    badge: 'CURATED BESTSELLER',
+    badge: 'EXCLUSIVE SIGNATURE',
     description: 'Clean streetwear silhouette with high-density screen print and metallic Madeira embroidery detail at the hem.',
     fixtureFolder: 'tee',
     motionManifest: '/fixtures/rack/tee/manifest.json',
