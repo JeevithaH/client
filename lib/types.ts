@@ -259,3 +259,26 @@ export interface SiteSettings {
   social_proof_interval_sec?: number;
 }
 
+export interface RackGarmentItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  slug: string;
+  color_name: string;
+  color_hex: string;
+  fabric: string;
+  price: number;
+  compare_at_price?: number;
+  badge: string;
+  description: string;
+  fixture_folder?: string;
+  atlas_url: string;
+  profile_url: string;
+  front_url: string;
+  back_url?: string;
+  display_order: number;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+

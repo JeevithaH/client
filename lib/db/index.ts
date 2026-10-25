@@ -106,5 +106,9 @@ export {
   deleteSocialProofNotification,
   getSiteSettings,
   updateSiteSetting,
-  DEFAULT_SITE_SETTINGS
+  DEFAULT_SITE_SETTINGS,
+  getActiveRackGarments,
+  getAllRackGarmentsAdmin,
+  saveRackGarment,
+  deleteRackGarment
 } from './stitch';

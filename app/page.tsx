@@ -15,6 +15,7 @@ import {
   getActiveHeroSlides,
   getActiveMarqueeItems,
   getActiveTrustPillars,
+  getActiveRackGarments,
 } from '@/lib/db';
 
 export const revalidate = 60; // Ultra-fast edge ISR cache (instant <50ms loads, revalidates in background)
@@ -26,12 +27,14 @@ export default async function HomePage() {
     heroSlides,
     marqueeItems,
     trustPillars,
+    rackGarments,
   ] = await Promise.all([
     getAllProducts(),
     getCategories(),
     getActiveHeroSlides(),
     getActiveMarqueeItems(),
     getActiveTrustPillars(),
+    getActiveRackGarments(),
   ]);
 
   const trendingProducts = products.slice(0, 8);
@@ -42,7 +45,7 @@ export default async function HomePage() {
       <HeroSlider slides={heroSlides} />
 
       {/* 2. Viral Interactive Clothing Rack Hero (Instagram Concept) */}
-      <InteractiveClothingRackHero />
+      <InteractiveClothingRackHero initialGarments={rackGarments} />
 
       {/* 3. Popular Collections Circular Cards Grid */}
       <CollectionCards categories={categories} />

@@ -27,10 +27,11 @@ import {
 const ADMIN_NAV = [
   { label: 'Dashboard', href: '/nirvignastudio', icon: LayoutDashboard },
   { label: 'Hero Slides', href: '/nirvignastudio/hero-slides', icon: Sliders },
+  { label: 'Interactive Rack', href: '/nirvignastudio/clothing-rack', icon: Shirt },
   { label: 'Announcements', href: '/nirvignastudio/announcements', icon: Megaphone },
   { label: 'Marquee Ribbons', href: '/nirvignastudio/marquee', icon: Repeat },
   { label: 'Social Proof Alerts', href: '/nirvignastudio/social-proof', icon: BellRing },
-  { label: 'Product Archive', href: '/nirvignastudio/products', icon: Shirt },
+  { label: 'Product Archive', href: '/nirvignastudio/products', icon: Boxes },
   { label: 'Client Orders', href: '/nirvignastudio/orders', icon: ShoppingBag },
   { label: 'Privilege Coupons', href: '/nirvignastudio/coupons', icon: Tag },
   { label: 'Inventory & Stock', href: '/nirvignastudio/inventory', icon: Boxes },

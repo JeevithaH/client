@@ -14,8 +14,8 @@ import {
   X,
   Check,
   RotateCw,
-  ShieldCheck,
-  Truck
+  Play,
+  Pause
 } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
 import { useToast } from '@/context/toast-context';
@@ -34,18 +34,17 @@ export interface RackGarment {
   badge: string;
   description: string;
   fixtureFolder: string;
-  motionManifest: string;
   atlasUrl: string;
   profileUrl: string;
   frontUrl: string;
   backUrl: string;
 }
 
-const RACK_GARMENTS: RackGarment[] = [
+const DEFAULT_RACK_GARMENTS: RackGarment[] = [
   {
     id: 'rack-hoodie',
     slug: 'heavyweight-boxy-hoodie',
-    title: 'Biella Heavyweight Boxy Hoodie',
+    title: 'Biella Heavyweight Boxy Tee',
     subtitle: '400 GSM Compact French Terry',
     colorName: 'Charcoal Noir',
     colorHex: '#18181B',
@@ -55,7 +54,6 @@ const RACK_GARMENTS: RackGarment[] = [
     badge: 'AUTUMN / WINTER 26',
     description: 'Ultra-dense 400 GSM brushed loopback fleece with an architectural drop-shoulder cut, double-layered hood, and clean cuff articulation.',
     fixtureFolder: 'hoodie',
-    motionManifest: '/fixtures/rack/hoodie/manifest.json',
     atlasUrl: '/fixtures/rack/hoodie/atlas.webp',
     profileUrl: '/fixtures/rack/hoodie/profile.webp',
     frontUrl: '/fixtures/rack/hoodie/front.webp',
@@ -74,7 +72,6 @@ const RACK_GARMENTS: RackGarment[] = [
     badge: 'FLAGSHIP CLASSIC',
     description: 'The gold standard of luxury drape with anti-curl collar and micro-gauge combed fibers for unmatched silk-like hand feel.',
     fixtureFolder: 'lake-white-v3',
-    motionManifest: '/fixtures/rack/lake-white-v3/manifest.json',
     atlasUrl: '/fixtures/rack/lake-white-v3/atlas.webp',
     profileUrl: '/fixtures/rack/lake-white-v3/profile.webp',
     frontUrl: '/fixtures/rack/lake-white-v3/front.webp',
@@ -85,15 +82,14 @@ const RACK_GARMENTS: RackGarment[] = [
     slug: 'biella-heavyweight-boxy-tee',
     title: 'Architectural Compact Crewneck',
     subtitle: '340 GSM Heavyweight French Jersey',
-    colorName: 'Obsidian Black',
-    colorHex: '#121214',
+    colorName: 'Imperial Navy',
+    colorHex: '#16233B',
     fabric: 'Pre-Shrunk Compact Cotton Jersey',
     price: 2899,
     compareAtPrice: 3999,
     badge: 'LIMITED EDITION',
     description: 'Engineered boxy silhouette with reinforced ribbed collar and seamless shoulder slope designed to maintain its form through years of wear.',
     fixtureFolder: 'crew',
-    motionManifest: '/fixtures/rack/crew/manifest.json',
     atlasUrl: '/fixtures/rack/crew/atlas.webp',
     profileUrl: '/fixtures/rack/crew/profile.webp',
     frontUrl: '/fixtures/rack/crew/front.webp',
@@ -112,7 +108,6 @@ const RACK_GARMENTS: RackGarment[] = [
     badge: 'NEW DROP',
     description: 'Artisanal stone-washed heavyweight jersey featuring dual line-art graphic insignias with relaxed drape and zero fade after commercial laundry.',
     fixtureFolder: 'cards-pink-v3',
-    motionManifest: '/fixtures/rack/cards-pink-v3/manifest.json',
     atlasUrl: '/fixtures/rack/cards-pink-v3/atlas.webp',
     profileUrl: '/fixtures/rack/cards-pink-v3/profile.webp',
     frontUrl: '/fixtures/rack/cards-pink-v3/front.webp',
@@ -123,15 +118,14 @@ const RACK_GARMENTS: RackGarment[] = [
     slug: 'custom-bespoke-atelier-embroidered-tee',
     title: 'Signature Atelier Graphic Tee',
     subtitle: '240 GSM Combed Streetwear Knit',
-    colorName: 'Vintage Washed Noir',
-    colorHex: '#27272A',
+    colorName: 'Desert Dune Sand',
+    colorHex: '#D2C1A8',
     fabric: '100% Combed Compact Cotton',
     price: 1999,
     compareAtPrice: 2699,
     badge: 'EXCLUSIVE SIGNATURE',
     description: 'Clean streetwear silhouette with high-density screen print and metallic Madeira embroidery detail at the hem.',
     fixtureFolder: 'tee',
-    motionManifest: '/fixtures/rack/tee/manifest.json',
     atlasUrl: '/fixtures/rack/tee/atlas.webp',
     profileUrl: '/fixtures/rack/tee/profile.webp',
     frontUrl: '/fixtures/rack/tee/front.webp',
@@ -206,8 +200,8 @@ class GarmentController {
 
   constructor({
     frameCount = 30,
-    durationMs = 380,
-    returnDurationMs = 300,
+    durationMs = 320,
+    returnDurationMs = 260,
     onFrame = () => {},
   }: {
     frameCount?: number;
@@ -251,7 +245,7 @@ class GarmentController {
       return;
     }
     const full = this.target === 1 ? this.durationMs : this.returnDurationMs;
-    let duration = Math.max(80, full * Math.sqrt(distance));
+    let duration = Math.max(70, full * Math.sqrt(distance));
     if (this.velocity) duration = Math.min(duration, (3 * distance) / Math.abs(this.velocity));
     this.segment = { kind: 'turn', start: this.position, velocity: this.velocity, duration, elapsed: 0 };
   }
@@ -308,13 +302,44 @@ interface GarmentState {
   isReady: boolean;
 }
 
-export function InteractiveClothingRackHero() {
+interface InteractiveClothingRackHeroProps {
+  initialGarments?: any[];
+}
+
+export function InteractiveClothingRackHero({ initialGarments }: InteractiveClothingRackHeroProps = {}) {
   const rackRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const statesRef = useRef<GarmentState[]>([]);
   const { addToCart, setIsCartOpen } = useCart();
   const { success } = useToast();
 
+  const mapItems = (items: any[]): RackGarment[] => {
+    return items.map((i: any) => ({
+      id: i.id,
+      slug: i.slug || 'garment',
+      title: i.title,
+      subtitle: i.subtitle || '',
+      colorName: i.color_name || i.colorName || 'Black',
+      colorHex: i.color_hex || i.colorHex || '#18181B',
+      fabric: i.fabric || '',
+      price: i.price || 1999,
+      compareAtPrice: i.compare_at_price || i.compareAtPrice || 2999,
+      badge: i.badge || 'ATELIER',
+      description: i.description || '',
+      fixtureFolder: i.fixture_folder || i.fixtureFolder || 'lake-white-v3',
+      atlasUrl: i.atlas_url || i.atlasUrl || '/fixtures/rack/lake-white-v3/atlas.webp',
+      profileUrl: i.profile_url || i.profileUrl || '/fixtures/rack/lake-white-v3/profile.webp',
+      frontUrl: i.front_url || i.frontUrl || '/fixtures/rack/lake-white-v3/front.webp',
+      backUrl: i.back_url || i.backUrl || '/fixtures/rack/lake-white-v3/back.webp',
+    }));
+  };
+
+  const [garments, setGarments] = useState<RackGarment[]>(() => {
+    if (initialGarments && initialGarments.length > 0) {
+      return mapItems(initialGarments);
+    }
+    return DEFAULT_RACK_GARMENTS;
+  });
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [inspectModalOpen, setInspectModalOpen] = useState(false);
@@ -322,24 +347,44 @@ export function InteractiveClothingRackHero() {
   const [inspectSelectedSize, setInspectSelectedSize] = useState<'S' | 'M' | 'L' | 'XL'>('L');
   const [isAssetsLoaded, setIsAssetsLoaded] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const [isCircularMotionActive, setIsCircularMotionActive] = useState(true);
 
   const rafRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
   const intentTimerRef = useRef<NodeJS.Timeout | null>(null);
   const pendingIndexRef = useRef<number>(-1);
-  const railOffsetRef = useRef<number>(0);
-  const railVelocityRef = useRef<number>(0);
-  const dragRef = useRef<{ id: number; startX: number; lastX: number; lastTime: number; velocity: number; horizontal: boolean } | null>(null);
+  const circularTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+
+  // Fetch garments dynamically from D1 API
+  useEffect(() => {
+    let isMounted = true;
+    async function loadRackData() {
+      try {
+        const res = await fetch('/api/clothing-rack');
+        const data = await res.json();
+        if (data.success && data.items && data.items.length > 0 && isMounted) {
+          setGarments(mapItems(data.items));
+        }
+      } catch (err) {
+        console.warn('Using default photorealistic rack garments fallback:', err);
+      }
+    }
+    loadRackData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Initialize Canvas and Sprite Controllers
   useEffect(() => {
-    const states: GarmentState[] = RACK_GARMENTS.map((item) => {
+    const states: GarmentState[] = garments.map((item) => {
       const state: GarmentState = {
         item,
         controller: new GarmentController({
           frameCount: 30,
-          durationMs: 380,
-          returnDurationMs: 300,
+          durationMs: 320,
+          returnDurationMs: 260,
           onFrame: (frame: number) => {
             if (!state.ctx || !state.image) return;
             const w = 384;
@@ -372,7 +417,6 @@ export function InteractiveClothingRackHero() {
       img.onload = () => {
         s.image = img;
         s.isReady = true;
-        // Paint initial frame (frame 0 = profile)
         if (s.ctx) {
           s.ctx.clearRect(0, 0, 384, 448);
           s.ctx.drawImage(img, 0, 0, 384, 448, 0, 0, 384, 448);
@@ -394,8 +438,9 @@ export function InteractiveClothingRackHero() {
       window.removeEventListener('resize', checkMobile);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       if (intentTimerRef.current) clearTimeout(intentTimerRef.current);
+      if (circularTimerRef.current) clearInterval(circularTimerRef.current);
     };
-  }, []);
+  }, [garments]);
 
   const wake = useCallback(() => {
     if (!rafRef.current) {
@@ -480,9 +525,8 @@ export function InteractiveClothingRackHero() {
         activate(-1);
         return;
       }
-      intentTimerRef.current = setTimeout(() => {
-        activate(index);
-      }, 70);
+      // Immediate response on hover
+      activate(index);
     },
     [activate]
   );
@@ -512,9 +556,37 @@ export function InteractiveClothingRackHero() {
     handleLayout();
     window.addEventListener('resize', handleLayout);
     return () => window.removeEventListener('resize', handleLayout);
-  }, [wake]);
+  }, [wake, garments]);
 
-  // Pointer Movement across Rack
+  // PHONE / MOBILE CIRCULAR MOVING ENGINE
+  // Automatically rotates garments and cycles in a smooth circular loop
+  useEffect(() => {
+    if (!isMobileDevice || !isCircularMotionActive || garments.length === 0) {
+      if (circularTimerRef.current) {
+        clearInterval(circularTimerRef.current);
+        circularTimerRef.current = null;
+      }
+      return;
+    }
+
+    let currentIndex = selectedIndex >= 0 ? selectedIndex : 0;
+    // Activate initial garment
+    activate(currentIndex);
+
+    circularTimerRef.current = setInterval(() => {
+      currentIndex = (currentIndex + 1) % garments.length;
+      activate(currentIndex);
+    }, 3200);
+
+    return () => {
+      if (circularTimerRef.current) {
+        clearInterval(circularTimerRef.current);
+        circularTimerRef.current = null;
+      }
+    };
+  }, [isMobileDevice, isCircularMotionActive, garments.length, activate, selectedIndex]);
+
+  // Pointer Movement across Rack (Desktop)
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (isMobileDevice) return;
     const rackEl = rackRef.current;
@@ -526,7 +598,8 @@ export function InteractiveClothingRackHero() {
     let minDiff = Infinity;
     statesRef.current.forEach((s, i) => {
       const diff = Math.abs(x - s.position);
-      const threshold = i === activeIndex ? s.displayWidth * 0.45 : 35;
+      // Generous hit-testing: within 130px of garment position
+      const threshold = i === activeIndex ? s.displayWidth * 0.5 : 120;
       if (diff <= threshold && diff < minDiff) {
         nearest = i;
         minDiff = diff;
@@ -541,17 +614,50 @@ export function InteractiveClothingRackHero() {
     intend(-1);
   };
 
+  // Touch Swipe Handlers for Mobile Circular Motion
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!isMobileDevice) return;
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+    // Pause auto-rotation while user is touching
+    setIsCircularMotionActive(false);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!isMobileDevice || !touchStartRef.current) return;
+    const touch = e.changedTouches[0];
+    const diffX = touch.clientX - touchStartRef.current.x;
+    const diffY = touch.clientY - touchStartRef.current.y;
+
+    // Detect horizontal swipe
+    if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (diffX < 0) {
+        // Swipe Left -> Next
+        handleNext();
+      } else {
+        // Swipe Right -> Prev
+        handlePrev();
+      }
+    }
+
+    touchStartRef.current = null;
+    // Resume circular motion after 4 seconds of inactivity
+    setTimeout(() => {
+      setIsCircularMotionActive(true);
+    }, 4000);
+  };
+
   const handleNext = () => {
-    const nextIdx = (selectedIndex + 1) % RACK_GARMENTS.length;
+    const nextIdx = (selectedIndex + 1) % garments.length;
     activate(nextIdx);
   };
 
   const handlePrev = () => {
-    const prevIdx = (selectedIndex - 1 + RACK_GARMENTS.length) % RACK_GARMENTS.length;
+    const prevIdx = (selectedIndex - 1 + garments.length) % garments.length;
     activate(prevIdx);
   };
 
-  const activeGarment = RACK_GARMENTS[selectedIndex] || RACK_GARMENTS[0];
+  const activeGarment = garments[selectedIndex] || garments[0];
 
   const handleQuickAdd = () => {
     addToCart(
@@ -618,14 +724,34 @@ export function InteractiveClothingRackHero() {
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>
                 {isMobileDevice
-                  ? 'Tap garments to rotate forward • Swipe to browse rack'
+                  ? 'Circular moving showcase active • Tap or swipe to rotate garments'
                   : 'Hover over any piece to turn forward • Click to inspect details'}
               </span>
             </p>
           </div>
 
-          {/* Quick Counter & Atelier Hotline */}
-          <div className="flex items-center gap-4 sm:gap-6 text-xs text-zinc-500">
+          {/* Quick Counter, Mobile Motion Controller & Atelier Hotline */}
+          <div className="flex items-center gap-3 sm:gap-6 text-xs text-zinc-500">
+            {isMobileDevice && (
+              <button
+                type="button"
+                onClick={() => setIsCircularMotionActive(!isCircularMotionActive)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-zinc-100 border border-zinc-300 text-[10px] font-bold uppercase tracking-wider text-black rounded"
+              >
+                {isCircularMotionActive ? (
+                  <>
+                    <Pause className="w-3 h-3 text-emerald-600" />
+                    <span>Auto-Orbiting</span>
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-3 h-3 text-zinc-600" />
+                    <span>Resume Orbit</span>
+                  </>
+                )}
+              </button>
+            )}
+
             <div className="hidden sm:block text-right">
               <span className="text-[10px] uppercase tracking-widest text-zinc-400 block font-bold">
                 Direct Atelier Line
@@ -641,7 +767,7 @@ export function InteractiveClothingRackHero() {
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-100 border border-zinc-200 rounded font-mono text-xs font-bold text-black">
               <span>{String(selectedIndex + 1).padStart(2, '0')}</span>
               <span className="text-zinc-400">/</span>
-              <span className="text-zinc-500">{String(RACK_GARMENTS.length).padStart(2, '0')}</span>
+              <span className="text-zinc-500">{String(garments.length).padStart(2, '0')}</span>
             </div>
           </div>
         </div>
@@ -651,6 +777,8 @@ export function InteractiveClothingRackHero() {
           ref={rackRef}
           onPointerMove={handlePointerMove}
           onPointerLeave={handlePointerLeave}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
           className="relative w-full h-[470px] sm:h-[530px] lg:h-[580px] mt-6 sm:mt-10 overflow-hidden cursor-pointer"
         >
           {/* Overhead Metallic Chrome Rail */}
@@ -662,14 +790,19 @@ export function InteractiveClothingRackHero() {
 
           {/* Garment Suspension Items Container */}
           <div className="absolute inset-0">
-            {RACK_GARMENTS.map((item, idx) => {
-              const isActive = idx === activeIndex;
+            {garments.map((item, idx) => {
+              const isActive = idx === activeIndex || (isMobileDevice && idx === selectedIndex);
               const isSelected = idx === selectedIndex;
 
               return (
                 <div
                   key={item.id}
                   id={`garment-btn-${idx}`}
+                  onPointerEnter={() => {
+                    if (!isMobileDevice) {
+                      activate(idx);
+                    }
+                  }}
                   onClick={() => {
                     activate(idx);
                     setInspectModalOpen(true);
@@ -679,7 +812,7 @@ export function InteractiveClothingRackHero() {
                   }`}
                   style={{
                     transform: 'translateX(-50%)',
-                    width: '60px',
+                    width: '70px',
                     height: '480px',
                     left: '50%',
                   }}
@@ -848,19 +981,16 @@ export function InteractiveClothingRackHero() {
                     alt={`${activeGarment.title} - ${inspectViewSide} view`}
                     fill
                     sizes="(max-width: 768px) 100vw, 400px"
-                    className="object-contain"
+                    className="object-contain p-2"
                   />
                 </div>
 
-                {/* Front / Back Toggle Tabs */}
-                <div className="mt-4 flex items-center gap-2 bg-white border border-zinc-200 p-1">
+                <div className="mt-4 flex items-center gap-2 bg-white border border-zinc-200 p-1 shadow-xs">
                   <button
                     type="button"
                     onClick={() => setInspectViewSide('front')}
-                    className={`px-4 py-1.5 text-xs uppercase font-bold tracking-wider transition-colors ${
-                      inspectViewSide === 'front'
-                        ? 'bg-black text-white shadow-sm'
-                        : 'text-zinc-600 hover:text-black'
+                    className={`px-3 py-1 text-[10px] uppercase font-bold tracking-wider transition-colors ${
+                      inspectViewSide === 'front' ? 'bg-black text-white' : 'text-zinc-600 hover:text-black'
                     }`}
                   >
                     Front View
@@ -868,10 +998,8 @@ export function InteractiveClothingRackHero() {
                   <button
                     type="button"
                     onClick={() => setInspectViewSide('back')}
-                    className={`px-4 py-1.5 text-xs uppercase font-bold tracking-wider transition-colors ${
-                      inspectViewSide === 'back'
-                        ? 'bg-black text-white shadow-sm'
-                        : 'text-zinc-600 hover:text-black'
+                    className={`px-3 py-1 text-[10px] uppercase font-bold tracking-wider transition-colors ${
+                      inspectViewSide === 'back' ? 'bg-black text-white' : 'text-zinc-600 hover:text-black'
                     }`}
                   >
                     Back View
@@ -879,16 +1007,20 @@ export function InteractiveClothingRackHero() {
                 </div>
               </div>
 
-              {/* Right Column: Garment Specifications & Actions */}
+              {/* Right Column: Garment Dossier & Ordering Actions */}
               <div className="flex flex-col justify-between space-y-6">
-                <div className="space-y-3">
-                  <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-[#C5A880]">
-                    {activeGarment.badge}
-                  </span>
-                  <h3 className="font-serif text-2xl sm:text-3xl font-normal text-black">
-                    {activeGarment.title}
-                  </h3>
-                  <div className="flex items-center gap-3">
+                <div className="space-y-4">
+                  <div>
+                    <span className="px-2 py-0.5 bg-black text-[#C5A880] text-[9px] uppercase font-bold tracking-widest inline-block mb-1">
+                      {activeGarment.badge}
+                    </span>
+                    <h3 className="font-serif text-2xl text-[#0E0E0E] font-medium leading-tight">
+                      {activeGarment.title}
+                    </h3>
+                    <p className="text-xs text-zinc-500 font-mono mt-1">{activeGarment.subtitle}</p>
+                  </div>
+
+                  <div className="flex items-baseline gap-3">
                     <span className="font-serif text-2xl font-bold text-black">
                       ₹{activeGarment.price.toLocaleString('en-IN')}
                     </span>
@@ -897,77 +1029,84 @@ export function InteractiveClothingRackHero() {
                         ₹{activeGarment.compareAtPrice.toLocaleString('en-IN')}
                       </span>
                     )}
+                    <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">
+                      Save ₹{(activeGarment.compareAtPrice - activeGarment.price).toLocaleString('en-IN')}
+                    </span>
                   </div>
 
-                  <p className="text-xs text-zinc-600 leading-relaxed font-light">
-                    {activeGarment.description}
-                  </p>
-
-                  <div className="py-2 border-t border-b border-zinc-100 space-y-1.5 text-xs text-zinc-700">
-                    <div className="flex justify-between">
-                      <span className="text-zinc-400">Fabric Composition:</span>
-                      <span className="font-medium">{activeGarment.fabric}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-zinc-400">Colourway:</span>
-                      <span className="font-medium">{activeGarment.colorName}</span>
+                  {/* Colorway & Swatch */}
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block">
+                      Colourway: <span className="text-black">{activeGarment.colorName}</span>
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-6 h-6 rounded-full border-2 border-black shadow-xs"
+                        style={{ backgroundColor: activeGarment.colorHex }}
+                      />
+                      <span className="text-xs text-zinc-600 font-mono">{activeGarment.colorHex}</span>
                     </div>
                   </div>
 
                   {/* Size Selector */}
                   <div className="space-y-1.5">
-                    <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-500">
-                      Select Tailored Size
-                    </span>
-                    <div className="flex items-center gap-2">
-                      {(['S', 'M', 'L', 'XL'] as const).map((sz) => (
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block">
+                        Select Tailored Size
+                      </span>
+                      <span className="text-[10px] font-mono text-zinc-500">True to Boxy Fit</span>
+                    </div>
+                    <div className="grid grid-cols-4 gap-2">
+                      {(['S', 'M', 'L', 'XL'] as const).map((size) => (
                         <button
-                          key={sz}
+                          key={size}
                           type="button"
-                          onClick={() => setInspectSelectedSize(sz)}
-                          className={`w-10 h-10 border text-xs font-bold transition-all ${
-                            inspectSelectedSize === sz
-                              ? 'border-black bg-black text-white shadow'
-                              : 'border-zinc-300 text-zinc-700 hover:border-black'
+                          onClick={() => setInspectSelectedSize(size)}
+                          className={`py-2 text-xs font-mono font-bold transition-all border ${
+                            inspectSelectedSize === size
+                              ? 'bg-black text-white border-black shadow-md'
+                              : 'bg-white text-zinc-700 border-zinc-200 hover:border-black'
                           }`}
                         >
-                          {sz}
+                          {size}
                         </button>
                       ))}
                     </div>
                   </div>
+
+                  {/* Fabric & Architecture Details */}
+                  <div className="p-3 bg-zinc-50 border border-zinc-200 space-y-1 text-xs">
+                    <div className="font-bold uppercase tracking-wider text-[10px] text-zinc-600">
+                      Fabric &amp; Craftsmanship
+                    </div>
+                    <div className="text-zinc-700">{activeGarment.fabric}</div>
+                    <div className="text-zinc-500 text-[11px] pt-1">{activeGarment.description}</div>
+                  </div>
                 </div>
 
-                {/* Primary Action Buttons */}
-                <div className="space-y-2.5 pt-4">
+                {/* CTAs: Add to Cart & WhatsApp Concierge */}
+                <div className="space-y-2 pt-4 border-t border-zinc-200">
                   <button
                     type="button"
                     onClick={() => {
                       handleQuickAdd();
                       setInspectModalOpen(false);
                     }}
-                    className="w-full py-3.5 bg-black hover:bg-zinc-800 text-white text-xs uppercase font-bold tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg"
+                    className="w-full py-3.5 bg-black hover:bg-zinc-800 text-white text-xs uppercase font-bold tracking-widest flex items-center justify-center gap-2 shadow-lg transition-all"
                   >
                     <ShoppingBag className="w-4 h-4 text-[#C5A880]" />
-                    <span>Add to Bag (Size {inspectSelectedSize})</span>
+                    <span>Add {inspectSelectedSize} to Bag &bull; ₹{activeGarment.price.toLocaleString('en-IN')}</span>
                   </button>
 
                   <a
                     href={getWhatsAppDirectUrl()}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white text-xs uppercase font-bold tracking-widest flex items-center justify-center gap-2 transition-all shadow-md"
+                    className="w-full py-3 bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/40 text-[#128C7E] text-xs uppercase font-bold tracking-widest flex items-center justify-center gap-2 transition-all"
                   >
-                    <MessageCircle className="w-4 h-4" />
-                    <span>Order via WhatsApp (8310274918)</span>
+                    <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                    <span>Inquire via Atelier WhatsApp</span>
                   </a>
-
-                  <Link
-                    href={`/product/${activeGarment.slug}`}
-                    className="w-full py-2.5 text-center text-xs text-zinc-600 hover:text-black font-semibold uppercase tracking-wider block"
-                  >
-                    View Complete Product Dossier &rarr;
-                  </Link>
                 </div>
               </div>
             </div>

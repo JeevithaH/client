@@ -5,7 +5,8 @@ import {
   MarqueeItem,
   TrustPillar,
   SocialProofNotification,
-  SiteSettings
+  SiteSettings,
+  RackGarmentItem
 } from '../types';
 
 // ==============================================================================
@@ -412,6 +413,102 @@ export async function updateSiteSetting(key: string, value: string): Promise<boo
     return true;
   } catch (err) {
     console.error('[D1 Update Site Setting Error]:', err);
+    return false;
+  }
+}
+
+// ==============================================================================
+// 7. INTERACTIVE ATELIER CLOTHING RACK
+// ==============================================================================
+
+export async function getActiveRackGarments(): Promise<RackGarmentItem[]> {
+  try {
+    const rows = await db
+      .prepare('SELECT * FROM rack_garments WHERE is_active = 1 ORDER BY display_order ASC')
+      .all<RackGarmentItem>();
+    return rows.results || [];
+  } catch (err) {
+    console.warn('[D1 Get Active Rack Garments Warning]:', err);
+    return [];
+  }
+}
+
+export async function getAllRackGarmentsAdmin(): Promise<RackGarmentItem[]> {
+  try {
+    const rows = await db
+      .prepare('SELECT * FROM rack_garments ORDER BY display_order ASC')
+      .all<RackGarmentItem>();
+    return rows.results || [];
+  } catch (err) {
+    console.warn('[D1 Get All Rack Garments Warning]:', err);
+    return [];
+  }
+}
+
+export async function saveRackGarment(item: Partial<RackGarmentItem>): Promise<boolean> {
+  try {
+    const id = item.id || `rack_${Date.now()}`;
+    await db
+      .prepare(
+        `INSERT INTO rack_garments (
+          id, title, subtitle, slug, color_name, color_hex, fabric, price, compare_at_price,
+          badge, description, fixture_folder, atlas_url, profile_url, front_url, back_url,
+          display_order, is_active, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(id) DO UPDATE SET
+          title = excluded.title,
+          subtitle = excluded.subtitle,
+          slug = excluded.slug,
+          color_name = excluded.color_name,
+          color_hex = excluded.color_hex,
+          fabric = excluded.fabric,
+          price = excluded.price,
+          compare_at_price = excluded.compare_at_price,
+          badge = excluded.badge,
+          description = excluded.description,
+          fixture_folder = excluded.fixture_folder,
+          atlas_url = excluded.atlas_url,
+          profile_url = excluded.profile_url,
+          front_url = excluded.front_url,
+          back_url = excluded.back_url,
+          display_order = excluded.display_order,
+          is_active = excluded.is_active,
+          updated_at = CURRENT_TIMESTAMP;`
+      )
+      .bind(
+        id,
+        item.title || 'Signature Atelier Garment',
+        item.subtitle || '',
+        item.slug || (item.title ? item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : 'atelier-garment'),
+        item.color_name || 'Charcoal Noir',
+        item.color_hex || '#18181B',
+        item.fabric || '100% Combed Compact Cotton',
+        item.price ?? 1999,
+        item.compare_at_price ?? 2999,
+        item.badge || 'NEW DROP',
+        item.description || '',
+        item.fixture_folder || 'lake-white-v3',
+        item.atlas_url || '/fixtures/rack/lake-white-v3/atlas.webp',
+        item.profile_url || '/fixtures/rack/lake-white-v3/profile.webp',
+        item.front_url || '/fixtures/rack/lake-white-v3/front.webp',
+        item.back_url || '/fixtures/rack/lake-white-v3/back.webp',
+        item.display_order ?? 0,
+        item.is_active ? 1 : 0
+      )
+      .run();
+    return true;
+  } catch (err) {
+    console.error('[D1 Save Rack Garment Error]:', err);
+    return false;
+  }
+}
+
+export async function deleteRackGarment(id: string): Promise<boolean> {
+  try {
+    await db.prepare('DELETE FROM rack_garments WHERE id = ?').bind(id).run();
+    return true;
+  } catch (err) {
+    console.error('[D1 Delete Rack Garment Error]:', err);
     return false;
   }
 }
