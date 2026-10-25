@@ -110,7 +110,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
         <div className="bg-white rounded-sm shadow-xl p-6 border border-zinc-100 min-h-[300px]">
           {loading ? (
             <div className="py-12 text-center text-zinc-400 text-sm animate-pulse font-serif">
-              Searching the Shipfold archive...
+              Searching the AVIVEKY archive...
             </div>
           ) : results.length > 0 ? (
             <div>

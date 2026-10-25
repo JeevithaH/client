@@ -5,8 +5,8 @@ import { Truck, Clock, ShieldCheck, MapPin, PackageCheck, AlertCircle, Phone, Ar
 import { PolicyNav } from '@/components/layout/policy-nav';
 
 export const metadata: Metadata = {
-  title: 'Delivery & Shipping Policy | STiTCH Atelier',
-  description: 'Pan-India express shipping details, estimated delivery timelines, free delivery threshold, and order tracking terms for STiTCH.',
+  title: 'Delivery & Shipping Policy | AVIVEKY Atelier',
+  description: 'Pan-India express shipping details, estimated delivery timelines, free delivery threshold, and order tracking terms for AVIVEKY.',
 };
 
 export default function ShippingPolicyPage() {
@@ -63,7 +63,7 @@ export default function ShippingPolicyPage() {
           </h2>
           <div className="p-5 bg-white border border-zinc-200 text-xs text-zinc-600 space-y-3 leading-relaxed">
             <p>
-              STiTCH partners with premier express logistics networks—including <strong>Delhivery Express</strong>, <strong>BlueDart</strong>, <strong>DTDC</strong>, and <strong>Shiprocket</strong>—to provide reliable, door-to-door delivery across all 28 states and 8 union territories of India.
+              AVIVEKY partners with premier express logistics networks—including <strong>Delhivery Express</strong>, <strong>BlueDart</strong>, <strong>DTDC</strong>, and <strong>Shiprocket</strong>—to provide reliable, door-to-door delivery across all 28 states and 8 union territories of India.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
               <div className="p-3 bg-zinc-50 border border-zinc-200">
@@ -187,7 +187,7 @@ export default function ShippingPolicyPage() {
             <p className="text-xs text-zinc-400 mt-0.5">Contact our shipping logistics desk on WhatsApp for instant assistance.</p>
           </div>
           <a
-            href="https://wa.me/918310274918?text=Hello%20STiTCH%2C%20I%20have%20an%20inquiry%20regarding%20my%20delivery."
+            href="https://wa.me/918310274918?text=Hello%20AVIVEKY%2C%20I%20have%20an%20inquiry%20regarding%20my%20delivery."
             target="_blank"
             rel="noopener noreferrer"
             className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shrink-0 transition-colors"

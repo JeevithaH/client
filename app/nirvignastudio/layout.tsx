@@ -17,7 +17,6 @@ import {
   LogOut,
   ShieldCheck,
   AlertTriangle,
-  Image as ImageIcon,
   Truck,
   Sliders,
   Megaphone,
@@ -37,7 +36,6 @@ const ADMIN_NAV = [
   { label: 'Inventory & Stock', href: '/nirvignastudio/inventory', icon: Boxes },
   { label: 'Patron Registry', href: '/nirvignastudio/users', icon: Users },
   { label: 'Shipping & Delivery', href: '/nirvignastudio/shipping', icon: Truck },
-  { label: 'Ad & Placements', href: '/nirvignastudio/placements', icon: ImageIcon },
 ];
 
 export default function NirvignaStudioLayout({ children }: { children: React.ReactNode }) {

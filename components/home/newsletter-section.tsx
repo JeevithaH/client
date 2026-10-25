@@ -13,7 +13,7 @@ export function NewsletterSection() {
     e.preventDefault();
     if (!email) return;
     setJoined(true);
-    success('Privilege Registered', 'Welcome to the House of Shipfold.');
+    success('Privilege Registered', 'Welcome to the House of AVIVEKY.');
   };
 
   return (
@@ -24,7 +24,7 @@ export function NewsletterSection() {
         </span>
 
         <h2 className="font-serif text-3xl sm:text-4xl font-light tracking-tight text-white">
-          The House of Shipfold
+          The House of AVIVEKY
         </h2>
 
         <p className="text-xs sm:text-sm text-zinc-400 font-light max-w-md mx-auto leading-relaxed">

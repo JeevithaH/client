@@ -278,7 +278,7 @@ function ShopContent() {
               <div className="py-24 text-center">
                 <RefreshCw className="w-5 h-5 animate-spin mx-auto text-zinc-400 mb-3" />
                 <p className="font-serif text-base text-zinc-700">
-                  Loading the Shipfold Collection...
+                  Loading the AVIVEKY Collection...
                 </p>
               </div>
             ) : products.length === 0 ? (
@@ -388,7 +388,7 @@ export default function ShopPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-white flex items-center justify-center font-serif text-lg text-zinc-700">
-          Loading Shipfold Archive...
+          Loading AVIVEKY Archive...
         </div>
       }
     >

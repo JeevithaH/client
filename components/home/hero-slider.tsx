@@ -15,7 +15,7 @@ export function HeroSlider({ slides = [] }: HeroSliderProps) {
     {
       id: 'slide-1',
       title: 'New Arrival',
-      subtitle: 'Premium Streetwear & Anime Collection 2026',
+      subtitle: 'AVIVEKY Streetwear & Anime Collection 2026',
       badge_text: 'HOT DROPS',
       image_url: 'https://stitchclothes-shop.myshopify.com/cdn/shop/files/Untitled_design_-_2024-12-27T174247.379.png?v=1737616864&width=1920',
       button_text: 'Shop Collection',
@@ -31,7 +31,7 @@ export function HeroSlider({ slides = [] }: HeroSliderProps) {
       badge_text: 'LIMITED EDITION',
       image_url: 'https://stitchclothes-shop.myshopify.com/cdn/shop/files/Untitled_design_-_2024-12-27T173455.563.png?v=1737616950&width=1920',
       button_text: 'Shop Collection',
-      button_link: '/collections/all',
+      button_link: '/collections/hoodies',
       text_alignment: 'center',
       display_order: 2,
       is_active: true,

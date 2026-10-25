@@ -5,8 +5,8 @@ import { FileText, Scale, ShieldCheck, ShoppingBag, AlertTriangle, ArrowRight } 
 import { PolicyNav } from '@/components/layout/policy-nav';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | STiTCH Atelier & Store',
-  description: 'Official terms and conditions governing purchases, website access, and user conduct on STiTCH.',
+  title: 'Terms of Service | AVIVEKY Atelier & Store',
+  description: 'Official terms and conditions governing purchases, website access, and user conduct on AVIVEKY.',
 };
 
 export default function TermsPage() {
@@ -23,7 +23,7 @@ export default function TermsPage() {
             Terms of Service
           </h1>
           <p className="text-zinc-400 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-            Please read these terms and conditions carefully before placing orders or utilizing the digital services of STiTCH.
+            Please read these terms and conditions carefully before placing orders or utilizing the digital services of AVIVEKY.
           </p>
           <div className="text-[11px] font-mono text-zinc-500 pt-2">
             Last Updated: October 2026 · Governing Indian E-Commerce Jurisdiction
@@ -41,7 +41,7 @@ export default function TermsPage() {
             Agreement to Terms
           </span>
           <p className="text-xs text-zinc-600 leading-relaxed">
-            These Terms of Service constitute a legally binding agreement made between you, whether personally or on behalf of an entity (&quot;you&quot; or &quot;Patron&quot;) and <strong>STiTCH</strong> (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;), concerning your access to and use of our e-commerce portal and product catalog. By accessing the site or purchasing apparel, you confirm that you have read, understood, and agreed to be bound by all of these terms.
+            These Terms of Service constitute a legally binding agreement made between you, whether personally or on behalf of an entity (&quot;you&quot; or &quot;Patron&quot;) and <strong>AVIVEKY</strong> (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;), concerning your access to and use of our e-commerce portal and product catalog. By accessing the site or purchasing apparel, you confirm that you have read, understood, and agreed to be bound by all of these terms.
           </p>
         </div>
 
@@ -82,7 +82,7 @@ export default function TermsPage() {
           </h2>
           <div className="p-5 bg-white border border-zinc-200 text-xs text-zinc-600 space-y-3 leading-relaxed">
             <p>
-              Receipt of an electronic order confirmation does not signify our final acceptance of your order. STiTCH reserves the right at any time after receipt of your order to accept, decline, or limit order quantities for any reason, including:
+              Receipt of an electronic order confirmation does not signify our final acceptance of your order. AVIVEKY reserves the right at any time after receipt of your order to accept, decline, or limit order quantities for any reason, including:
             </p>
             <ul className="list-disc pl-4 space-y-1">
               <li>Product unavailability or fabric stock depletion</li>
@@ -100,7 +100,7 @@ export default function TermsPage() {
           </h2>
           <div className="p-5 bg-white border border-zinc-200 text-xs text-zinc-600 space-y-3 leading-relaxed">
             <p>
-              In no event shall STiTCH, its directors, employees, or partners be liable to you for any indirect, incidental, punitive, or consequential damages arising from the use of our products or website. Our total aggregate liability for any claim arising out of your purchase shall strictly not exceed the amount actually paid by you for the specific garment giving rise to the claim.
+              In no event shall AVIVEKY, its directors, employees, or partners be liable to you for any indirect, incidental, punitive, or consequential damages arising from the use of our products or website. Our total aggregate liability for any claim arising out of your purchase shall strictly not exceed the amount actually paid by you for the specific garment giving rise to the claim.
             </p>
           </div>
         </section>

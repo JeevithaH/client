@@ -566,18 +566,18 @@ function LoginContent() {
     <div className="min-h-screen bg-[#FAF8F5] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center space-y-2">
         <Link href="/" className="inline-block">
-          <span className="font-serif text-3xl font-bold tracking-[0.25em] text-[#0C1427] uppercase">
-            Shipfold
+          <span className="font-sans text-3xl font-black tracking-[0.25em] text-[#0E0E0E] uppercase">
+            AVIVEKY
           </span>
-          <span className="block text-[9px] uppercase tracking-[0.35em] text-[#C5A880] font-medium -mt-0.5">
-            Atelier &amp; Clothiers
+          <span className="block text-[9px] uppercase tracking-[0.35em] text-zinc-400 font-medium -mt-0.5">
+            Streetwear Atelier
           </span>
         </Link>
         <h2 className="font-serif text-xl font-medium text-zinc-900 mt-2">
           {mode === 'login'
             ? 'Patron Salon Login'
             : mode === 'register'
-            ? 'Join The Shipfold Circle'
+            ? 'Join The AVIVEKY Circle'
             : 'Recover Access'}
         </h2>
         {callbackUrl.includes('/checkout') && (

@@ -5,8 +5,8 @@ import { RotateCcw, CheckCircle, Clock, ShieldCheck, HelpCircle, Phone, ArrowRig
 import { PolicyNav } from '@/components/layout/policy-nav';
 
 export const metadata: Metadata = {
-  title: 'Return, Refund & Exchange Policy | STiTCH Atelier',
-  description: '7-day hassle-free returns and size exchanges for STiTCH apparel. Fast UPI & bank refunds with complimentary doorstep pickup.',
+  title: 'Return, Refund & Exchange Policy | AVIVEKY Atelier',
+  description: '7-day hassle-free returns and size exchanges for AVIVEKY apparel. Fast UPI & bank refunds with complimentary doorstep pickup.',
 };
 
 export default function RefundPolicyPage() {
@@ -63,7 +63,7 @@ export default function RefundPolicyPage() {
           </h2>
           <div className="p-5 bg-white border border-zinc-200 text-xs text-zinc-600 space-y-3 leading-relaxed">
             <p>
-              We want you to feel confident in every piece you purchase from STiTCH. You may request a return or size exchange within <strong>7 calendar days</strong> of receiving your parcel.
+              We want you to feel confident in every piece you purchase from AVIVEKY. You may request a return or size exchange within <strong>7 calendar days</strong> of receiving your parcel.
             </p>
             <p>
               Whether you need to exchange an M for an L, swap a colorway, or return for a full monetary refund, we arrange convenient reverse doorstep pickup at no additional courier charge for initial exchanges.
@@ -189,7 +189,7 @@ export default function RefundPolicyPage() {
             <p className="text-xs text-zinc-400 mt-0.5">Drop a quick message on WhatsApp and our team will schedule reverse pickup.</p>
           </div>
           <a
-            href="https://wa.me/918310274918?text=Hello%20STiTCH%2C%20I%20would%20like%20to%20request%20a%20return%20or%20exchange%20for%20my%20order."
+            href="https://wa.me/918310274918?text=Hello%20AVIVEKY%2C%20I%20would%20like%20to%20request%20a%20return%20or%20exchange%20for%20my%20order."
             target="_blank"
             rel="noopener noreferrer"
             className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shrink-0 transition-colors"

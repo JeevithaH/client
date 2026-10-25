@@ -73,7 +73,7 @@ export function Header() {
 
               <Link href="/" className="flex flex-col">
                 <span className="font-sans text-2xl font-black tracking-[0.2em] text-[#0E0E0E] uppercase leading-none">
-                  STiTCH
+                  AVIVEKY
                 </span>
                 <span className="text-[8px] uppercase tracking-[0.35em] text-zinc-400 font-bold mt-1">
                   Streetwear Atelier

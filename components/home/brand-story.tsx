@@ -32,7 +32,7 @@ export function BrandStory() {
           <div className="space-y-8 max-w-xl">
             <div className="space-y-3">
               <span className="text-[10px] uppercase tracking-[0.35em] text-zinc-500 font-medium">
-                The House of Shipfold
+                The House of AVIVEKY
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#0E0E0E] font-normal leading-tight">
                 The Art of Exceptional Tailoring
@@ -40,7 +40,7 @@ export function BrandStory() {
             </div>
 
             <p className="text-xs sm:text-sm text-zinc-600 font-light leading-relaxed">
-              At Shipfold, every silhouette is born from an uncompromising pursuit of perfection. Each fiber is selected from the top fraction of global extra-long staple harvests, spun at high twists to resist pilling, and finished with double-bath mercerization for a subtle, enduring luster.
+              At AVIVEKY, every silhouette is born from an uncompromising pursuit of perfection. Each fiber is selected from the top fraction of global extra-long staple harvests, spun at high twists to resist pilling, and finished with double-bath mercerization for a subtle, enduring luster.
             </p>
 
             <div className="grid grid-cols-2 gap-8 pt-2 border-t border-zinc-200">

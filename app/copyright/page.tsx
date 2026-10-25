@@ -5,8 +5,8 @@ import { Copyright, Award, Mail, ArrowRight } from 'lucide-react';
 import { PolicyNav } from '@/components/layout/policy-nav';
 
 export const metadata: Metadata = {
-  title: 'Copyright & Design Rights | STiTCH',
-  description: 'Official copyright statement, original graphic art protections, and brand design rights for STiTCH.',
+  title: 'Copyright & Design Rights | AVIVEKY',
+  description: 'Official copyright statement, original graphic art protections, and brand design rights for AVIVEKY.',
 };
 
 export default function CopyrightPage() {
@@ -23,10 +23,10 @@ export default function CopyrightPage() {
             Copyright &amp; Design Rights
           </h1>
           <p className="text-zinc-400 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-            All original garment patterns, typography, graphic art, photography, and brand identifiers are creative works of STiTCH.
+            All original garment patterns, typography, graphic art, photography, and brand identifiers are creative works of AVIVEKY.
           </p>
           <div className="text-[11px] font-mono text-zinc-500 pt-2">
-            © 2026 STiTCH (Stitchclothes / Nirvigna Studio). All Rights Reserved.
+            © 2026 AVIVEKY. All Rights Reserved.
           </div>
         </div>
       </div>
@@ -42,7 +42,7 @@ export default function CopyrightPage() {
             <span>Copyright Statement</span>
           </div>
           <p className="text-xs text-zinc-600 leading-relaxed">
-            All content appearing on this website—including but not limited to garment designs, custom typography, anime-inspired illustrations, lookbook photography, video content, UI layouts, brand logos, and artwork—is the exclusive creative property of <strong>STiTCH</strong>.
+            All content appearing on this website—including but not limited to garment designs, custom typography, anime-inspired illustrations, lookbook photography, video content, UI layouts, brand logos, and artwork—is the exclusive creative property of <strong>AVIVEKY</strong>.
           </p>
         </div>
 
@@ -80,9 +80,9 @@ export default function CopyrightPage() {
           <div className="p-5 bg-white border border-zinc-200 text-xs text-zinc-600 space-y-3 leading-relaxed">
             <p>To preserve our brand identity and protect our patrons, please note:</p>
             <ul className="list-disc pl-4 space-y-1.5">
-              <li>Reproduction, imitation, or counterfeit production of garments bearing the STiTCH name, woven label, or logos is strictly prohibited.</li>
+              <li>Reproduction, imitation, or counterfeit production of garments bearing the AVIVEKY name, woven label, or logos is strictly prohibited.</li>
               <li>Unauthorized commercial distribution or digital scraping of our product imagery is not allowed.</li>
-              <li>Authentic STiTCH merchandise is exclusively sold through our official web store and authorized direct channels.</li>
+              <li>Authentic AVIVEKY merchandise is exclusively sold through our official web store and authorized direct channels.</li>
             </ul>
           </div>
         </section>
@@ -94,7 +94,7 @@ export default function CopyrightPage() {
           </h2>
           <div className="p-5 bg-white border border-zinc-200 text-xs text-zinc-600 space-y-3 leading-relaxed">
             <p>
-              Fashion stylists, publications, and digital creators looking to feature STiTCH pieces in lookbooks, photo shoots, or media features are warmly invited to get in touch with our team for high-resolution assets and styling samples.
+              Fashion stylists, publications, and digital creators looking to feature AVIVEKY pieces in lookbooks, photo shoots, or media features are warmly invited to get in touch with our team for high-resolution assets and styling samples.
             </p>
             <div className="p-4 bg-zinc-50 border border-zinc-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
               <div>
@@ -105,7 +105,7 @@ export default function CopyrightPage() {
                 </span>
               </div>
               <a
-                href="mailto:snfabricsenquiry@gmail.com?subject=Brand%20Inquiry%20-%20STiTCH"
+                href="mailto:snfabricsenquiry@gmail.com?subject=Brand%20Inquiry%20-%20AVIVEKY"
                 className="px-4 py-2 bg-black text-white text-xs font-semibold uppercase tracking-wider hover:bg-zinc-800 shrink-0 text-center"
               >
                 Send Email

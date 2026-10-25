@@ -48,7 +48,7 @@ export function WhatsAppButton({ phoneNumber = '918310274918' }: { phoneNumber?:
           <div className="p-4 bg-[#FAF8F5] space-y-3 text-xs">
             <div className="p-3 bg-white border border-zinc-200/80 rounded-none shadow-sm space-y-1">
               <p className="text-zinc-800 font-serif leading-relaxed">
-                Welcome to Shipfold. How may our concierge team assist your wardrobe curation today?
+                Welcome to AVIVEKY. How may our concierge team assist your wardrobe curation today?
               </p>
               <p className="text-[10px] text-zinc-400 text-right">Concierge Desk</p>
             </div>

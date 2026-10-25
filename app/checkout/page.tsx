@@ -285,7 +285,7 @@ export default function CheckoutPage() {
           key: rzpData.keyId,
           amount: rzpData.amount,
           currency: rzpData.currency || 'INR',
-          name: 'Shipfold Clothiers',
+          name: 'AVIVEKY',
           description: `Garment Atelier Order (${items.length} item${items.length > 1 ? 's' : ''})`,
           order_id: rzpData.orderId,
           prefill: {

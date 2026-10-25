@@ -15,7 +15,6 @@ import {
   getActiveHeroSlides,
   getActiveMarqueeItems,
   getActiveTrustPillars,
-  getActivePlacements
 } from '@/lib/db';
 
 export const revalidate = 60; // Ultra-fast edge ISR cache (instant <50ms loads, revalidates in background)
@@ -27,26 +26,25 @@ export default async function HomePage() {
     heroSlides,
     marqueeItems,
     trustPillars,
-    placements
   ] = await Promise.all([
     getAllProducts(),
     getCategories(),
     getActiveHeroSlides(),
     getActiveMarqueeItems(),
     getActiveTrustPillars(),
-    getActivePlacements(),
   ]);
 
   const trendingProducts = products.slice(0, 8);
 
-  const campaignAd = placements.find((p) => p.slot_key === 'home_ad_campaign');
-
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      {/* 1. Viral Interactive Clothing Rack Hero (Instagram Concept) */}
+      {/* 1. Full-Bleed Hero Carousel Slider (Latest Admin Configured Slides) */}
+      <HeroSlider slides={heroSlides} />
+
+      {/* 2. Viral Interactive Clothing Rack Hero (Instagram Concept) */}
       <InteractiveClothingRackHero />
 
-      {/* 2. Popular Collections Circular Cards Grid */}
+      {/* 3. Popular Collections Circular Cards Grid */}
       <CollectionCards categories={categories} />
 
       {/* 3. Trending Drops Section */}

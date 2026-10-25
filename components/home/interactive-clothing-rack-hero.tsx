@@ -577,7 +577,7 @@ export function InteractiveClothingRackHero() {
 
   const getWhatsAppDirectUrl = () => {
     const message = [
-      `*🏛️ SHIPFOLD / STITCH — CLOTHING RACK CONCIERGE INQUIRY*`,
+      `*🏛️ AVIVEKY — CLOTHING RACK CONCIERGE INQUIRY*`,
       `----------------------------------------`,
       `*Garment:* ${activeGarment.title}`,
       `*Silhouette / Fabric:* ${activeGarment.subtitle}`,
@@ -599,7 +599,7 @@ export function InteractiveClothingRackHero() {
       {/* Background Architectural Watermark Typography */}
       <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden opacity-[0.035] z-0">
         <span className="font-serif text-[18vw] font-bold tracking-[0.2em] uppercase leading-none select-none text-black">
-          STITCH
+          AVIVEKY
         </span>
       </div>
 

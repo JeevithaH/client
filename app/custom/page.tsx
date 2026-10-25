@@ -216,7 +216,7 @@ export default function CustomTShirtPage() {
       error('Please provide a phone or WhatsApp number');
       return;
     }
-    let message = '*SHIPFOLD - NEW CUSTOM T-SHIRT / PRODUCT REQUEST*\n' +
+    let message = '*AVIVEKY - NEW CUSTOM STREETWEAR / PRODUCT REQUEST*\n' +
       '----------------------------------------\n' +
       `*Silhouette / Cut:* ${reqSilhouette}\n` +
       `*Colorway:* ${reqColor}\n` +
@@ -245,7 +245,7 @@ export default function CustomTShirtPage() {
         <div className="absolute inset-0 z-0">
           <Image
             src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=2000&auto=format&fit=crop"
-            alt="Shipfold Bespoke Custom T-Shirt Atelier"
+            alt="AVIVEKY Bespoke Custom Apparel Atelier"
             fill
             priority
             className="object-cover object-center brightness-[0.45]"

@@ -28,22 +28,22 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'Shipfold | Luxury T-Shirt Atelier & Clothiers',
+  title: 'AVIVEKY | Premium Streetwear & Anime Apparel Atelier',
   description:
-    'Bespoke t-shirts tailored from extra-long staple American Supima® and 2-ply double mercerized Egyptian Giza 88 cotton. Refined luxury menswear.',
-  keywords: 'luxury t-shirts, supima cotton, mercerized polo, henleys, louis philippe style, menswear',
+    'Exclusive streetwear drops, anime graphic apparel, heavyweight 400 GSM hoodies & oversized combed cotton t-shirts.',
+  keywords: 'aviveky, streetwear, anime hoodies, oversized t-shirts, heavyweight fleece, graphic tees',
   openGraph: {
-    title: 'Shipfold | Luxury T-Shirt Atelier & Clothiers',
+    title: 'AVIVEKY | Premium Streetwear & Anime Apparel Atelier',
     description:
-      'Bespoke t-shirts tailored from extra-long staple American Supima® and 2-ply double mercerized Egyptian Giza 88 cotton.',
+      'Exclusive streetwear drops, anime graphic apparel, heavyweight 400 GSM hoodies & oversized combed cotton t-shirts.',
     url: 'https://shipfold.com',
-    siteName: 'Shipfold Atelier',
+    siteName: 'AVIVEKY Atelier',
     images: [
       {
         url: 'https://images.unsplash.com/photo-1625910513413-5bc50b925b6a?q=80&w=1200',
         width: 1200,
         height: 630,
-        alt: 'Shipfold Luxury Apparel',
+        alt: 'AVIVEKY Apparel',
       },
     ],
     locale: 'en_IN',

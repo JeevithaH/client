@@ -351,7 +351,7 @@ export async function deleteSocialProofNotification(id: string): Promise<boolean
 // ==============================================================================
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
-  store_name: 'Stitchclothes',
+  store_name: 'AVIVEKY',
   store_tagline: 'Premium Streetwear & Anime Clothiers',
   support_phone: '+918310274918',
   support_email: 'snfabricsenquiry@gmail.com',

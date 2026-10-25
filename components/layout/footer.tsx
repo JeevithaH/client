@@ -13,14 +13,14 @@ export function Footer() {
           {/* Col 1 & 2: Brand Story */}
           <div className="lg:col-span-2 space-y-4">
             <span className="font-sans text-2xl font-black tracking-[0.2em] text-white uppercase block">
-              STiTCH
+              AVIVEKY
             </span>
             <p className="text-zinc-400 text-xs max-w-sm font-light leading-relaxed">
               Streetwear drops, anime apparel, heavyweight hoodies &amp; oversized tees. Engineered with 380 GSM fleece and 240 GSM combed cotton. Built for all-day comfort and street presence.
             </p>
             <div className="flex items-center gap-3 pt-2">
               <a
-                href="https://wa.me/918310274918?text=Hello%20STiTCH%2C%20I%20would%20like%20to%20inquire%20about%20orders."
+                href="https://wa.me/918310274918?text=Hello%20AVIVEKY%2C%20I%20would%20like%20to%20inquire%20about%20orders."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-3.5 py-2 bg-emerald-950/70 border border-emerald-700/60 text-emerald-300 hover:bg-emerald-900/70 text-[11px] uppercase tracking-wider font-semibold transition-colors"
@@ -167,7 +167,7 @@ export function Footer() {
         {/* Bottom Bar: Copyright & Payment Badges */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-zinc-500 text-center sm:text-left pt-2 border-t border-zinc-800/80">
           <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
-            <span>© {new Date().getFullYear()} STiTCH (Stitchclothes). All rights reserved.</span>
+            <span>© {new Date().getFullYear()} AVIVEKY. All rights reserved.</span>
             <span className="text-zinc-700 hidden sm:inline">•</span>
             <Link href="/copyright" className="text-zinc-400 hover:text-white underline">
               Copyright

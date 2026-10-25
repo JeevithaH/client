@@ -5,8 +5,8 @@ import { ShieldCheck, Lock, Eye, Database, Mail, Phone, ArrowRight } from 'lucid
 import { PolicyNav } from '@/components/layout/policy-nav';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | STiTCH Atelier & Store',
-  description: 'Understand how STiTCH collects, safeguards, and processes your personal data and payment transactions under Indian Data Protection standards.',
+  title: 'Privacy Policy | AVIVEKY Atelier & Store',
+  description: 'Understand how AVIVEKY collects, safeguards, and processes your personal data and payment transactions under Indian Data Protection standards.',
 };
 
 export default function PrivacyPolicyPage() {
@@ -23,7 +23,7 @@ export default function PrivacyPolicyPage() {
             Privacy Policy
           </h1>
           <p className="text-zinc-400 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-            Your trust is our paramount asset. Here is how STiTCH safeguards your personal information, payment credentials, and shopping history.
+            Your trust is our paramount asset. Here is how AVIVEKY safeguards your personal information, payment credentials, and shopping history.
           </p>
           <div className="text-[11px] font-mono text-zinc-500 pt-2">
             Last Updated &amp; Effective: October 2026 · Compliant with IT Act 2000 &amp; DPDP Act
@@ -42,7 +42,7 @@ export default function PrivacyPolicyPage() {
             <span>Commitment to Patron Privacy</span>
           </div>
           <p className="text-xs text-zinc-600 leading-relaxed">
-            This Privacy Policy governs the manner in which <strong>STiTCH</strong> (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;, or &quot;Stitchclothes&quot;) collects, maintains, uses, and discloses information gathered from users of the website <strong>stitchclothes-shop.myshopify.com</strong> and associated digital portals. By utilizing our platform, you consent to the data practices described in this statement.
+            This Privacy Policy governs the manner in which <strong>AVIVEKY</strong> (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) collects, maintains, uses, and discloses information gathered from users of our website and associated digital portals. By utilizing our platform, you consent to the data practices described in this statement.
           </p>
         </div>
 
@@ -91,14 +91,14 @@ export default function PrivacyPolicyPage() {
           </h2>
           <div className="p-5 bg-white border border-zinc-200 space-y-3 text-xs leading-relaxed text-zinc-600">
             <p>
-              All online payments on STiTCH are processed through authorized, RBI-licensed payment aggregators including <strong>Razorpay</strong> and certified UPI banking gateways.
+              All online payments on AVIVEKY are processed through authorized, RBI-licensed payment aggregators including <strong>Razorpay</strong> and certified UPI banking gateways.
             </p>
             <div className="p-3 bg-zinc-50 border-l-2 border-black space-y-1 text-zinc-700">
               <span className="font-bold uppercase tracking-wider text-[10px] block text-black">
                 Zero Storage of Sensitive Card Credentials:
               </span>
               <p className="text-[11px]">
-                STiTCH does not store, view, or process raw credit/debit card numbers, CVVs, or bank account passwords on our servers. All transactions comply strictly with <strong>PCI-DSS Level 1 Certification</strong> and RBI tokenization directives.
+                AVIVEKY does not store, view, or process raw credit/debit card numbers, CVVs, or bank account passwords on our servers. All transactions comply strictly with <strong>PCI-DSS Level 1 Certification</strong> and RBI tokenization directives.
               </p>
             </div>
             <p>
