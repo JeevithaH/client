@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Flame, Sparkles } from 'lucide-react';
 import { HeroSlider } from '@/components/home/hero-slider';
+import { InteractiveClothingRackHero } from '@/components/home/interactive-clothing-rack-hero';
 import { CollectionCards } from '@/components/home/collection-cards';
 import { MarqueeTicker } from '@/components/home/marquee-ticker';
 import { TrustPillars } from '@/components/home/trust-pillars';
@@ -44,8 +45,8 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      {/* 1. Glozin Full-Bleed Hero Carousel Slider */}
-      <HeroSlider slides={heroSlides} />
+      {/* 1. Viral Interactive Clothing Rack Hero (Instagram Concept) */}
+      <InteractiveClothingRackHero />
 
       {/* 2. Popular Collections Circular Cards Grid */}
       <CollectionCards categories={categories} />
