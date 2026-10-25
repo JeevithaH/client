@@ -193,3 +193,27 @@ a.luxury-link {
     height: auto;
   }
 }
+
+/* ==========================================================================
+   SEAMLESS INFINITE MARQUEE TICKER ANIMATION
+   ========================================================================== */
+@keyframes marquee-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee-smooth {
+  display: flex !important;
+  width: max-content !important;
+  animation: marquee-scroll 28s linear infinite !important;
+  will-change: transform;
+}
+
+.animate-marquee-smooth:hover {
+  animation-play-state: paused;
+}
+

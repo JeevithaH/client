@@ -51,6 +51,15 @@ const config: Config = {
         ultra: "0.35em",
         subtle: "0.08em",
       },
+      animation: {
+        marquee: "marquee-scroll 28s linear infinite",
+      },
+      keyframes: {
+        "marquee-scroll": {
+          "0%": { transform: "translate3d(0, 0, 0)" },
+          "100%": { transform: "translate3d(-50%, 0, 0)" },
+        },
+      },
     },
   },
   plugins: [],
