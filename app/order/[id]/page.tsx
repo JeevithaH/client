@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { Order, OrderStatus } from '@/lib/types';
 import { useToast } from '@/context/toast-context';
-import { getWhatsAppOrderTrackingUrl } from '@/lib/whatsapp';
+import { getWhatsAppOrderConfirmationUrl, getWhatsAppOrderTrackingUrl } from '@/lib/whatsapp';
 
 const STEPS: { status: OrderStatus; label: string; desc: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { status: 'Placed', label: 'Order Placed', desc: 'Received & verified by atelier', icon: Clock },
@@ -404,13 +404,13 @@ export default function OrderTrackingPage({ params }: { params: { id: string } }
           </Link>
 
           <a
-            href={getWhatsAppOrderTrackingUrl(order.order_number, order.customer_name)}
+            href={getWhatsAppOrderConfirmationUrl(order)}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs uppercase tracking-[0.18em] font-semibold transition-all shadow-md"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs uppercase tracking-[0.18em] font-semibold transition-all shadow-md"
           >
             <MessageCircle className="w-4 h-4" />
-            <span>Send Tracking to WhatsApp</span>
+            <span>Get WhatsApp Order Confirmation</span>
           </a>
 
           <button

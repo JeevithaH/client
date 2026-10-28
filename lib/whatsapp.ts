@@ -1,5 +1,5 @@
 /**
- * WhatsApp Concierge & Ordering Utility for Shipfold
+ * WhatsApp Concierge & Ordering Utility for AVIVEKY
  */
 
 import { CartItem, Product, Address } from './types';
@@ -10,7 +10,7 @@ export const CONCIERGE_PHONE_RAW = process.env.NEXT_PUBLIC_WHATSAPP_RAW || '8310
 
 export function getWhatsAppConciergeUrl(customMessage?: string): string {
   const text = customMessage || encodeURIComponent(
-    'Greetings Shipfold Atelier Concierge. I am inquiring about custom T-shirts & your curated luxury collection.'
+    'Greetings AVIVEKY Atelier Concierge. I am inquiring about custom T-shirts & your curated luxury collection.'
   );
   return `https://wa.me/${CONCIERGE_PHONE}?text=${text}`;
 }
@@ -35,7 +35,7 @@ export function getWhatsAppCustomTShirtOrderUrl({
   estimatedPrice?: string | number;
 }): string {
   const message = [
-    `*🏛️ SHIPFOLD BESPOKE ATELIER — CUSTOM T-SHIRT ORDER*`,
+    `*🏛️ AVIVEKY BESPOKE ATELIER — CUSTOM T-SHIRT ORDER*`,
     `----------------------------------------`,
     `*Direct Hotline:* ${CONCIERGE_PHONE_DISPLAY}`,
     `----------------------------------------`,
@@ -72,10 +72,10 @@ export function getWhatsAppProductOrderUrl({
   deliveryCity?: string;
 }): string {
   const lineTotal = product.price * quantity;
-  const url = typeof window !== 'undefined' ? `${window.location.origin}/product/${product.slug}` : `https://shipfold.com/product/${product.slug}`;
+  const url = typeof window !== 'undefined' ? `${window.location.origin}/product/${product.slug}` : `https://aviveky.com/product/${product.slug}`;
 
   const message = [
-    `*🏛️ SHIPFOLD ATELIER — BESPOKE WHATSAPP ORDER*`,
+    `*🏛️ AVIVEKY ATELIER — BESPOKE WHATSAPP ORDER*`,
     `----------------------------------------`,
     `*Garment:* ${product.title}`,
     `*Colourway:* ${color}`,
@@ -133,7 +133,7 @@ export function getWhatsAppCartOrderUrl({
   }
 
   const message = [
-    `*🏛️ SHIPFOLD ATELIER — COMPLETE BAG ORDER*`,
+    `*🏛️ AVIVEKY ATELIER — COMPLETE BAG ORDER*`,
     `----------------------------------------`,
     customerName ? `*Patron:* ${customerName}` : null,
     customerPhone ? `*Phone:* ${customerPhone}` : null,
@@ -156,13 +156,61 @@ export function getWhatsAppCartOrderUrl({
 
 export function getWhatsAppOrderTrackingUrl(orderNumber: string, customerName: string): string {
   const message = [
-    `*🏛️ SHIPFOLD ORDER INQUIRY*`,
+    `*🏛️ AVIVEKY ORDER INQUIRY*`,
     `----------------------------------------`,
     `*Order Number:* ${orderNumber}`,
     `*Patron:* ${customerName}`,
     `----------------------------------------`,
     `Greetings Concierge, kindly share dispatch updates or tracking airway bill details for my order.`,
   ].join('\n');
+
+  return `https://wa.me/${CONCIERGE_PHONE}?text=${encodeURIComponent(message)}`;
+}
+
+export function getWhatsAppOrderConfirmationUrl(order: {
+  order_number: string;
+  customer_name: string;
+  customer_phone?: string;
+  total_amount: number;
+  payment_method?: string;
+  shipping_address?: string | Address;
+  items?: { product_title: string; color_name?: string; size: string; quantity: number; price: number }[];
+}): string {
+  const itemsText = (order.items || [])
+    .map(
+      (item, idx) =>
+        `${idx + 1}. *${item.product_title}* (${item.color_name || 'Standard'}, Size: ${item.size}) × ${item.quantity} = ₹${(
+          item.price * item.quantity
+        ).toLocaleString('en-IN')}`
+    )
+    .join('\n');
+
+  let addr = '';
+  if (order.shipping_address) {
+    if (typeof order.shipping_address === 'object') {
+      addr = `${order.shipping_address.street}, ${order.shipping_address.city}, ${order.shipping_address.state} - ${order.shipping_address.postal_code}`;
+    } else {
+      addr = order.shipping_address;
+    }
+  }
+
+  const message = [
+    `*🏛️ AVIVEKY — OFFICIAL ORDER CONFIRMATION*`,
+    `----------------------------------------`,
+    `*Order Number:* #${order.order_number}`,
+    `*Customer Name:* ${order.customer_name}`,
+    order.customer_phone ? `*Contact Phone:* ${order.customer_phone}` : null,
+    `*Total Paid:* ₹${order.total_amount.toLocaleString('en-IN')}`,
+    `*Payment Mode:* ${order.payment_method || 'Verified Online (Razorpay)'}`,
+    addr ? `*Delivery Destination:* ${addr}` : null,
+    `----------------------------------------`,
+    `*ORDERED GARMENTS:*`,
+    itemsText || 'Item details recorded in studio database.',
+    `----------------------------------------`,
+    `Hello AVIVEKY Concierge, I have placed this order on the website and would like to receive live WhatsApp updates as it is packed and dispatched. Thank you!`,
+  ]
+    .filter(Boolean)
+    .join('\n');
 
   return `https://wa.me/${CONCIERGE_PHONE}?text=${encodeURIComponent(message)}`;
 }

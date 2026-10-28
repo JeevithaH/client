@@ -56,6 +56,7 @@ interface SimpleColorway {
   imageUrl: string;
   secondaryImageUrl?: string;
   sizes: { [size: string]: boolean };
+  sizeStock: { [size: string]: number };
   stockPerSize: number;
 }
 
@@ -87,7 +88,11 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
         const key = v.color_name || 'Standard';
         if (!map.has(key)) {
           const sizeMap: { [size: string]: boolean } = {};
-          STANDARD_SIZES.forEach((s) => (sizeMap[s] = false));
+          const stockMap: { [size: string]: number } = {};
+          STANDARD_SIZES.forEach((s) => {
+            sizeMap[s] = false;
+            stockMap[s] = 20;
+          });
           map.set(key, {
             id: `cw_${Math.random().toString(36).substring(2, 7)}`,
             colorName: key,
@@ -95,19 +100,23 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
             imageUrl: v.image_url || '',
             secondaryImageUrl: v.secondary_image_url || '',
             sizes: sizeMap,
-            stockPerSize: v.stock || 15,
+            sizeStock: stockMap,
+            stockPerSize: v.stock || 20,
           });
         }
         const cw = map.get(key)!;
         cw.sizes[v.size] = true;
+        cw.sizeStock[v.size] = v.stock ?? 20;
       });
       return Array.from(map.values());
     }
 
     // Default for new product: 1 clean colorway with S, M, L, XL selected
     const initialSizes: { [size: string]: boolean } = {};
+    const initialStock: { [size: string]: number } = {};
     STANDARD_SIZES.forEach((s) => {
       initialSizes[s] = ['S', 'M', 'L', 'XL'].includes(s);
+      initialStock[s] = 20;
     });
 
     return [
@@ -118,6 +127,7 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
         imageUrl: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=900&auto=format&fit=crop',
         secondaryImageUrl: '',
         sizes: initialSizes,
+        sizeStock: initialStock,
         stockPerSize: 20,
       },
     ];
@@ -167,8 +177,10 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
 
   const handleAddColorway = (preset?: typeof COLOR_PRESETS[0]) => {
     const initialSizes: { [size: string]: boolean } = {};
+    const initialStock: { [size: string]: number } = {};
     STANDARD_SIZES.forEach((s) => {
       initialSizes[s] = ['S', 'M', 'L', 'XL'].includes(s);
+      initialStock[s] = 20;
     });
 
     setColorways([
@@ -179,9 +191,26 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
         colorHex: preset ? preset.hex : '#111111',
         imageUrl: colorways[0]?.imageUrl || '',
         sizes: initialSizes,
+        sizeStock: initialStock,
         stockPerSize: 20,
       },
     ]);
+  };
+
+  const applyBulkStock = (cwIdx: number, qty: number) => {
+    const safe = Math.max(0, Math.floor(qty));
+    setColorways((prev) => {
+      const updated = [...prev];
+      const cw = updated[cwIdx];
+      const newStock: { [size: string]: number } = { ...(cw.sizeStock || {}) };
+      STANDARD_SIZES.forEach((s) => {
+        newStock[s] = safe;
+      });
+      cw.sizeStock = newStock;
+      cw.stockPerSize = safe;
+      return updated;
+    });
+    success('Stock Updated', `All sizes for ${colorways[cwIdx].colorName} set to ${safe} units.`);
   };
 
   const handleRemoveColorway = (idx: number) => {
@@ -267,13 +296,14 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
       const sizesToUse = activeSizes.length > 0 ? activeSizes : ['M'];
 
       sizesToUse.forEach((size) => {
+        const stockQty = cw.sizeStock?.[size] !== undefined ? Number(cw.sizeStock[size]) : Number(cw.stockPerSize) || 20;
         variants.push({
           id: `var_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
           product_id: initialProduct?.id || '',
           color_name: cw.colorName || 'Standard',
           color_hex: cw.colorHex || '#111111',
           size,
-          stock: Number(cw.stockPerSize) || 20,
+          stock: stockQty,
           sku: `AV-${generatedSlug.toUpperCase().substring(0, 4)}-${cw.colorName.substring(0, 3).toUpperCase()}-${size}`,
           image_url: cw.imageUrl || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=900&auto=format&fit=crop',
           secondary_image_url: cw.secondaryImageUrl || undefined,
@@ -659,48 +689,96 @@ export function ProductForm({ initialProduct, isEdit = false }: ProductFormProps
                 </div>
               )}
 
-              {/* Sizes & Stock */}
-              <div className="pt-2 border-t border-zinc-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="space-y-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-700 block">
-                    Available Sizes:
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    {STANDARD_SIZES.map((size) => {
-                      const isSelected = Boolean(cw.sizes[size]);
-                      return (
-                        <button
-                          key={size}
-                          type="button"
-                          onClick={() => toggleSize(idx, size)}
-                          className={`w-8 h-8 text-xs font-mono font-bold transition-all border ${
-                            isSelected
-                              ? 'bg-black text-white border-black shadow-xs'
-                              : 'bg-white text-zinc-400 border-zinc-300 hover:border-black'
-                          }`}
-                        >
-                          {size}
-                        </button>
-                      );
-                    })}
+              {/* Sizes & Individual Stock per Size */}
+              <div className="pt-3 border-t border-zinc-200 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-black block">
+                      Available Sizes &amp; Stock per Size
+                    </span>
+                    <span className="text-[10px] text-zinc-500">
+                      Toggle sizes on/off and set individual stock for each size.
+                    </span>
+                  </div>
+
+                  {/* Bulk Set Shortcut */}
+                  <div className="flex items-center gap-1.5 self-start sm:self-auto bg-zinc-100 px-2 py-1 border border-zinc-200 rounded-xs">
+                    <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-wider">Set All:</span>
+                    <input
+                      type="number"
+                      min={0}
+                      defaultValue={20}
+                      id={`bulk-stock-input-${idx}`}
+                      className="w-14 px-1.5 py-0.5 text-xs font-mono font-bold text-center bg-white border border-zinc-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const el = document.getElementById(`bulk-stock-input-${idx}`) as HTMLInputElement;
+                        const val = Number(el?.value);
+                        if (!isNaN(val) && val >= 0) {
+                          applyBulkStock(idx, val);
+                        }
+                      }}
+                      className="px-2 py-0.5 text-[10px] uppercase font-bold bg-black text-white hover:bg-zinc-800 transition-colors"
+                    >
+                      Apply
+                    </button>
                   </div>
                 </div>
 
-                <div className="space-y-1 sm:text-right">
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-700 block">
-                    Stock Units per Size:
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    value={cw.stockPerSize}
-                    onChange={(e) => {
-                      const updated = [...colorways];
-                      updated[idx].stockPerSize = Number(e.target.value);
-                      setColorways(updated);
-                    }}
-                    className="w-24 px-2 py-1 text-xs font-mono font-bold text-center bg-white border border-zinc-300"
-                  />
+                {/* Per-Size Interactive Cards */}
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 pt-1">
+                  {STANDARD_SIZES.map((size) => {
+                    const isSelected = Boolean(cw.sizes[size]);
+                    const currentStock = cw.sizeStock?.[size] !== undefined ? cw.sizeStock[size] : cw.stockPerSize ?? 20;
+
+                    return (
+                      <div
+                        key={size}
+                        className={`p-2 border transition-all text-center rounded-xs flex flex-col justify-between ${
+                          isSelected
+                            ? 'border-black bg-white shadow-xs'
+                            : 'border-zinc-200 bg-zinc-100/50 opacity-50'
+                        }`}
+                      >
+                        {/* Size Toggle Button */}
+                        <button
+                          type="button"
+                          onClick={() => toggleSize(idx, size)}
+                          className={`w-full py-1 text-xs font-mono font-bold transition-colors ${
+                            isSelected ? 'bg-black text-white' : 'bg-zinc-200 text-zinc-600 hover:bg-zinc-300'
+                          }`}
+                          title={`Click to ${isSelected ? 'disable' : 'enable'} Size ${size}`}
+                        >
+                          Size {size}
+                        </button>
+
+                        {/* Individual Stock Input for this Size */}
+                        <div className="mt-2 space-y-0.5">
+                          <label className="text-[9px] uppercase tracking-wider text-zinc-500 font-bold block">
+                            {isSelected ? 'Stock' : 'Off'}
+                          </label>
+                          <input
+                            type="number"
+                            min={0}
+                            disabled={!isSelected}
+                            value={isSelected ? currentStock : ''}
+                            placeholder={isSelected ? '0' : '—'}
+                            onChange={(e) => {
+                              const updated = [...colorways];
+                              if (!updated[idx].sizeStock) {
+                                updated[idx].sizeStock = {};
+                              }
+                              updated[idx].sizeStock[size] = Math.max(0, Number(e.target.value));
+                              setColorways(updated);
+                            }}
+                            className="w-full px-1 py-1 text-xs font-mono font-bold text-center bg-white border border-zinc-300 focus:outline-hidden focus:border-black disabled:bg-zinc-100 disabled:text-zinc-400"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
