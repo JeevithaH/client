@@ -1,4 +1,4 @@
-name = "client-1"
+name = "aviveky"
 compatibility_date = "2024-10-22"
 compatibility_flags = ["nodejs_compat"]
 
@@ -17,5 +17,5 @@ binding = "R2_BUCKET"
 bucket_name = "shipfold-apparel"
 
 [vars]
-NEXTAUTH_URL = "https://client-1.workers.dev"
-NEXT_PUBLIC_APP_URL = "https://client-1.workers.dev"
+NEXTAUTH_URL = "https://aviveky.workers.dev"
+NEXT_PUBLIC_APP_URL = "https://aviveky.workers.dev"

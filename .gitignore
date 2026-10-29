@@ -31,3 +31,13 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 *.tsbuildinfo
+
+# Local DB files
+data/shipfold.db-shm
+data/shipfold.db-wal
+
+# CI/CD (project-specific, not needed in repo)
+.gitlab-ci.yml
+
+# Dev notes / walkthroughs
+WALKTHROUGH.md

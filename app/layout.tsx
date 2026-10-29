@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     title: 'AVIVEKY | Premium Streetwear & Anime Apparel Atelier',
     description:
       'Exclusive streetwear drops, anime graphic apparel, heavyweight 400 GSM hoodies & oversized combed cotton t-shirts.',
-    url: 'https://shipfold.com',
+    url: 'https://aviveky.com',
     siteName: 'AVIVEKY Atelier',
     images: [
       {

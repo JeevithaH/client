@@ -8,7 +8,7 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  secret: process.env.NEXTAUTH_SECRET || 'shipfold_luxury_secret_super_secure_key_2026',
+  secret: process.env.NEXTAUTH_SECRET || 'aviveky_luxury_secret_super_secure_key_2026',
   pages: {
     signIn: '/login',
   },
@@ -17,7 +17,7 @@ export const authOptions: NextAuthOptions = {
       id: 'credentials',
       name: 'Credentials',
       credentials: {
-        email: { label: 'Email', type: 'email', placeholder: 'patron@shipfold.com' },
+        email: { label: 'Email', type: 'email', placeholder: 'patron@aviveky.com' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {

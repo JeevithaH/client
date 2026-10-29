@@ -1,6 +1,6 @@
 /**
  * ==============================================================================
- * SHIPFOLD ATELIER — DATABASE RE-EXPORT SHIM
+ * AVIVEKY — DATABASE RE-EXPORT SHIM
  * ==============================================================================
  * 
  * Cloudflare D1 is now the sole primary database and single source of truth.

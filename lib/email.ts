@@ -1,6 +1,6 @@
 /**
  * ==============================================================================
- * SHIPFOLD ATELIER — LUXURY EMAIL DISPATCH SERVICE
+ * AVIVEKY — EMAIL DISPATCH SERVICE
  * ==============================================================================
  * 
  * Supports:
@@ -34,7 +34,7 @@ export async function sendEmail({ to, subject, html }: SendEmailParams): Promise
       });
 
       const info = await transporter.sendMail({
-        from: `Shipfold Atelier <${gmailUser}>`,
+        from: `AVIVEKY <${gmailUser}>`,
         to,
         subject,
         html,
@@ -50,7 +50,7 @@ export async function sendEmail({ to, subject, html }: SendEmailParams): Promise
 
   // Option 2: Resend API
   const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.EMAIL_FROM || 'Shipfold Atelier <onboarding@resend.dev>';
+  const fromEmail = process.env.EMAIL_FROM || 'AVIVEKY <onboarding@resend.dev>';
 
   if (apiKey && !apiKey.includes('placeholder')) {
     try {
@@ -84,7 +84,7 @@ export async function sendEmail({ to, subject, html }: SendEmailParams): Promise
 
   // Graceful fallback logger for local development / testing
   console.log(`\n======================================================`);
-  console.log(`[SHIPFOLD EMAIL SIMULATOR]`);
+  console.log(`[AVIVEKY EMAIL SIMULATOR]`);
   console.log(`To: ${to}`);
   console.log(`Subject: ${subject}`);
   console.log(`======================================================\n`);
@@ -95,7 +95,7 @@ export async function sendEmail({ to, subject, html }: SendEmailParams): Promise
  * Dispatches a bespoke 6-digit email verification OTP
  */
 export async function sendVerificationOtpEmail(to: string, name: string, otp: string) {
-  const subject = `${otp} is your Shipfold Atelier verification code`;
+  const subject = `${otp} is your AVIVEKY verification code`;
   const html = `
 <!DOCTYPE html>
 <html>
@@ -109,7 +109,7 @@ export async function sendVerificationOtpEmail(to: string, name: string, otp: st
     <tr>
       <td style="padding: 36px 40px; background-color: #0C1427; text-align: center;">
         <h1 style="margin: 0; font-family: Georgia, serif; font-size: 24px; font-weight: normal; letter-spacing: 0.25em; color: #FFFFFF; text-transform: uppercase;">
-          Shipfold
+          AVIVEKY
         </h1>
         <p style="margin: 4px 0 0 0; font-size: 9px; letter-spacing: 0.35em; color: #C5A880; text-transform: uppercase;">
           Atelier &amp; Clothiers
@@ -145,7 +145,7 @@ export async function sendVerificationOtpEmail(to: string, name: string, otp: st
         </table>
 
         <p style="margin: 24px 0 0 0; font-size: 12px; line-height: 1.6; color: #6B7280;">
-          If you did not initiate this account creation at Shipfold, please disregard this communique.
+          If you did not initiate this account creation at AVIVEKY, please disregard this communique.
         </p>
       </td>
     </tr>
@@ -154,7 +154,7 @@ export async function sendVerificationOtpEmail(to: string, name: string, otp: st
     <tr>
       <td style="padding: 24px 40px; border-top: 1px solid #F3F4F6; background-color: #FAFAFA; text-align: center;">
         <p style="margin: 0; font-size: 11px; color: #9CA3AF; letter-spacing: 0.05em;">
-          Shipfold Clothiers &bull; Concierge Hotline: +91 8310274918 &bull; Bengaluru, India
+          AVIVEKY &bull; Concierge Hotline: +91 8310274918 &bull; Bengaluru, India
         </p>
       </td>
     </tr>
@@ -170,7 +170,7 @@ export async function sendVerificationOtpEmail(to: string, name: string, otp: st
  * Dispatches a bespoke 6-digit password reset OTP
  */
 export async function sendPasswordResetEmail(to: string, name: string, otp: string) {
-  const subject = `${otp} is your Shipfold password reset code`;
+  const subject = `${otp} is your AVIVEKY password reset code`;
   const html = `
 <!DOCTYPE html>
 <html>
@@ -184,7 +184,7 @@ export async function sendPasswordResetEmail(to: string, name: string, otp: stri
     <tr>
       <td style="padding: 36px 40px; background-color: #0C1427; text-align: center;">
         <h1 style="margin: 0; font-family: Georgia, serif; font-size: 24px; font-weight: normal; letter-spacing: 0.25em; color: #FFFFFF; text-transform: uppercase;">
-          Shipfold
+          AVIVEKY
         </h1>
         <p style="margin: 4px 0 0 0; font-size: 9px; letter-spacing: 0.35em; color: #C5A880; text-transform: uppercase;">
           Security &amp; Patron Services
@@ -202,7 +202,7 @@ export async function sendPasswordResetEmail(to: string, name: string, otp: stri
           Dear ${name || 'Patron'},
         </h2>
         <p style="margin: 0 0 24px 0; font-size: 13px; line-height: 1.6; color: #4B5563;">
-          We received a request to update the password associated with your Shipfold patron account. Use the one-time code below to establish your new credentials:
+          We received a request to update the password associated with your AVIVEKY patron account. Use the one-time code below to establish your new credentials:
         </p>
 
         <!-- OTP Code Card -->
@@ -229,7 +229,7 @@ export async function sendPasswordResetEmail(to: string, name: string, otp: stri
     <tr>
       <td style="padding: 24px 40px; border-top: 1px solid #F3F4F6; background-color: #FAFAFA; text-align: center;">
         <p style="margin: 0; font-size: 11px; color: #9CA3AF; letter-spacing: 0.05em;">
-          Shipfold Clothiers &bull; Concierge Hotline: +91 8310274918 &bull; Bengaluru, India
+          AVIVEKY &bull; Concierge Hotline: +91 8310274918 &bull; Bengaluru, India
         </p>
       </td>
     </tr>

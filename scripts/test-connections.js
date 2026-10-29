@@ -38,7 +38,7 @@ const r2Bucket = process.env.CLOUDFLARE_R2_BUCKET_NAME || 'shipfold-apparel';
 const r2PublicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
 
 console.log('\n================================================================');
-console.log('       NIRVIGNA STUDIO — CLOUDFLARE D1 & R2 HEALTH CHECK');
+console.log('       AVIVEKY — CLOUDFLARE D1 & R2 HEALTH CHECK');
 console.log('================================================================\n');
 
 async function checkD1() {
